@@ -1,0 +1,53 @@
+[
+  {
+    "msys": {
+      "relay_message": {
+        "content": {
+          "email_rfc822": "Return-Path: <me@here.com>\r\nMIME-Version: 1.0\r\nFrom: me@here.com\r\nReceived: by 10.114.82.10 with HTTP; Mon, 4 Jul 2016 07:53:14 -0700 (PDT)\r\nDate: Mon, 4 Jul 2016 15:53:14 +0100\r\nMessage-ID: <484810298443-112311-xqxbby@mail.there.com>\r\nSubject: Relay webhooks rawk!\r\nTo: you@there.com\r\nContent-Type: multipart/alternative; boundary=deaddeaffeedf00fall45dbhail980dhypnot0ad\r\n\r\n--deaddeaffeedf00fall45dbhail980dhypnot0ad\r\nContent-Type: text/plain; charset=UTF-8\r\nHi there SparkPostians.\r\n\r\n--deaddeaffeedf00fall45dbhail980dhypnot0ad\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<p>Hi there <strong>SparkPostians</strong></p>\r\n\r\n--deaddeaffeedf00fall45dbhail980dhypnot0ad--\r\n",
+          "email_rfc822_is_base64": false,
+          "headers": [
+            {
+              "Return-Path": "<me@here.com>"
+            },
+            {
+              "MIME-Version": "1.0"
+            },
+            {
+              "From": "me@here.com"
+            },
+            {
+              "Received": "by 10.114.82.10 with HTTP; Mon, 4 Jul 2016 07:53:14 -0700 (PDT)"
+            },
+            {
+              "Date": "Mon, 4 Jul 2016 15:53:14 +0100"
+            },
+            {
+              "Message-ID": "<484810298443-112311-xqxbby@mail.there.com>"
+            },
+            {
+              "Subject": "Relay webhooks rawk!"
+            },
+            {
+              "To": "you@there.com"
+            }
+          ],
+          "html": "<p>Hi there <strong>SparkPostians</strong>.</p>",
+          "subject": "We come in peace",
+          "text": "Hi there SparkPostians.",
+          "to": [
+            "your@yourdomain.com"
+          ]
+        },
+        "customer_id": "1337",
+        "ok": true,
+        "not_ok": false,
+        "unknown": null,
+        "friendly_from": "me@here.com",
+        "msg_from": "me@here.com",
+        "rcpt_to": "you@there.com",
+        "webhook_id": "4839201967643219",
+        "lots_of_text": "Philip Lee Wadler (born April 8, 1956) is an American computer scientist known for his contributions to programming language design and type theory. In particular, he has contributed to the theory behind functional programming[8] and the use of monads in functional programming, the design of the purely functional language Haskell,[9] and the XQuery declarative query language. In 1984, he created the Orwell programming language. Wadler was involved in adding generic types to Java 5.0.[10] He is also author of the paper Theorems for free![11] that gave rise to much research on functional language optimization (see also Parametricity). p"
+      }
+    }
+  }
+]
