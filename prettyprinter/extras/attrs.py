@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from attr import Factory, NOTHING
-from prettyprinter.prettyprinter import prettycall, register_pretty
+from prettyprinter.prettyprinter import pretty_call, register_pretty
 
 
 def is_instance_of_attrs_class(value):
@@ -39,7 +39,7 @@ def pretty_attrs(value, ctx):
         if display_attr:
             kwargs.append((attribute.name, getattr(value, attribute.name)))
 
-    return prettycall(ctx, cls, **OrderedDict(kwargs))
+    return pretty_call(ctx, cls, **OrderedDict(kwargs))
 
 
 def install():

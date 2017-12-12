@@ -7,7 +7,7 @@ from django.db.models.query import QuerySet
 from ..prettyprinter import (
     MULTILINE_STATEGY_HANG,
     build_fncall,
-    prettycall,
+    pretty_call,
     pretty_python_value,
     register_pretty,
     annotate_comment,
@@ -110,7 +110,7 @@ def pretty_base_model(instance, ctx):
                 related_model = related_field.model
                 attrs.append((
                     field.name,
-                    prettycall(
+                    pretty_call(
                         ctx,
                         related_model,
                         **{related_field.name: fk_value}
@@ -215,7 +215,7 @@ def pretty_queryset(queryset, ctx):
 
     element_ctx = ctx.set(ModelVerbosity, ModelVerbosity.SHORT)
 
-    return prettycall(
+    return pretty_call(
         element_ctx,
         qs_cls,
         (

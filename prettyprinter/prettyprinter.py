@@ -135,7 +135,7 @@ def comment(comment_str, value):
     annotating the Doc with ``annotate_comment``.
 
     Generally, you want to use this to annotate arguments
-    to ``prettycall``.
+    to ``pretty_call``.
 
     >>> [comment('This is a commented value', 'value')]
     [
@@ -543,13 +543,13 @@ def sequence_of_docs(ctx, left, docs, right, dangle=False, force_break=False):
     return outer(bracket(ctx, left, concat(parts), right))
 
 
-def prettycall(ctx, fn, *args, **kwargs):
+def pretty_call(ctx, fn, *args, **kwargs):
     """Returns a Doc that represents a function call to :keyword:`fn` with
     the remaining positional and keyword arguments.
 
     Given an arbitrary context ``ctx``,::
 
-        prettycall(ctx, sorted, [7, 4, 5], reverse=True)
+        pretty_call(ctx, sorted, [7, 4, 5], reverse=True)
 
     Will result in output::
 
@@ -563,7 +563,7 @@ def prettycall(ctx, fn, *args, **kwargs):
             reverse=True
         )
 
-    ``prettycall`` automatically handles syntax highlighting.
+    ``pretty_call`` automatically handles syntax highlighting.
 
     :param ctx: a context value
     :type ctx: prettyprinter.prettyprinter.PrettyContext
@@ -778,7 +778,7 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
             return concat([left, right])
         else:
             assert isinstance(value, set)
-            return prettycall(ctx, set)
+            return pretty_call(ctx, set)
 
     if ctx.depth_left == 0:
         return concat([left, ELLIPSIS, right])
@@ -825,8 +825,8 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
 @register_pretty(frozenset)
 def pretty_frozenset(value, ctx):
     if value:
-        return prettycall(ctx, frozenset, list(value))
-    return prettycall(ctx, frozenset)
+        return pretty_call(ctx, frozenset, list(value))
+    return pretty_call(ctx, frozenset)
 
 
 class _AlwaysSortable(object):
@@ -993,14 +993,14 @@ NEG_INF_FLOAT = float('-inf')
 @register_pretty(float)
 def pretty_float(value, ctx):
     if ctx.depth_left == 0:
-        return prettycall(ctx, float, ...)
+        return pretty_call(ctx, float, ...)
 
     if value == INF_FLOAT:
-        return prettycall(ctx, float, 'inf')
+        return pretty_call(ctx, float, 'inf')
     elif value == NEG_INF_FLOAT:
-        return prettycall(ctx, float, '-inf')
+        return pretty_call(ctx, float, '-inf')
     elif math.isnan(value):
-        return prettycall(ctx, float, 'nan')
+        return pretty_call(ctx, float, 'nan')
 
     return annotate(Token.NUMBER_FLOAT, repr(value))
 
@@ -1008,7 +1008,7 @@ def pretty_float(value, ctx):
 @register_pretty(int)
 def pretty_int(value, ctx):
     if ctx.depth_left == 0:
-        return prettycall(ctx, int, ...)
+        return pretty_call(ctx, int, ...)
     return annotate(Token.NUMBER_INT, repr(value))
 
 
@@ -1250,10 +1250,10 @@ def pretty_str(s, ctx):
 
     if ctx.depth_left == 0:
         if isinstance(s, str):
-            return prettycall(ctx, constructor, ...)
+            return pretty_call(ctx, constructor, ...)
         else:
             assert isinstance(s, bytes)
-            return prettycall(ctx, constructor, ...)
+            return pretty_call(ctx, constructor, ...)
 
     multiline_strategy = ctx.multiline_strategy
     prettyprinter_indent = ctx.indent

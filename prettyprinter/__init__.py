@@ -16,7 +16,7 @@ from .color import colored_render_to_stream
 from .prettyprinter import (
     python_to_sdocs,
     register_pretty,
-    prettycall,
+    pretty_call,
     comment,
     trailing_comment,
 )
@@ -38,7 +38,7 @@ __all__ = [
     'python_to_sdocs',
     'cpprint',
     'register_pretty',
-    'prettycall',
+    'pretty_call',
     'comment',
     'trailing_comment',
     'install_extras',

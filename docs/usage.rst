@@ -2,6 +2,8 @@
 Usage
 =====
 
+Install the package with ``pip``:
+
 .. code:: bash
     
     pip install prettyprinter
@@ -89,11 +91,11 @@ You can register a pretty printer like this:
 
 .. code:: python
 
-    from prettyprinter import register_pretty, prettycall
+    from prettyprinter import register_pretty, pretty_call
 
     @register_pretty(MyClass)
     def pretty_myclass(value, ctx):
-        return prettycall(
+        return pretty_call(
             ctx,
             MyClass,
             one=value.one,
@@ -131,11 +133,11 @@ The decorated function must accept two arguments:
 
 In most cases, you don't need need to do anything with the context except pass it along in calls, but it can be used to affect rendering of nested data.
 
-The function must return a :class:`~prettyprinter.doc.Doc`, which is either an instance of :class:`~prettyprinter.doc.Doc` or a :class:`str`. :func:`~prettyprinter.prettycall` returns a :class:`~prettyprinter.doc.Doc` that represents a function call. Given an arbitrary context ``ctx``
+The function must return a :class:`~prettyprinter.doc.Doc`, which is either an instance of :class:`~prettyprinter.doc.Doc` or a :class:`str`. :func:`~prettyprinter.pretty_call` returns a :class:`~prettyprinter.doc.Doc` that represents a function call. Given an arbitrary context ``ctx``
 
 .. code:: python
 
-    prettycall(ctx, round, 1.5)
+    pretty_call(ctx, round, 1.5)
 
 Will be printed out as
 
