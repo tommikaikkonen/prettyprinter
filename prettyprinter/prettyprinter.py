@@ -1,6 +1,7 @@
 import inspect
 import math
 import re
+import warnings
 from functools import singledispatch, partial
 from itertools import chain, cycle
 
@@ -289,7 +290,34 @@ def _run_pretty(pretty_fn, value, ctx, trailing_comment=None):
     ctx.start_visit(value)
 
     if trailing_comment:
-        doc = pretty_fn(value, ctx, trailing_comment=trailing_comment)
+        try:
+            doc = pretty_fn(
+                value,
+                ctx,
+                trailing_comment=trailing_comment
+            )
+        except TypeError as e:
+            # This is probably because pretty_fn does not support
+            # trailing_comment, but let's make sure.
+            sig = inspect.signature(pretty_fn)
+            try:
+                sig.bind(value, ctx, trailing_comment=trailing_comment)
+            except TypeError:
+                fnname = '{}.{}'.format(
+                    pretty_fn.__module__,
+                    pretty_fn.__qualname__
+                )
+                warnings.warn(
+                    "The pretty printer for {}, {}, does not support rendering "
+                    "trailing comments. It will not show up in output.".format(
+                        type(value).__name__, fnname
+                    )
+                )
+                doc = pretty_fn(value, ctx)
+            else:
+                # TypeError came from the function implementation;
+                # reraise.
+                raise e
     else:
         doc = pretty_fn(value, ctx)
 
