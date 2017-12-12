@@ -153,7 +153,7 @@ def install_extras(
     *,
     exclude=EMPTY_SET,
     raise_on_error=False,
-    warn_on_error=True,
+    warn_on_error=True
 ):
     """Installs extras. The following extras are available:
 
