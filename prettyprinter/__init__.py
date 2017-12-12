@@ -4,7 +4,7 @@
 
 __author__ = """Tommi Kaikkonen"""
 __email__ = 'kaikkonentommi@gmail.com'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 from io import StringIO
 import sys
