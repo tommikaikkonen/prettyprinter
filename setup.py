@@ -34,7 +34,7 @@ setup(
     author="Tommi Kaikkonen",
     author_email='kaikkonentommi@gmail.com',
     url='https://github.com/tommikaikkonen/prettyprinter',
-    packages=find_packages(include=['prettyprinter']),
+    packages=find_packages(include=['prettyprinter', 'prettyprinter.extras']),
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
