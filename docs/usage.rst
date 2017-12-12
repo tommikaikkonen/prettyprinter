@@ -29,13 +29,15 @@ for colored output. For colorless output, remove the ``c`` prefix from the funct
 Usage in Python code and default shell
 ------------------------------
 
-It is not possible to override the printer for evaluated values in the Python shell. You should use IPython because it is alot easier to work with, but you may use :func:`~prettyprinter.cpprint` to print values in the default shell or in your code, similar to the standard library ``pprint``:
+Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.pprint` for uncolored output, just like ``pprint.pprint``:
 
 .. code:: python
 
     >>> from prettyprinter import cpprint
     >>> cpprint({'a': 1, 'b': 2})
     # ...colored output
+
+Unfortunately, it's not possible to override the representation printer for values evaluated in the default Python shell. I recommend using IPython.
 
 Usage with IPython
 ------------------
@@ -48,14 +50,9 @@ You can use prettyprinter with IPython so that values in the REPL will be printe
     nano "`ipython locate profile default`/startup/init_prettyprinter.py"
 
 
-The code in this file will be run upon entering the shell. Then add one or more of these lines:
+The code in this file will be run upon entering the shell. Add these lines and comment out any extra packages you don't need:
 
 .. code:: python
-
-    # Use prettyprinter as the default pretty printer in IPython
-    import prettyprinter.extras.ipython
-
-    prettyprinter.extras.ipython.install()
 
     # Specify syntax higlighting theme in IPython;
     # will be picked up by prettyprinter.
@@ -65,21 +62,25 @@ The code in this file will be run upon entering the shell. Then add one or more 
     ipy.colors = 'linux'
     ipy.highlighting_style = styles.get_style_by_name('monokai')
 
+    import prettyprinter
 
-    # For Django users: install prettyprinter for Django models and QuerySets.
-    import prettyprinter.extras.django
-    prettyprinter.extras.django.install()
-
-Packages colorful_ and pygments_ need to be installed to use ``prettyprinter`` with ``IPython``.
+    prettyprinter.install_extras(
+        # Comment out any packages you are not using.
+        include=[
+            'ipython',
+            'attrs',
+            'django',
+        ],
+        warn_on_error=True
+    )
 
 
 Pretty printing your own types
 ------------------------------
 
-Given a custom class like this:
+Given a custom class:
 
 .. code:: python
-
 
     class MyClass(object):
         def __init__(self, one, two):
@@ -87,7 +88,7 @@ Given a custom class like this:
             self.two = two
 
 
-You can register a pretty printer like this:
+You can register a pretty printer:
 
 .. code:: python
 
@@ -126,12 +127,12 @@ The real utility is in how nested data pretty printing is handled for you, and h
 
 :func:`@register_pretty <prettyprinter.register_pretty>` is a decorator that takes the type to register. Internally, :class:`functools.singledispatch` is used to handle dispatch to the correct pretty printer. This means that any subclasses will also use the same printer.
 
-The decorated function must accept two arguments:
+The decorated function must accept exactly two positional arguments:
 
 - ``value`` to pretty print, and
 - ``ctx``, a context value.
 
-In most cases, you don't need need to do anything with the context except pass it along in calls, but it can be used to affect rendering of nested data.
+In most cases, you don't need need to do anything with the context, except pass it along in nested calls. It can be used to affect rendering of nested data.
 
 The function must return a :class:`~prettyprinter.doc.Doc`, which is either an instance of :class:`~prettyprinter.doc.Doc` or a :class:`str`. :func:`~prettyprinter.pretty_call` returns a :class:`~prettyprinter.doc.Doc` that represents a function call. Given an arbitrary context ``ctx``
 

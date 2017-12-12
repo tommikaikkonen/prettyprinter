@@ -2,6 +2,8 @@
 PrettyPrinter
 =============
 
+Documentation_
+
 Syntax-highlighting, declarative and composable pretty printer for Python 3.6+
 
 - Drop in replacement for the standard library ``pprint``: just rename ``pprint`` to ``prettyprinter`` in your imports.
@@ -23,4 +25,6 @@ Packaged with the following pretty printer definitions:
 - ``django`` - your Models and QuerySets will be pretty printed automatically
 
 * Free software: MIT license
-* Documentation: https://prettyprinter.readthedocs.io.
+* Documentation: Documentation_.
+
+.. _Documentation: https://prettyprinter.readthedocs.io
