@@ -16,7 +16,61 @@ Syntax-highlighting, declarative and composable pretty printer for Python 3.6+
 .. image:: ../prettyprinterscreenshot.png
     :alt: 
 
-Packaged with the following pretty printer definitions:
+Pretty print common Python values:
+
+.. code:: python
+
+    >>> from datetime import datetime
+    >>> from prettyprinter import pprint
+    >>> pprint({'beautiful output': datetime.now()})
+    {
+        'beautiful output': datetime.datetime(
+            year=2017,
+            month=12,
+            day=12,
+            hour=0,
+            minute=43,
+            second=4,
+            microsecond=752094
+        )
+    }
+
+As well as your own, without any manual string formatting:
+
+.. code:: python
+
+    >>> class MyClass:
+    ...     def __init__(self, one, two):
+    ...         self.one = one
+    ...         self.two = two
+
+    >>> from prettyprinter import register_pretty, pretty_call
+
+    >>> @register_pretty(MyClass)
+    ... def pretty_myclass(value, ctx):
+    ...     return pretty_call(ctx, MyClass, one=value.one, two=value.two)
+
+    >>> pprint(MyClass((1, 2, 3), {'a': 1, 'b': 2}))
+    MyClass(one=(1, 2, 3), two={'a': 1, 'b': 2})
+
+    >>> pprint({'beautiful output': datetime.now(), 'beautiful MyClass instance': MyClass((1, 2, 3), {'a': 1, 'b': 2})})
+    {
+        'beautiful MyClass instance': MyClass(
+            one=(1, 2, 3),
+            two={'a': 1, 'b': 2}
+        ),
+        'beautiful output': datetime.datetime(
+            year=2017,
+            month=12,
+            day=12,
+            hour=0,
+            minute=44,
+            second=18,
+            microsecond=384219
+        )
+    }
+
+Comes packaged with the following pretty printer definitions:
 
 - ``datetime`` - (installed by default)
 - ``enum`` - (installed by default)

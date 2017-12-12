@@ -27,7 +27,7 @@ for colored output. For colorless output, remove the ``c`` prefix from the funct
     from prettyprinter import pprint
 
 Usage in Python code and default shell
-------------------------------
+--------------------------------------
 
 Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.pprint` for uncolored output, just like ``pprint.pprint``:
 
