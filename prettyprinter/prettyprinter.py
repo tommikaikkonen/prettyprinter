@@ -136,6 +136,11 @@ def comment(comment_str, value):
 
     Generally, you want to use this to annotate arguments
     to ``prettycall``.
+
+    >>> [comment('This is a commented value', 'value')]
+    [
+        'value'  # This is a commented value
+    ]
     """
     return _CommentedValue(value, comment_str)
 
@@ -147,7 +152,13 @@ def trailing_comment(comment_str, value):
     the last argument in a function.
 
     This will force the rendering of `value` to be broken
-    to multple lines as Python does not have inline comments.
+    to multiple lines as Python does not have inline comments.
+
+    >>> trailing_comment('...and more', ['value'])
+    [
+        'value',
+        # ...and more
+    ]
     """
     return _TrailingCommentedValue(value, comment_str)
 
@@ -461,7 +472,7 @@ def commentdoc(text):
     )
 
 
-def sequence_of_docs(ctx, left, docs, right, dangle=False):
+def sequence_of_docs(ctx, left, docs, right, dangle=False, force_break=False):
     docs = list(docs)
 
     # Performance optimization:
@@ -478,10 +489,9 @@ def sequence_of_docs(ctx, left, docs, right, dangle=False):
 
     MAX_PRACTICAL_RIBBON_WIDTH = 150
 
-    will_break = minimum_output_len > MAX_PRACTICAL_RIBBON_WIDTH
+    will_break = force_break or minimum_output_len > MAX_PRACTICAL_RIBBON_WIDTH
 
     has_comment = any(is_commented(doc) for doc in docs)
-
     parts = []
     for idx, doc in enumerate(docs):
         last = idx == len(docs) - 1
@@ -802,7 +812,14 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
         els = chain(els, [commentdoc(trailing_comment)])
         dangle = False
 
-    return sequence_of_docs(ctx, left, els, right, dangle=dangle)
+    return sequence_of_docs(
+        ctx,
+        left,
+        els,
+        right,
+        dangle=dangle,
+        force_break=bool(trailing_comment)
+    )
 
 
 @register_pretty(frozenset)

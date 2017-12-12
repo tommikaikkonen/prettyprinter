@@ -7,7 +7,9 @@ __email__ = 'kaikkonentommi@gmail.com'
 __version__ = '0.1.2'
 
 from io import StringIO
+from importlib import import_module
 import sys
+import warnings
 
 from pprint import isrecursive, isreadable, saferepr
 from .color import colored_render_to_stream
@@ -39,6 +41,7 @@ __all__ = [
     'prettycall',
     'comment',
     'trailing_comment',
+    'install_extras',
 ]
 
 
@@ -135,3 +138,60 @@ def cpprint(
     colored_render_to_stream(stream, sdocs, style=style)
     if end:
         stream.write(end)
+
+
+ALL_EXTRAS = frozenset([
+    'attrs',
+    'django',
+    'ipython',
+])
+EMPTY_SET = frozenset()
+
+
+def install_extras(
+    include=ALL_EXTRAS,
+    *,
+    exclude=EMPTY_SET,
+    raise_on_error=False,
+    warn_on_error=True,
+):
+    """Installs extras. The following extras are available:
+
+    - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
+    - ``'django'`` - automatically pretty prints Model and QuerySet ubclasses defined in your Django apps.
+    - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
+
+    :param include: an iterable of strs representing the extras to include.
+        All extras are included by default.
+    :param exclude: an iterable of strs representing the extras to exclude.
+    """
+    include = set(include)
+    exclude = set(exclude)
+
+    extras_to_install = (ALL_EXTRAS & include) - exclude
+
+    for extra in extras_to_install:
+        module_name = 'prettyprinter.extras.' + extra
+        try:
+            extra_module = import_module(module_name)
+        except ImportError as e:
+            if raise_on_error:
+                raise e
+            if warn_on_error:
+                warnings.warn(
+                    "Failed to import '{0}' PrettyPrinter extra. "
+                    "If you don't need it, call install_extras with "
+                    "exclude=['{0}']".format(extra)
+                )
+        else:
+            try:
+                extra_module.install()
+            except Exception as exc:
+                if raise_on_error:
+                    raise exc
+                elif warn_on_error:
+                    warnings.warn(
+                        "Failed to install '{0}' PrettyPrinter extra. "
+                        "If you don't need it, call install_extras with "
+                        "exclude=['{0}']".format(extra)
+                    )
