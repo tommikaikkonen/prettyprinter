@@ -97,7 +97,7 @@ class CommentAnnotation:
         self.value = value
 
     def __repr__(self):
-        return f'ValueComment({repr(self.value)})'
+        return 'ValueComment({})'.format(repr(self.value))
 
 
 class _CommentedValue:
@@ -190,14 +190,14 @@ def general_identifier(s):
             if module == 'builtins':
                 return builtin_identifier(qualname)
             return identifier(qualname)
-        return identifier(f'{module}.{qualname}')
+        return identifier('{}.{}'.format(module, qualname))
     return identifier(s)
 
 
 def classattr(cls, attrname):
     return concat([
         general_identifier(cls),
-        identifier(f'.{attrname}')
+        identifier('.{}'.format(attrname))
     ])
 
 
@@ -286,11 +286,14 @@ def _run_pretty(pretty_fn, value, ctx, trailing_comment=None):
         isinstance(doc, str) or
         isinstance(doc, Doc)
     ):
-        fnname = f'{pretty_fn.__module__}.{pretty_fn.__qualname__}'
+        fnname = '{}.{}'.format(
+            pretty_fn.__module__,
+            pretty_fn.__qualname__
+        )
         raise ValueError(
             'Functions decorated with register_pretty must return '
-            f'an instance of str or Doc. {fnname} returned '
-            f'{repr(doc)} instead.'
+            'an instance of str or Doc. {} returned '
+            '{} instead.'.format(fnname, repr(doc))
         )
 
     ctx.end_visit(value)
@@ -356,7 +359,9 @@ def register_pretty(type=None, predicate=None):
     if predicate is not None:
         if not callable(predicate):
             raise ValueError(
-                f"Expected a callable for 'predicate', got {repr(predicate)}"
+                "Expected a callable for 'predicate', got {}".format(
+                    repr(predicate)
+                )
             )
 
     def decorator(fn):
@@ -368,11 +373,16 @@ def register_pretty(type=None, predicate=None):
         try:
             sig.bind(value, ctx)
         except TypeError:
-            fnname = f'{fn.__module__}.{fn.__qualname__}'
+            fnname = '{}.{}'.format(
+                fn.__module__,
+                fn.__qualname__
+            )
             raise ValueError(
                 "Functions decorated with register_pretty must accept "
                 "exactly two positional parameters: 'value' and 'ctx'. "
-                f"The function signature for {fnname} was not compatible."
+                "The function signature for {} was not compatible.".format(
+                    fnname
+                )
             )
 
         if type:
@@ -399,7 +409,7 @@ def commentdoc(text):
     the comment to multiple lines."""
     if not text:
         raise ValueError(
-            f'Expected non-empty comment str, got {repr(text)}'
+            'Expected non-empty comment str, got {}'.format(repr(text))
         )
 
     commentlines = []
@@ -1317,7 +1327,10 @@ def pretty_str(s, ctx):
 
 
 def _pretty_recursion(value):
-    return f'<Recursion on {type(value).__name__} with id={id(value)}>'
+    return '<Recursion on {} with id={}>'.format(
+        type(value).__name__,
+        id(value)
+    )
 
 
 def python_to_sdocs(value, indent, width, depth, ribbon_width=71):

@@ -18,7 +18,7 @@ from .utils import intersperse
 
 def validate_doc(doc):
     if not isinstance(doc, Doc) and not isinstance(doc, str):
-        raise ValueError(f'Invalid doc: {repr(doc)}')
+        raise ValueError('Invalid doc: {}'.format(repr(doc)))
 
     return doc
 

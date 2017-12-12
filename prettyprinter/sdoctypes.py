@@ -11,7 +11,7 @@ class SLine(SDoc):
         self.indent = indent
 
     def __repr__(self):
-        return f'SLine({repr(self.indent)})'
+        return 'SLine({})'.format(repr(self.indent))
 
 
 class SAnnotationPush(SDoc):
@@ -21,7 +21,7 @@ class SAnnotationPush(SDoc):
         self.value = value
 
     def __repr__(self):
-        return f'SAnnotationPush({repr(self.value)})'
+        return 'SAnnotationPush({})'.format(repr(self.value))
 
 
 class SAnnotationPop(SDoc):
@@ -31,4 +31,4 @@ class SAnnotationPop(SDoc):
         self.value = value
 
     def __repr__(self):
-        return f'SAnnotationPush({repr(self.value)})'
+        return 'SAnnotationPush({})'.format(repr(self.value))

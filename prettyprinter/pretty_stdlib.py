@@ -120,7 +120,7 @@ def pretty_pytz_dst_timezone(tz, ctx):
 
     if tz.zone:
         return annotate_comment(
-            f'In timezone {tz.zone}',
+            'In timezone {}'.format(tz.zone),
             calldoc
         )
     return calldoc

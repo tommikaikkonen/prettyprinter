@@ -30,7 +30,7 @@ class Annotated(Doc):
         self.annotation = annotation
 
     def __repr__(self):
-        return f'Annotated({repr(self.doc)})'
+        return 'Annotated({})'.format(repr(self.doc))
 
 
 class Nil(Doc):
@@ -75,7 +75,9 @@ class Concat(Doc):
         return res
 
     def __repr__(self):
-        return f"Concat({', '.join(repr(doc) for doc in self.docs)})"
+        return "Concat({})".format(
+            ', '.join(repr(doc) for doc in self.docs)
+        )
 
 
 class Nest(Doc):
@@ -97,7 +99,10 @@ class Nest(Doc):
         return Nest(self.indent, normalize_doc(self.doc))
 
     def __repr__(self):
-        return f'Nest({repr(self.indent)}, {repr(self.doc)})'
+        return 'Nest({}, {})'.format(
+            repr(self.indent),
+            repr(self.doc)
+        )
 
 
 class FlatChoice(Doc):
@@ -122,9 +127,9 @@ class FlatChoice(Doc):
         )
 
     def __repr__(self):
-        return (
-            f'FlatChoice(when_broken={repr(self.when_broken)}, '
-            f'when_flat={repr(self.when_flat)})'
+        return 'FlatChoice(when_broken={}, when_flat={})'.format(
+            repr(self.when_broken),
+            repr(self.when_flat)
         )
 
 
@@ -135,7 +140,7 @@ class Contextual(Doc):
         self.fn = fn
 
     def __repr__(self):
-        return f'Contextual({repr(self.fn)})'
+        return 'Contextual({})'.format(repr(self.fn))
 
 
 class HardLine(Doc):
@@ -167,7 +172,7 @@ class Group(Doc):
         return Group(doc_normalized)
 
     def __repr__(self):
-        return f'Group({repr(self.doc)})'
+        return 'Group({})'.format(repr(self.doc))
 
 
 class AlwaysBreak(Doc):
@@ -184,7 +189,7 @@ class AlwaysBreak(Doc):
         return AlwaysBreak(doc_normalized)
 
     def __repr__(self):
-        return f'AlwaysBreak({repr(self.doc)})'
+        return 'AlwaysBreak({})'.format(repr(self.doc))
 
 
 class Fill(Doc):
@@ -215,4 +220,6 @@ class Fill(Doc):
         return NIL
 
     def __repr__(self):
-        return f"Fill([{', '.join(repr(doc) for doc in self.docs)}])"
+        return "Fill([{}])".format(
+            ', '.join(repr(doc) for doc in self.docs)
+        )

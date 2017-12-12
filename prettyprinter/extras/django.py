@@ -173,17 +173,23 @@ def pretty_base_model(instance, ctx):
 
     commentstr = (
         (
-            f"Null fields: {', '.join(null_fieldnames)}\n"
+            "Null fields: {}\n".format(
+                ', '.join(null_fieldnames)
+            )
             if null_fieldnames
             else ''
         ) +
         (
-            f"Blank fields: {', '.join(blank_fieldnames)}\n"
+            "Blank fields: {}\n".format(
+                ', '.join(blank_fieldnames)
+            )
             if blank_fieldnames
             else ''
         ) +
         (
-            f"Default value fields: {', '.join(default_fieldnames)}\n"
+            "Default value fields: {}\n".format(
+                ', '.join(default_fieldnames)
+            )
             if default_fieldnames
             else ''
         )

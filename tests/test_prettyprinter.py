@@ -129,7 +129,10 @@ def test_perf():
         number=500,
     )
 
-    print(f'Native pprint took {native_dur}, prettyprinter took {prettyprinter_dur}')
+    print('Native pprint took {}, prettyprinter took {}'.format(
+        native_dur,
+        prettyprinter_dur,
+    ))
 
 
 def test_recursive():
@@ -137,7 +140,10 @@ def test_recursive():
     d['self_recursion'] = d
 
     rendered = pformat(d)
-    assert rendered == f"{{'self_recursion': <Recursion on dict with id={id(d)}>}}"
+    expected = "{{'self_recursion': <Recursion on dict with id={}>}}".format(
+        id(d)
+    )
+    assert rendered == expected
 
 
 def possibly_commented(strategy):
