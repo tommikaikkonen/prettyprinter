@@ -1,17 +1,18 @@
-from enum import IntEnum, auto
+from enum import IntEnum, unique
 
 
+@unique
 class Token(IntEnum):
-    KEYWORD_CONSTANT = auto()
-    NAME_BUILTIN = auto()
-    NAME_ENTITY = auto()
-    NAME_FUNCTION = auto()
-    LITERAL_STRING = auto()
-    STRING_AFFIX = auto()
-    STRING_ESCAPE = auto()
-    NUMBER_BINARY = auto()
-    NUMBER_FLOAT = auto()
-    NUMBER_INT = auto()
-    OPERATOR = auto()
-    PUNCTUATION = auto()
-    COMMENT_SINGLE = auto()
+    KEYWORD_CONSTANT = 'KEYWORD_CONSTANT'
+    NAME_BUILTIN = 'NAME_BUILTIN'
+    NAME_ENTITY = 'NAME_ENTITY'
+    NAME_FUNCTION = 'NAME_FUNCTION'
+    LITERAL_STRING = 'LITERAL_STRING'
+    STRING_AFFIX = 'STRING_AFFIX'
+    STRING_ESCAPE = 'STRING_ESCAPE'
+    NUMBER_BINARY = 'NUMBER_BINARY'
+    NUMBER_FLOAT = 'NUMBER_FLOAT'
+    NUMBER_INT = 'NUMBER_INT'
+    OPERATOR = 'OPERATOR'
+    PUNCTUATION = 'PUNCTUATION'
+    COMMENT_SINGLE = 'COMMENT_SINGLE'

@@ -1,4 +1,4 @@
-from enum import Enum, unique, auto
+from enum import Enum, unique
 
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model, ForeignKey
@@ -22,10 +22,10 @@ QUERYSET_OUTPUT_SIZE = 20
 
 @unique
 class ModelVerbosity(Enum):
-    UNSET = auto()
-    MINIMAL = auto()
-    SHORT = auto()
-    FULL = auto()
+    UNSET = 1
+    MINIMAL = 2
+    SHORT = 3
+    FULL = 4
 
 
 def inc(value):
