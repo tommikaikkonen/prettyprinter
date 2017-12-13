@@ -39,6 +39,15 @@ Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.
 
 Unfortunately, it's not possible to override the representation printer for values evaluated in the default Python shell. I recommend using IPython.
 
+The default style is meant for a dark background. If you're on a light background, or want to set your own theme, you may do so with :func:`~prettyprinter.set_default_style`
+
+.. code:: python
+    
+    >>> from prettyprinter import set_default_style
+    >>> set_default_style('light')
+
+Possible values are ``'light'``, ``'dark'``, and any subclass of ``pygments.styles.Style``.
+
 Usage with IPython
 ------------------
 
@@ -58,6 +67,13 @@ The code in this file will be run upon entering the shell. Add these lines and c
     # will be picked up by prettyprinter.
     from pygments import styles
 
+    # For light terminal backgrounds.
+    from prettyprinter.color import GitHubLightStyle
+    ipy = get_ipython()
+    ipy.colors = 'LightBG'
+    ipy.highlighting_style = GitHubLightStyle
+
+    # For dark terminal background.
     ipy = get_ipython()
     ipy.colors = 'linux'
     ipy.highlighting_style = styles.get_style_by_name('monokai')

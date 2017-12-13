@@ -144,6 +144,7 @@ html_theme = 'alabaster'
 # "default.css".
 html_static_path = [
     'prettyprinterscreenshot.png'
+    'prettyprinterlightscreenshot.png'
 ]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page

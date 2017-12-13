@@ -1,20 +1,28 @@
 Welcome to PrettyPrinter's documentation!
 =========================================
 
-Contents:
+.. include:: ../README.rst
+
+User Guide
+----------
 
 .. toctree::
    :maxdepth: 2
 
-   readme
    usage
-   modules
+
+API Reference
+-------------
+
+.. toctree::
+   :maxdepth: 2
+
+   api_reference
+
+Meta
+----
+.. toctree::
+   :maxdepth: 1
+   
    authors
    history
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

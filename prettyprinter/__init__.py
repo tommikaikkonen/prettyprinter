@@ -12,7 +12,7 @@ import sys
 import warnings
 
 from pprint import isrecursive, isreadable, saferepr
-from .color import colored_render_to_stream
+from .color import colored_render_to_stream, set_default_style
 from .prettyprinter import (
     python_to_sdocs,
     register_pretty,
@@ -28,20 +28,21 @@ import prettyprinter.pretty_stdlib
 
 
 __all__ = [
-    'PrettyPrinter',
-    'pformat',
+    'cpprint',
     'pprint',
+    'pformat',
+    'install_extras',
+    'set_default_style',
+    'register_pretty',
+    'pretty_call',
+    'trailing_comment',
+    'comment',
+    'python_to_sdocs',
+    'default_render_to_stream',
+    'PrettyPrinter',
     'saferepr',
     'isreadable',
     'isrecursive',
-    'default_render_to_stream',
-    'python_to_sdocs',
-    'cpprint',
-    'register_pretty',
-    'pretty_call',
-    'comment',
-    'trailing_comment',
-    'install_extras',
 ]
 
 

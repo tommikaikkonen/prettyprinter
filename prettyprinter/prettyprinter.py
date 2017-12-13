@@ -194,6 +194,10 @@ def identifier(s):
     return annotate(Token.NAME_FUNCTION, s)
 
 
+def keyword_arg(s):
+    return annotate(Token.NAME_VARIABLE, s)
+
+
 def general_identifier(s):
     if callable(s):
         module, qualname = s.__module__, s.__qualname__
@@ -693,10 +697,18 @@ def build_fncall(
         (
             annotate_comment(
                 doc.annotation.value,
-                concat([binding, ASSIGN_OP, doc.doc])
+                concat([
+                    keyword_arg(binding),
+                    ASSIGN_OP,
+                    doc.doc
+                ])
             )
             if is_commented(doc)
-            else concat([binding, ASSIGN_OP, doc])
+            else concat([
+                keyword_arg(binding),
+                ASSIGN_OP,
+                doc
+            ])
         )
         for binding, doc in kwargdocs
     ]

@@ -16,6 +16,12 @@ Syntax-highlighting, declarative and composable pretty printer for Python 3.6+
 .. image:: ../prettyprinterscreenshot.png
     :alt: 
 
+.. image:: prettyprinterlightscreenshot.png
+    :alt: 
+
+.. image:: ../prettyprinterlightscreenshot.png
+    :alt: 
+
 Pretty print common Python values:
 
 .. code:: python
