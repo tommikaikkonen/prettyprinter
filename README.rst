@@ -6,6 +6,10 @@ Documentation_
 
 Syntax-highlighting, declarative and composable pretty printer for Python 3.6+
 
+.. code:: bash
+    
+    pip install prettyprinter
+
 - Drop in replacement for the standard library ``pprint``: just rename ``pprint`` to ``prettyprinter`` in your imports.
 - Uses a modified Wadler-Leijen layout algorithm for optimal formatting
 - Write pretty printers for your own types with a dead simple, declarative interface
