@@ -1238,6 +1238,8 @@ def str_to_lines(max_len, use_quote, s):
     curr_line_len = 0
     while remaining_stack:
         curr, is_whitespace = remaining_stack.pop()
+        if not curr:
+            continue
         curr_line_parts.append(curr)
         curr_line_len += escaped_len(curr, use_quote)
 
@@ -1267,9 +1269,11 @@ def str_to_lines(max_len, use_quote, s):
             remaining_len = max_len - (curr_line_len - escaped_len(curr, use_quote))
             this_line_part, next_line_part = split_at(max(remaining_len, 0), curr)
 
-            curr_line_parts.append(this_line_part)
+            if this_line_part:
+                curr_line_parts.append(this_line_part)
 
-            yield empty.join(curr_line_parts)
+            if curr_line_parts:
+                yield empty.join(curr_line_parts)
             curr_line_parts = []
             curr_line_len = 0
 

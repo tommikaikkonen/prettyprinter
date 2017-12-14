@@ -319,6 +319,18 @@ def test_single_element_sequence_multiline_strategy():
     assert res == expected
 
 
+def test_str_bug():
+    data = 'lorem ipsum dolor sit amet ' * 10
+    expected = """\
+'lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum '
+'dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet '
+'lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum '
+'dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet '"""
+    res = pformat(data)
+    assert res == expected
+
+
+
 def test_many_cases():
     # top-level multiline str.
     pprint('abcd' * 40)
