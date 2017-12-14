@@ -159,11 +159,11 @@ def possibly_commented(strategy):
 
         if add_trailing_comment:
             comment_text = draw(st.text(alphabet='abcdefghijklmnopqrstuvwxyz #\\\'"'))
-            value = trailing_comment(comment_text, value)
+            value = trailing_comment(value, comment_text)
 
         if add_comment:
             comment_text = draw(st.text(alphabet='abcdefghijklmnopqrstuvwxyz #\\\'"'))
-            value = comment(comment_text, value)
+            value = comment(value, comment_text)
 
         return value
 

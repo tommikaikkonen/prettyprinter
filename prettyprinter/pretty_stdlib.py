@@ -20,7 +20,7 @@ from .prettyprinter import (
     ADD_OP,
     MUL_OP,
     NEG_OP,
-    annotate_comment,
+    comment,
     build_fncall,
     classattr,
     identifier,
@@ -119,9 +119,9 @@ def pretty_pytz_dst_timezone(tz, ctx):
     )
 
     if tz.zone:
-        return annotate_comment(
-            'In timezone {}'.format(tz.zone),
-            calldoc
+        return comment(
+            calldoc,
+            'In timezone {}'.format(tz.zone)
         )
     return calldoc
 

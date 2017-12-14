@@ -10,7 +10,7 @@ from ..prettyprinter import (
     pretty_call,
     pretty_python_value,
     register_pretty,
-    annotate_comment,
+    comment_doc,
     trailing_comment
 )
 
@@ -164,9 +164,9 @@ def pretty_base_model(instance, ctx):
                     display = None
 
                 if display:
-                    vdoc = annotate_comment(
-                        display,
-                        vdoc
+                    vdoc = comment_doc(
+                        vdoc,
+                        display
                     )
 
             attrs.append((kw, vdoc))
@@ -220,8 +220,8 @@ def pretty_queryset(queryset, ctx):
         qs_cls,
         (
             trailing_comment(
-                '...remaining elements truncated',
-                instances
+                instances,
+                '...remaining elements truncated'
             )
             if truncated
             else instances

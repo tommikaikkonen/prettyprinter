@@ -113,41 +113,46 @@ class _TrailingCommentedValue:
         self.comment = comment
 
 
-def annotate_comment(comment, doc):
-    """Annotate ``doc`` with ``comment`` text.
+def comment_value(value, comment_text):
+    """Annotates a Python value with a comment text.
+
+    prettyprinter will inspect and strip the annotation
+    during the layout process, and handle rendering the comment
+    next to the value in the output.
+
+    It is highly unlikely you need to call this function. Use
+    ``comment`` instead, which works in almost all cases.
+    """
+    return _CommentedValue(value, comment_text)
+
+
+def comment_doc(doc, comment_text):
+    """Annotates a Doc with a comment; used by the layout algorithm.
+
+    You don't need to call this unless you're doing something low-level
+    with Docs; use ``comment`` instead.
 
     Peprint will make sure the parent (or top-level) handler
     will render the comment in a proper way. E.g. if ``doc``
     represents an element in a list, then the ``list`` pretty
     printer will handle where to place the comment.
-
-    Differs from ``comment`` and ``trailing_comment`` by
-    operating only on Docs, not normal values.
     """
-    return annotate(CommentAnnotation(comment), doc)
+    return annotate(CommentAnnotation(comment_text), doc)
 
 
-def comment(comment_str, value):
-    """Annotates a value with a comment str.
+def comment(value, comment_text):
+    """Annotates a value or a Doc with a comment.
 
-    Allows you to insert comments into Peprint output
-    by annotating them on the values directly, instead
-    of first having to render them into a Doc and then
-    annotating the Doc with ``annotate_comment``.
-
-    Generally, you want to use this to annotate arguments
-    to ``pretty_call``.
-
-    >>> [comment('This is a commented value', 'value')]
-    [
-        'value'  # This is a commented value
-    ]
+    When printed by prettyprinter, the comment will be
+    rendered next to the value or Doc.
     """
-    return _CommentedValue(value, comment_str)
+    if isinstance(value, Doc):
+        return comment_doc(value, comment_text)
+    return comment_value(value, comment_text)
 
 
-def trailing_comment(comment_str, value):
-    """Annotates a value with a comment str, so that
+def trailing_comment(value, comment_text):
+    """Annotates a value with a comment text, so that
     the comment will be rendered "trailing", e.g. in place
     of the last element in a list, set or tuple, or after
     the last argument in a function.
@@ -161,7 +166,7 @@ def trailing_comment(comment_str, value):
         # ...and more
     ]
     """
-    return _TrailingCommentedValue(value, comment_str)
+    return _TrailingCommentedValue(value, comment_text)
 
 
 def unwrap_comments(value):
@@ -376,9 +381,9 @@ def pretty_python_value(value, ctx):
         )
 
     if comment:
-        return annotate_comment(
-            comment,
-            doc
+        return comment_doc(
+            doc,
+            comment
         )
     return doc
 
@@ -695,13 +700,13 @@ def build_fncall(
     kwargdocs = [
         # Propagate any comments to the kwarg doc.
         (
-            annotate_comment(
-                doc.annotation.value,
+            comment_doc(
                 concat([
                     keyword_arg(binding),
                     ASSIGN_OP,
                     doc.doc
-                ])
+                ]),
+                doc.annotation.value
             )
             if is_commented(doc)
             else concat([
