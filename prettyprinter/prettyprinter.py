@@ -157,7 +157,7 @@ def trailing_comment(value, comment_text):
     of the last element in a list, set or tuple, or after
     the last argument in a function.
 
-    This will force the rendering of `value` to be broken
+    This will force the rendering of ``value`` to be broken
     to multiple lines as Python does not have inline comments.
 
     >>> trailing_comment('...and more', ['value'])
@@ -391,6 +391,30 @@ def pretty_python_value(value, ctx):
 def register_pretty(type=None, predicate=None):
     """Returns a decorator that registers the decorated function
     as the pretty printer for instances of ``type``.
+
+    :param type: the type to register the pretty printer for.
+    :param predicate: a predicate function that takes one argument
+                      and returns a boolean indicating if the value
+                      should be handled by the registered pretty printer.
+
+    Only one of ``type`` and ``predicate`` may be supplied. That means
+    that ``predicate`` will be run on unregistered types only.
+
+    The decorated function must accept exactly two positional arguments:
+
+    - ``value`` to pretty print, and
+    - ``ctx``, a context value.
+
+    Here's an example of the pretty printer for OrderedDict:
+
+    .. code:: python
+
+        from collections import OrderedDict
+        from prettyprinter import register_pretty, pretty_call
+
+        @register_pretty(OrderedDict)
+        def pretty_orderreddict(value, ctx):
+            return pretty_call(ctx, OrderedDict, list(value.items()))
     """
 
     if type is None and predicate is None:

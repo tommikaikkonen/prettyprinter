@@ -100,6 +100,17 @@ def pprint(
     ribbon_width=71,
     end='\n'
 ):
+    """Pretty print a Python value ``object`` to ``stream``,
+    which defaults to sys.stdout. The output will not be colored.
+
+    :param indent: number of spaces to add for each level of nesting.
+    :param stream: the output stream, defaults to sys.stdout
+    :param width: a soft maximum allowed number of columns in the output,
+                  which the layout algorithm attempts to stay under.
+    :param depth: maximum depth to print nested structures
+    :param ribbon_width: a soft maximum allowed number of columns in the output,
+                         after indenting the line
+    """
     # TODO: compact
     sdocs = python_to_sdocs(
         object,
@@ -127,6 +138,23 @@ def cpprint(
     style=None,
     end='\n'
 ):
+    """Pretty print a Python value ``object`` to ``stream``,
+    which defaults to sys.stdout. The output will be colored and
+    syntax highlighted.
+
+    :param indent: number of spaces to add for each level of nesting.
+    :param stream: the output stream, defaults to sys.stdout
+    :param width: a soft maximum allowed number of columns in the output,
+                  which the layout algorithm attempts to stay under.
+    :param depth: maximum depth to print nested structures
+    :param ribbon_width: a soft maximum allowed number of columns in the output,
+                         after indenting the line
+    :param style: one of ``'light'``, ``'dark'`` or a subclass
+                  of ``pygments.styles.Style``. If omitted,
+                  will use the default style. If the default style
+                  is not changed by the user with :func:`~prettyprinter.set_default_style`,
+                  the default is ``'dark'``.
+    """
     sdocs = python_to_sdocs(
         object,
         indent=indent,
