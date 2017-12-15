@@ -30,6 +30,7 @@ from prettyprinter.doc import (
     fill,
 )
 from prettyprinter.utils import intersperse
+from prettyprinter.prettyprinter import str_to_lines
 from prettyprinter import (
     comment,
     trailing_comment,
@@ -382,3 +383,19 @@ def test_large_data_performance():
     # specifically escaping strings many times.
     # There's probably more we can do here
     assert took < datetime.timedelta(seconds=10)
+
+
+@settings(max_examples=5000, max_iterations=5000)
+@given(
+    st.text(),
+    st.integers(min_value=5),
+    st.sampled_from(('"', "'"))
+)
+def test_str_to_lines(s, max_len, use_quote):
+    lines = list(str_to_lines(max_len, use_quote, s))
+
+    for line in lines:
+        assert line
+        assert len(line) <= max_len * len('\\Uxxxxxxxx')
+
+    assert ''.join(lines) == s

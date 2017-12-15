@@ -1233,6 +1233,11 @@ def escaped_len(s, use_quote):
 
 
 def str_to_lines(max_len, use_quote, s):
+    if len(s) <= max_len:
+        if s:
+            yield s
+        return
+
     if isinstance(s, str):
         whitespace_pattern = WHITESPACE_PATTERN_TEXT
         nonword_pattern = NONWORD_PATTERN_TEXT
@@ -1261,6 +1266,7 @@ def str_to_lines(max_len, use_quote, s):
             cycle([starts_with_whitespace, not starts_with_whitespace])
         )
     )
+
 
     remaining_stack = list(reversed(tagged_alternating))
     curr_line_parts = []
