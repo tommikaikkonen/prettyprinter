@@ -1,6 +1,13 @@
 from collections import OrderedDict
 
-from requests import Request, Response
+from requests import (
+    PreparedRequest,
+    Request,
+    Response,
+    Session,
+)
+from requests.models import DEFAULT_REDIRECT_LIMIT
+from requests.hooks import default_hooks
 from requests.structures import CaseInsensitiveDict
 
 from prettyprinter import pretty_call, comment, register_pretty
@@ -11,6 +18,65 @@ MAX_CONTENT_CHARS = 500
 
 def pretty_headers(headers, ctx):
     return pretty_call(ctx, CaseInsensitiveDict, dict(headers.items()))
+
+
+def pretty_request(request, ctx):
+    kwargs = [
+        ('method', request.method),
+        ('url', request.url),
+    ]
+
+    if request.cookies:
+        kwargs.append(('cookies', request.cookies))
+
+    if request.auth:
+        kwargs.append(('auth', request.auth))
+
+    if request.json:
+        kwargs.append(('json', request.json))
+
+    if request.data:
+        kwargs.append(('data', request.data))
+
+    if request.files:
+        kwargs.append(('files', request.files))
+
+    if request.headers:
+        kwargs.append(('headers', request.headers))
+
+    if request.params:
+        kwargs.append(('params', request.params))
+
+    if request.hooks and request.hooks != default_hooks():
+        kwargs.append(('hooks', request.hooks))
+
+    return pretty_call(ctx, 'requests.Request', **OrderedDict(kwargs))
+
+
+def pretty_prepared_request(request, ctx):
+    kwargs = [
+        ('method', request.method),
+        ('url', request.url),
+    ]
+
+    if request.headers:
+        kwargs.append(('headers', request.headers))
+
+    if request.body is not None:
+        count_bytes = len(request.body)
+
+        kwargs.append((
+            'body',
+            comment(
+                request.body[:10],
+                '... and {} more bytes'.format(count_bytes - 10)
+            )
+        ))
+
+    if request.hooks != default_hooks():
+        kwargs.append(('hooks', request.hooks))
+
+    return pretty_call(ctx, 'requests.PreparedRequest', **OrderedDict(kwargs))
 
 
 def pretty_response(resp, ctx):
@@ -44,7 +110,7 @@ def pretty_response(resp, ctx):
             pass
         else:
             has_valid_json_payload = True
-            kwargs.append(('json', data))
+            kwargs.append(('json', comment(data, 'Access with .json()')))
 
     if not has_valid_json_payload:
         text = resp.text
@@ -62,6 +128,36 @@ def pretty_response(resp, ctx):
     return pretty_call(ctx, 'requests.Response', **OrderedDict(kwargs))
 
 
+def pretty_session(session, ctx):
+    kwargs = []
+
+    if session.headers:
+        kwargs.append(('headers', session.headers))
+
+    if session.auth is not None:
+        kwargs.append(('auth', session.auth))
+
+    if session.params:
+        kwargs.append(('params', session.params))
+
+    if session.stream:
+        kwargs.append(('stream', session.stream))
+
+    if session.cert is not None:
+        kwargs.append(('cert', session.cert))
+
+    if session.max_redirects != DEFAULT_REDIRECT_LIMIT:
+        kwargs.append(('max_redirects', session.max_redirects))
+
+    if session.cookies:
+        kwargs.append(('cookies', session.cookies))
+
+    return pretty_call(ctx, 'requests.Session', **OrderedDict(kwargs))
+
+
 def install():
     register_pretty(CaseInsensitiveDict)(pretty_headers)
     register_pretty(Response)(pretty_response)
+    register_pretty(Request)(pretty_request)
+    register_pretty(PreparedRequest)(pretty_prepared_request)
+    register_pretty(Session)(pretty_session)

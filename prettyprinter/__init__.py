@@ -190,6 +190,7 @@ def install_extras(
 
     - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
     - ``'django'`` - automatically pretty prints Model and QuerySet ubclasses defined in your Django apps.
+    - ``'requests'`` - automatically pretty prints Requests, Responses, Sessions, etc.
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
     - ``'python'`` - makes prettyprinter the default printer in the default Python shell.
 

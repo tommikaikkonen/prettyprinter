@@ -103,6 +103,7 @@ The code in this file will be run upon entering the shell. Add these lines and c
             'ipython',
             'attrs',
             'django',
+            'requests',
         ],
         warn_on_error=True
     )
