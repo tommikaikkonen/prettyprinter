@@ -2,7 +2,14 @@
 History
 =======
 
-0.5.0 (2017-12-14)
+0.6.0 (2017-12-21)
+------------------
+
+No backwards incompatible changes.
+
+* Added pretty printer definitions for the ``requests`` library. To use it, include ``'requests'`` in your ``install_extras`` call: ``prettyprinter.install_extras(include=['requests'])``.
+
+0.5.0 (2017-12-21)
 ------------------
 
 No backwards incompatible changes.
