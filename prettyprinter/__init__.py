@@ -174,6 +174,7 @@ ALL_EXTRAS = frozenset([
     'django',
     'ipython',
     'python',
+    'requests',
 ])
 EMPTY_SET = frozenset()
 
