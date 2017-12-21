@@ -1,3 +1,4 @@
+import os
 
 def intersperse(x, ys):
     """
@@ -35,3 +36,12 @@ def rfind_idx(predicate, seq):
 
 def identity(x):
     return x
+
+
+def get_terminal_width(default=79):
+    try:
+        _rows, columns = os.popen('stty size', 'r').read().split()
+        columns = int(columns)
+    except Exception:
+        return default
+    return columns

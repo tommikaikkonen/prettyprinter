@@ -26,8 +26,10 @@ for colored output. For colorless output, remove the ``c`` prefix from the funct
 
     from prettyprinter import pprint
 
-Usage in Python code and default shell
---------------------------------------
+
+
+Usage in Python code
+--------------------
 
 Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.pprint` for uncolored output, just like ``pprint.pprint``:
 
@@ -35,9 +37,7 @@ Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.
 
     >>> from prettyprinter import cpprint
     >>> cpprint({'a': 1, 'b': 2})
-    # ...colored output
-
-Unfortunately, it's not possible to override the representation printer for values evaluated in the default Python shell. I recommend using IPython.
+    {'a': 1, 'b': 2}
 
 The default style is meant for a dark background. If you're on a light background, or want to set your own theme, you may do so with :func:`~prettyprinter.set_default_style`
 
@@ -47,6 +47,23 @@ The default style is meant for a dark background. If you're on a light backgroun
     >>> set_default_style('light')
 
 Possible values are ``'light'``, ``'dark'``, and any subclass of ``pygments.styles.Style``.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Adding a pretty printer function to the global namespace
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If you're so inclined, you could add :func:`~prettyprinter.cpprint` to the global namespace in your application so you can use it in a similar way as the built in ``print`` function:
+
+.. code:: python
+    
+    import builtins
+    import prettyprinter
+    builtins.pretty = prettyprinter.cpprint
+
+    pretty([1, 2, 3])
+
+You'll want to add this to a file that is executed during application initialization.
+
 
 Usage with IPython
 ------------------
@@ -89,6 +106,47 @@ The code in this file will be run upon entering the shell. Add these lines and c
         ],
         warn_on_error=True
     )
+
+
+Usage in the default Python shell
+---------------------------------
+
+PrettyPrinter integrates with the default shell by overriding ``sys.displayhook``, so that values evaluated in the prompt will be printed using PrettyPrinter. The integration is set up as follows:
+
+.. code:: python
+
+    >>> from prettyprinter import install_extras
+    >>> install_extras(['python'])
+    >>> {'a': 1, 'b': 2}
+    {'a': 1, 'b': 2}  # <- this will be colored when run in a terminal.
+
+If you don't want to run this every time you open a shell, create a Python startup file that executes the above statements and point the environment variable ``PYTHONSTARTUP`` to that file in your shell initialization file (such as ``~/.bashrc``), and rerun ``~/.bashrc`` to assign the correct ``PYTHONSTARTUP`` value in your current shell session. Here's a bash script to do that for you:
+
+.. code:: bash
+    
+    echo 'import prettyprinter; prettyprinter.install_extras(["python"])\n' >> ~/python_startup.py
+    echo "\nexport PYTHONSTARTUP=~/python_startup.py" >> ~/.bashrc
+    source ~/.bashrc
+
+If you're using a light background in your terminal, run this to add a line to the Python startup file to change the color theme PrettyPrinter uses:
+
+.. code:: bash
+
+    echo '\nprettyprinter.set_default_style("light")' >> ~/python_startup.py
+
+
+Then, after starting the ``python`` shell,
+
+.. code:: bash
+    
+    python
+
+values evaluated in the shell should be printed with PrettyPrinter without any other setup.
+
+.. code:: python
+    
+    >>> {'a': 1, 'b': 2}
+    {'a': 1, 'b': 2} # <- the output should be colored when run in a terminal.
 
 
 Pretty printing your own types

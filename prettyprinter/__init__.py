@@ -173,6 +173,7 @@ ALL_EXTRAS = frozenset([
     'attrs',
     'django',
     'ipython',
+    'python',
 ])
 EMPTY_SET = frozenset()
 
@@ -189,6 +190,7 @@ def install_extras(
     - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
     - ``'django'`` - automatically pretty prints Model and QuerySet ubclasses defined in your Django apps.
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
+    - ``'python'`` - makes prettyprinter the default printer in the default Python shell.
 
     :param include: an iterable of strs representing the extras to include.
         All extras are included by default.
@@ -196,6 +198,15 @@ def install_extras(
     """
     include = set(include)
     exclude = set(exclude)
+
+    unexisting_extras = (include | exclude) - ALL_EXTRAS
+
+    if unexisting_extras:
+        raise ValueError(
+            "The following extras don't exist: {}".format(
+                ', '.join(unexisting_extras)
+            )
+        )
 
     extras_to_install = (ALL_EXTRAS & include) - exclude
 
