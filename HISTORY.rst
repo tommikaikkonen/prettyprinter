@@ -2,6 +2,25 @@
 History
 =======
 
+0.7.0 (2017-12-23)
+
+Breaking change: instances of lists, sets, frozensets, tuples and dicts will be truncated to 1000 elements by default when printing.
+
+* Added a maximum sequence length that applies to subclasses of lists, sets, frozensets, tuples and dicts. The default is 1000. There is a trailing comment that indicates the number of truncated elements. To remove truncation, you can set ``max_seq_len`` to ``None`` using ``set_default_config`` explained below.
+* Added ability to change the default global configuration using ``set_default_config``. The functions accepts zero to many keyword arguments and replaces those values in the global configuration with the ones provided.
+
+.. code:: python
+
+    from prettyprinter import set_default_config
+
+    set_default_config(
+        style='dark',
+        max_seq_len=1000,
+        width=79,
+        ribbon_width=71,
+        depth=None,
+    )
+
 0.6.0 (2017-12-21)
 ------------------
 

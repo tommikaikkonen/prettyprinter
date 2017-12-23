@@ -1,4 +1,6 @@
 import os
+from itertools import islice
+
 
 def intersperse(x, ys):
     """
@@ -45,3 +47,7 @@ def get_terminal_width(default=79):
     except Exception:
         return default
     return columns
+
+
+def take(n, iterable):
+    return islice(iterable, n)

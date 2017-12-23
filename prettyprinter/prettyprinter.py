@@ -26,7 +26,7 @@ from .doctypes import (
 
 from .layout import layout_smart
 from .syntax import Token
-from .utils import identity, intersperse
+from .utils import identity, intersperse, take
 
 UNSET_SENTINEL = object()
 
@@ -228,6 +228,7 @@ class PrettyContext:
         'depth_left',
         'visited',
         'multiline_strategy',
+        'max_seq_len',
         'user_ctx'
     )
 
@@ -237,11 +238,13 @@ class PrettyContext:
         depth_left,
         visited=None,
         multiline_strategy=MULTILINE_STATEGY_PLAIN,
+        max_seq_len=1000,
         user_ctx=None,
     ):
         self.indent = indent
         self.depth_left = depth_left
         self.multiline_strategy = multiline_strategy
+        self.max_seq_len = max_seq_len
 
         if visited is None:
             visited = set()
@@ -831,6 +834,32 @@ def build_fncall(
 @register_pretty(list)
 @register_pretty(set)
 def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
+    if len(value) > ctx.max_seq_len:
+        try:
+            truncated = value[:ctx.max_seq_len]
+        except TypeError:
+            # E.g. sets are not subscriptable.
+            # Possible edge case: what if a subclass does not
+            # take an iterable constructor argument? Or
+            # has other constructor arguments that won't
+            # be correctly passed to the truncated copy?
+            # This case is _not_ handled.
+            truncated = type(value)(take(ctx.max_seq_len, value))
+
+        truncation_comment = '...and {} more elements'.format(
+            len(value) - ctx.max_seq_len
+        )
+
+        return pretty_bracketable_iterable(
+            truncated,
+            ctx,
+            trailing_comment=(
+                truncation_comment + '. ' + trailing_comment
+                if trailing_comment
+                else truncation_comment
+            )
+        )
+
     dangle = False
 
     if isinstance(value, list):
@@ -915,11 +944,26 @@ class _AlwaysSortable(object):
 
 
 @register_pretty(dict)
-def pretty_dict(d, ctx):
+def pretty_dict(d, ctx, trailing_comment=None):
     if ctx.depth_left == 0:
         return concat([LBRACE, ELLIPSIS, RBRACE])
 
-    has_comment = False
+    if len(d) > ctx.max_seq_len:
+        count_truncated = len(d) - ctx.max_seq_len
+        truncation_comment = '...and {} more elements'.format(
+            count_truncated
+        )
+        return pretty_dict(
+            type(d)(take(ctx.max_seq_len, d.items())),
+            ctx,
+            trailing_comment=(
+                truncation_comment + '. ' + trailing_comment
+                if trailing_comment
+                else truncation_comment
+            )
+        )
+
+    has_comment = bool(trailing_comment)
 
     pairs = []
     for k in sorted(d.keys(), key=_AlwaysSortable):
@@ -1039,6 +1083,12 @@ def pretty_dict(d, ctx):
                 vcommented
             ])
         )
+
+    if trailing_comment:
+        parts.append(concat([
+            HARDLINE,
+            commentdoc(trailing_comment)
+        ]))
 
     doc = bracket(
         ctx,
@@ -1429,13 +1479,25 @@ def _pretty_recursion(value):
     )
 
 
-def python_to_sdocs(value, indent, width, depth, ribbon_width=71):
+def python_to_sdocs(
+    value,
+    indent,
+    width,
+    depth,
+    ribbon_width,
+    max_seq_len
+):
     if depth is None:
         depth = float('inf')
 
     doc = pretty_python_value(
         value,
-        ctx=PrettyContext(indent=indent, depth_left=depth, visited=set())
+        ctx=PrettyContext(
+            indent=indent,
+            depth_left=depth,
+            visited=set(),
+            max_seq_len=max_seq_len
+        )
     )
 
     if is_commented(doc):

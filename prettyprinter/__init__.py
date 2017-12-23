@@ -33,6 +33,7 @@ __all__ = [
     'pformat',
     'install_extras',
     'set_default_style',
+    'set_default_config',
     'register_pretty',
     'pretty_call',
     'trailing_comment',
@@ -44,6 +45,25 @@ __all__ = [
     'isreadable',
     'isrecursive',
 ]
+
+
+class UnsetSentinel:
+    def __repr__(self):
+        return 'UNSET'
+
+    __str__ = __repr__
+
+
+_UNSET_SENTINEL = UnsetSentinel()
+
+
+_default_config = {
+    'indent': 4,
+    'width': 79,
+    'ribbon_width': 71,
+    'depth': None,
+    'max_seq_len': 1000,
+}
 
 
 class PrettyPrinter:
@@ -69,20 +89,42 @@ class PrettyPrinter:
 
 def pformat(
     object,
-    indent=4,
-    width=79,
-    depth=None,
+    indent=_UNSET_SENTINEL,
+    width=_UNSET_SENTINEL,
+    depth=_UNSET_SENTINEL,
     *,
-    ribbon_width=71,
-    compact=False
+    ribbon_width=_UNSET_SENTINEL,
+    max_seq_len=_UNSET_SENTINEL,
+    compact=_UNSET_SENTINEL,
 ):
     # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=indent,
-        width=width,
-        depth=depth,
-        ribbon_width=ribbon_width,
+        indent=(
+            _default_config['indent']
+            if indent is _UNSET_SENTINEL
+            else indent
+        ),
+        width=(
+            _default_config['width']
+            if width is _UNSET_SENTINEL
+            else width
+        ),
+        depth=(
+            _default_config['depth']
+            if depth is _UNSET_SENTINEL
+            else depth
+        ),
+        ribbon_width=(
+            _default_config['ribbon_width']
+            if ribbon_width is _UNSET_SENTINEL
+            else ribbon_width
+        ),
+        max_seq_len=(
+            _default_config['max_seq_len']
+            if max_seq_len is _UNSET_SENTINEL
+            else max_seq_len
+        )
     )
     stream = StringIO()
     default_render_to_stream(stream, sdocs)
@@ -91,13 +133,14 @@ def pformat(
 
 def pprint(
     object,
-    stream=None,
-    indent=4,
-    width=79,
-    depth=None,
+    stream=_UNSET_SENTINEL,
+    indent=_UNSET_SENTINEL,
+    width=_UNSET_SENTINEL,
+    depth=_UNSET_SENTINEL,
     *,
     compact=False,
-    ribbon_width=71,
+    ribbon_width=_UNSET_SENTINEL,
+    max_seq_len=_UNSET_SENTINEL,
     end='\n'
 ):
     """Pretty print a Python value ``object`` to ``stream``,
@@ -114,13 +157,40 @@ def pprint(
     # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=indent,
-        width=width,
-        depth=depth,
-        ribbon_width=ribbon_width,
+        indent=(
+            _default_config['indent']
+            if indent is _UNSET_SENTINEL
+            else indent
+        ),
+        width=(
+            _default_config['width']
+            if width is _UNSET_SENTINEL
+            else width
+        ),
+        depth=(
+            _default_config['depth']
+            if depth is _UNSET_SENTINEL
+            else depth
+        ),
+        ribbon_width=(
+            _default_config['ribbon_width']
+            if ribbon_width is _UNSET_SENTINEL
+            else ribbon_width
+        ),
+        max_seq_len=(
+            _default_config['max_seq_len']
+            if max_seq_len is _UNSET_SENTINEL
+            else max_seq_len
+        )
     )
-    if stream is None:
-        stream = sys.stdout
+    stream = (
+        # This is not in _default_config in case
+        # sys.stdout changes.
+        sys.stdout
+        if stream is _UNSET_SENTINEL
+        else stream
+    )
+
     default_render_to_stream(stream, sdocs)
     if end:
         stream.write(end)
@@ -128,13 +198,14 @@ def pprint(
 
 def cpprint(
     object,
-    stream=None,
-    indent=4,
-    width=79,
-    depth=None,
+    stream=_UNSET_SENTINEL,
+    indent=_UNSET_SENTINEL,
+    width=_UNSET_SENTINEL,
+    depth=_UNSET_SENTINEL,
     *,
     compact=False,
-    ribbon_width=71,
+    ribbon_width=_UNSET_SENTINEL,
+    max_seq_len=_UNSET_SENTINEL,
     style=None,
     end='\n'
 ):
@@ -157,13 +228,41 @@ def cpprint(
     """
     sdocs = python_to_sdocs(
         object,
-        indent=indent,
-        width=width,
-        depth=depth,
-        ribbon_width=ribbon_width
+        indent=(
+            _default_config['indent']
+            if indent is _UNSET_SENTINEL
+            else indent
+        ),
+        width=(
+            _default_config['width']
+            if width is _UNSET_SENTINEL
+            else width
+        ),
+        depth=(
+            _default_config['depth']
+            if depth is _UNSET_SENTINEL
+            else depth
+        ),
+        ribbon_width=(
+            _default_config['ribbon_width']
+            if ribbon_width is _UNSET_SENTINEL
+            else ribbon_width
+        ),
+        max_seq_len=(
+            _default_config['max_seq_len']
+            if max_seq_len is _UNSET_SENTINEL
+            else max_seq_len
+        )
     )
-    if stream is None:
-        stream = sys.stdout
+
+    stream = (
+        # This is not in _default_config in case
+        # sys.stdout changes.
+        sys.stdout
+        if stream is _UNSET_SENTINEL
+        else stream
+    )
+
     colored_render_to_stream(stream, sdocs, style=style)
     if end:
         stream.write(end)
@@ -237,3 +336,25 @@ def install_extras(
                         "If you don't need it, call install_extras with "
                         "exclude=['{0}']".format(extra)
                     )
+
+
+def set_default_config(
+    *,
+    style=_UNSET_SENTINEL,
+    max_seq_len=_UNSET_SENTINEL,
+    width=_UNSET_SENTINEL,
+    ribbon_width=_UNSET_SENTINEL,
+    depth=_UNSET_SENTINEL,
+):
+    global _default_config
+
+    if style is not _UNSET_SENTINEL:
+        set_default_style(style)
+
+    new_defaults = {**_default_config}
+
+    if max_seq_len is not _UNSET_SENTINEL:
+        new_defaults['max_seq_len'] = max_seq_len
+
+    _default_config = new_defaults
+    return new_defaults
