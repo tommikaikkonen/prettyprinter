@@ -379,6 +379,7 @@ def test_large_data_performance():
     pformat(data)
     end = datetime.datetime.now()
     took = end - start
+    print('took', took)
     # The bottleneck is in string to doc conversion,
     # specifically escaping strings many times.
     # There's probably more we can do here

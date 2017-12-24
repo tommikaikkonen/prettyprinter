@@ -1310,60 +1310,76 @@ def str_to_lines(max_len, use_quote, s):
     # List[Tuple[str, bool]]
     # The boolean associated with each part indicates if it is a
     # whitespce/non-word part or not.
-    tagged_alternating = list(
+    tagged_alternating = iter(
         zip(
             alternating_words_ws,
             cycle([starts_with_whitespace, not starts_with_whitespace])
         )
     )
 
+    next_part = None
+    next_is_whitespace = None
 
-    remaining_stack = list(reversed(tagged_alternating))
     curr_line_parts = []
     curr_line_len = 0
-    while remaining_stack:
-        curr, is_whitespace = remaining_stack.pop()
-        if not curr:
-            continue
-        curr_line_parts.append(curr)
-        curr_line_len += escaped_len(curr, use_quote)
+
+    while True:
+        if not next_part:
+            try:
+                next_part, next_is_whitespace = next(tagged_alternating)
+            except StopIteration:
+                break
+
+            if not next_part:
+                continue
+
+        # We think of the current line as including next_part,
+        # but as an optimization we don't append to curr_line_parts,
+        # as we often would have to pop it back out.
+        next_escaped_len = escaped_len(next_part, use_quote)
+        curr_line_len += next_escaped_len
 
         if curr_line_len == max_len:
-            if not is_whitespace and len(curr_line_parts) > 2:
-                curr_line_parts.pop()
+            if not next_is_whitespace and len(curr_line_parts) > 1:
                 yield empty.join(curr_line_parts)
                 curr_line_parts = []
                 curr_line_len = 0
-                remaining_stack.append((curr, is_whitespace))
+                # Leave next_part and next_is_whitespace as is
+                # to be processed on next iteration
             else:
-                yield empty.join(curr_line_parts)
+                yield empty.join(chain(curr_line_parts, [next_part]))
                 curr_line_parts = []
                 curr_line_len = 0
-                continue
+                next_part = None
+                next_is_whitespace = None
         elif curr_line_len > max_len:
-            if not is_whitespace and len(curr_line_parts) > 1:
-                curr_line_parts.pop()
+            if not next_is_whitespace and curr_line_parts:
                 yield empty.join(curr_line_parts)
-                remaining_stack.append((curr, is_whitespace))
                 curr_line_parts = []
                 curr_line_len = 0
+                # Leave next_part and next_is_whitespace as is
+                # to be processed on next iteration
                 continue
 
-            curr_line_parts.pop()
-
-            remaining_len = max_len - (curr_line_len - escaped_len(curr, use_quote))
-            this_line_part, next_line_part = split_at(max(remaining_len, 0), curr)
-
+            remaining_len = max_len - (curr_line_len - next_escaped_len)
+            this_line_part, next_line_part = split_at(max(remaining_len, 0), next_part)
             if this_line_part:
                 curr_line_parts.append(this_line_part)
 
             if curr_line_parts:
                 yield empty.join(curr_line_parts)
+
             curr_line_parts = []
             curr_line_len = 0
 
             if next_line_part:
-                remaining_stack.append((next_line_part, is_whitespace))
+                next_part = next_line_part
+            else:
+                next_part = None
+        else:
+            curr_line_parts.append(next_part)
+            next_part = None
+            next_is_whitespace = None
 
     if curr_line_parts:
         yield empty.join(curr_line_parts)
