@@ -6,6 +6,7 @@ History
 
 Breaking change: instances of lists, sets, frozensets, tuples and dicts will be truncated to 1000 elements by default when printing.
 
+* Added pretty printing definitions for ``dataclasses``
 * Improved performance of splitting strings to multiple lines by ~15%
 * Added a maximum sequence length that applies to subclasses of lists, sets, frozensets, tuples and dicts. The default is 1000. There is a trailing comment that indicates the number of truncated elements. To remove truncation, you can set ``max_seq_len`` to ``None`` using ``set_default_config`` explained below.
 * Added ability to change the default global configuration using ``set_default_config``. The functions accepts zero to many keyword arguments and replaces those values in the global configuration with the ones provided.

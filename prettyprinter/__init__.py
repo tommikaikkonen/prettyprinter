@@ -274,6 +274,7 @@ ALL_EXTRAS = frozenset([
     'ipython',
     'python',
     'requests',
+    'dataclasses',
 ])
 EMPTY_SET = frozenset()
 
@@ -288,6 +289,7 @@ def install_extras(
     """Installs extras. The following extras are available:
 
     - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
+    - ``'dataclasses'`` - automatically pretty prints classes created using the ``dataclasses`` module.
     - ``'django'`` - automatically pretty prints Model and QuerySet ubclasses defined in your Django apps.
     - ``'requests'`` - automatically pretty prints Requests, Responses, Sessions, etc.
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.

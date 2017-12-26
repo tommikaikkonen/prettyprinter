@@ -85,6 +85,7 @@ Comes packaged with the following pretty printer definitions:
 - ``datetime`` - (installed by default)
 - ``enum`` - (installed by default)
 - ``pytz`` - (installed by default)
+- ``dataclasses`` - any new class you create will be pretty printed automatically
 - ``attrs`` - any new class you create will be pretty printed automatically
 - ``django`` - your Models and QuerySets will be pretty printed automatically
 - ``requests`` - automatically pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
