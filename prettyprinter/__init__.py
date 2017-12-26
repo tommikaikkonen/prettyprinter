@@ -95,7 +95,7 @@ def pformat(
     *,
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
-    compact=_UNSET_SENTINEL,
+    compact=_UNSET_SENTINEL
 ):
     # TODO: compact
     sdocs = python_to_sdocs(
@@ -346,7 +346,7 @@ def set_default_config(
     max_seq_len=_UNSET_SENTINEL,
     width=_UNSET_SENTINEL,
     ribbon_width=_UNSET_SENTINEL,
-    depth=_UNSET_SENTINEL,
+    depth=_UNSET_SENTINEL
 ):
     global _default_config
 
