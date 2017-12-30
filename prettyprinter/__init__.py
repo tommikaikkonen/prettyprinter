@@ -98,6 +98,11 @@ def pformat(
     max_seq_len=_UNSET_SENTINEL,
     compact=_UNSET_SENTINEL
 ):
+    """
+    Returns a pretty printed representation of the object as a ``str``.
+    Accepts the same parameters as :func:`~prettyprinter.pprint`.
+    The output is not colored.
+    """
     # TODO: compact
     sdocs = python_to_sdocs(
         object,
@@ -145,10 +150,10 @@ def pprint(
     end='\n'
 ):
     """Pretty print a Python value ``object`` to ``stream``,
-    which defaults to sys.stdout. The output will not be colored.
+    which defaults to ``sys.stdout``. The output will not be colored.
 
     :param indent: number of spaces to add for each level of nesting.
-    :param stream: the output stream, defaults to sys.stdout
+    :param stream: the output stream, defaults to ``sys.stdout``
     :param width: a soft maximum allowed number of columns in the output,
                   which the layout algorithm attempts to stay under.
     :param depth: maximum depth to print nested structures
