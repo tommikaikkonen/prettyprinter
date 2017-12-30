@@ -2,7 +2,14 @@
 History
 =======
 
+next
+----
+
+* Added ``prettyprinter.pretty_repr`` that is assignable to ``__repr__`` dunder methods, so you don't need to write it separately from the pretty printer definition.
+
+
 0.7.0 (2017-12-23)
+------------------
 
 Breaking change: instances of lists, sets, frozensets, tuples and dicts will be truncated to 1000 elements by default when printing.
 

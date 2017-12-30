@@ -31,6 +31,7 @@ __all__ = [
     'cpprint',
     'pprint',
     'pformat',
+    'pretty_repr',
     'install_extras',
     'set_default_style',
     'set_default_config',
@@ -360,3 +361,20 @@ def set_default_config(
 
     _default_config = new_defaults
     return new_defaults
+
+
+def pretty_repr(instance):
+    """
+    A function assignable to the ``__repr__`` dunder method, so that
+    the ``prettyprinter`` definition for the type is used to provide
+    repr output. Usage:
+
+    .. code:: python
+
+        from prettyprinter import pretty_repr
+
+        class MyClass:
+            __repr__ = pretty_repr
+
+    """
+    return pformat(instance)

@@ -17,6 +17,9 @@ from prettyprinter import (
     pprint,
     pformat,
     cpprint,
+    pretty_repr,
+    register_pretty,
+    pretty_call,
 )
 from pprint import (
     pprint as nativepprint,
@@ -400,3 +403,14 @@ def test_str_to_lines(s, max_len, use_quote):
         assert len(line) <= max_len * len('\\Uxxxxxxxx')
 
     assert ''.join(lines) == s
+
+
+def test_pretty_repr():
+    class MyClass:
+        __repr__ = pretty_repr
+
+    @register_pretty(MyClass)
+    def pretty_myclass(value, ctx):
+        return pretty_call(ctx, MyClass)
+
+    assert repr(MyClass()) == pformat(MyClass())
