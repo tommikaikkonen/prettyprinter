@@ -19,6 +19,7 @@ from prettyprinter import (
     cpprint,
     pretty_repr,
     register_pretty,
+    is_registered,
     pretty_call,
 )
 from pprint import (
@@ -405,6 +406,31 @@ def test_str_to_lines(s, max_len, use_quote):
     assert ''.join(lines) == s
 
 
+def test_is_registered():
+    class MyClass:
+        pass
+
+    assert not is_registered(MyClass)
+
+    # object is not counted as a subclass
+    assert not is_registered(MyClass, check_subclasses=True)
+
+    @register_pretty(MyClass)
+    def pretty_myclass(instance, ctx):
+        return '...'
+
+    assert is_registered(MyClass)
+    assert is_registered(MyClass, check_subclasses=True)
+
+
+def test_is_registerd_subclass():
+    class MyList(list):
+        pass
+
+    assert not is_registered(MyList)
+    assert is_registered(MyList, check_subclasses=True)
+
+
 def test_pretty_repr():
     class MyClass:
         __repr__ = pretty_repr
@@ -414,6 +440,19 @@ def test_pretty_repr():
         return pretty_call(ctx, MyClass)
 
     assert repr(MyClass()) == pformat(MyClass())
+
+
+def test_pretty_repr_unregistered_uses_default_repr_and_warns():
+    class MyClass:
+        __repr__ = pretty_repr
+
+    inst = MyClass()
+
+    with pytest.warns(UserWarning) as record:
+        result = repr(inst)
+
+    assert result == object.__repr__(inst)
+    assert len(record) == 1
 
 
 def test_dict_sorted_by_insertion_default():

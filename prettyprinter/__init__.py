@@ -14,6 +14,7 @@ import warnings
 from pprint import isrecursive, isreadable, saferepr
 from .color import colored_render_to_stream, set_default_style
 from .prettyprinter import (
+    is_registered,
     python_to_sdocs,
     register_pretty,
     pretty_call,
@@ -416,4 +417,18 @@ def pretty_repr(instance):
             __repr__ = pretty_repr
 
     """
+
+    instance_type = type(instance)
+    if not is_registered(instance_type, check_subclasses=True):
+        warnings.warn(
+            "pretty_repr is assigned as the __repr__ method of "
+            f"'{instance_type.__qualname__}.{instance_type.__name__}'. "
+            "However, no pretty printer is registered for that type or "
+            "its subclasses. Falling back to the default "
+            "repr implementation. To fix this warning, register a pretty "
+            "printer using prettyprinter.register_pretty.",
+            UserWarning
+        )
+        return object.__repr__(instance)
+
     return pformat(instance)

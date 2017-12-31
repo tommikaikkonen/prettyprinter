@@ -384,7 +384,9 @@ def _repr_pretty(value, ctx):
     return repr(value)
 
 
-pretty_dispatch = singledispatch(partial(_run_pretty, _repr_pretty))
+_BASE_DISPATCH = partial(_run_pretty, _repr_pretty)
+
+pretty_dispatch = singledispatch(_BASE_DISPATCH)
 
 
 def pretty_python_value(value, ctx):
@@ -489,6 +491,12 @@ def register_pretty(type=None, predicate=None):
             _PREDICATE_REGISTRY.append((predicate, fn))
         return fn
     return decorator
+
+
+def is_registered(type, check_subclasses=False):
+    if check_subclasses:
+        return pretty_dispatch.dispatch(type) is not _BASE_DISPATCH
+    return type in pretty_dispatch.registry
 
 
 def bracket(ctx, left, child, right):
