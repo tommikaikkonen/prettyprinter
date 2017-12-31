@@ -428,7 +428,7 @@ def test_is_registered():
     assert is_registered(MyClass, check_subclasses=True)
 
 
-def test_is_registerd_subclass():
+def test_is_registered_subclass():
     class MyList(list):
         pass
 
