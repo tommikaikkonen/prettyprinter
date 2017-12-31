@@ -181,6 +181,8 @@ def colored_render_to_stream(stream, sdocs, style, newline='\n', separator=' '):
     if not evald:
         return
 
+    color_cache = {}
+
     colorstack = []
 
     sdoc_lines = as_lines(evald)
@@ -206,9 +208,14 @@ def colored_render_to_stream(stream, sdocs, style, newline='\n', separator=' '):
                 stream.write(newline + separator * sdoc.indent)
             elif isinstance(sdoc, SAnnotationPush):
                 if isinstance(sdoc.value, Token):
-                    pygments_token = _SYNTAX_TOKEN_TO_PYGMENTS_TOKEN[sdoc.value]
-                    tokenattrs = style.style_for_token(pygments_token)
-                    color = styleattrs_to_colorful(tokenattrs)
+                    try:
+                        color = color_cache[sdoc.value]
+                    except KeyError:
+                        pygments_token = _SYNTAX_TOKEN_TO_PYGMENTS_TOKEN[sdoc.value]
+                        tokenattrs = style.style_for_token(pygments_token)
+                        color = styleattrs_to_colorful(tokenattrs)
+                        color_cache[sdoc.value] = color
+
                     colorstack.append(color)
                     stream.write(str(color))
 

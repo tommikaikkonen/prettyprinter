@@ -6,6 +6,7 @@
 import pytest
 import datetime
 import pytz
+from io import StringIO
 from itertools import cycle, islice
 import json
 import timeit
@@ -379,8 +380,12 @@ def test_large_data_performance():
             'text': 'lorem ipsum dolor sit amet ' * 500
         }
     ] * 200
+    stream = StringIO()
+
     start = datetime.datetime.now()
-    pformat(data)
+    cpprint(data, stream=stream)
+    stream.getvalue()
+
     end = datetime.datetime.now()
     took = end - start
     print('took', took)
