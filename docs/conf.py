@@ -143,8 +143,8 @@ html_theme = 'alabaster'
 # static files, so a file named "default.css" will overwrite the builtin
 # "default.css".
 html_static_path = [
-    'prettyprinterscreenshot.png'
-    'prettyprinterlightscreenshot.png'
+    '../prettyprinterscreenshot.png',
+    '../prettyprinterlightscreenshot.png'
 ]
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page

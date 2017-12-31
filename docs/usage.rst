@@ -48,9 +48,9 @@ The default style is meant for a dark background. If you're on a light backgroun
 
 Possible values are ``'light'``, ``'dark'``, and any subclass of ``pygments.styles.Style``.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Adding a pretty printer function to the global namespace
-+++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If you're so inclined, you could add :func:`~prettyprinter.cpprint` to the global namespace in your application so you can use it in a similar way as the built in ``print`` function:
 
