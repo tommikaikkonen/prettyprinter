@@ -1539,7 +1539,7 @@ def python_to_sdocs(
     depth,
     ribbon_width,
     max_seq_len,
-    sort_dict_keys,
+    sort_dict_keys
 ):
     if depth is None:
         depth = float('inf')

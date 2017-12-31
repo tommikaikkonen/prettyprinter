@@ -100,7 +100,7 @@ def pformat(
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
     compact=_UNSET_SENTINEL,
-    sort_dict_keys=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL
 ):
     """
     Returns a pretty printed representation of the object as a ``str``.
@@ -382,7 +382,7 @@ def set_default_config(
     width=_UNSET_SENTINEL,
     ribbon_width=_UNSET_SENTINEL,
     depth=_UNSET_SENTINEL,
-    sort_dict_keys=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL
 ):
     """
     Sets the default configuration values used when calling
