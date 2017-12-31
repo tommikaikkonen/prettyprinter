@@ -14,6 +14,8 @@ Non-breaking changes:
 * Improved performance of rendering colorized output by caching colors.
 * Added ``prettyprinter.pretty_repr`` that is assignable to ``__repr__`` dunder methods, so you don't need to write it separately from the pretty printer definition.
 * Deprecated use of ``PrettyContext.set`` in favor of less misleading ``PrettyContext.assoc``
+* Defined pretty printing for instances of ``type``, i.e. classes.
+* Defined pretty printing for functions
 
 
 

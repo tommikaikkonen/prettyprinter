@@ -2,9 +2,13 @@ import inspect
 import math
 import re
 import warnings
-from enum import Enum, unique
 from functools import singledispatch, partial
 from itertools import chain, cycle
+from types import (
+    FunctionType,
+    BuiltinFunctionType,
+    BuiltinMethodType
+)
 
 from .doc import (
     always_break,
@@ -857,6 +861,61 @@ def build_fncall(
             SOFTLINE,
             RPAREN
         ])
+    )
+
+
+@register_pretty(type)
+def pretty_type(_type, ctx):
+    if _type is type(None):  # noqa
+        # NoneType is not available in the global namespace,
+        # clearer to print type(None)
+        return pretty_call(ctx, type, None)
+
+    result = general_identifier(_type)
+
+    # For native types, we can print the class identifier, e.g.
+    # >>> int
+    # int
+    #
+    # But for others, such as:
+    # >>> import functools; functools.partial
+    # functools.partial
+    #
+    # It may be unclear what kind of value it is, unless the user already
+    # knows it's a class. The default repr from Python is
+    # <class 'functools.partial'>, so we'll imitate that by adding
+    # a comment indicating that the value is a class.
+    module = _type.__module__
+    if module in IMPLICIT_MODULES:
+        return result
+
+    return comment(
+        result,
+        'class'
+    )
+
+
+@register_pretty(FunctionType)
+def pretty_function(fn, ctx):
+    return comment(
+        general_identifier(fn),
+        'function'
+    )
+
+
+@register_pretty(BuiltinMethodType)
+def pretty_builtin_method(method, ctx):
+    return comment(
+        general_identifier(method),
+        'built-in method'
+    )
+
+
+@register_pretty(BuiltinFunctionType)
+def pretty_builtin_function(fn, ctx):
+    return comment(
+        general_identifier(fn),
+        'built-in function'
     )
 
 

@@ -241,7 +241,15 @@ def containers(primitives):
     return st.recursive(primitives, extend)
 
 
-@given(possibly_commented(containers(possibly_commented(primitives()))))
+@given(
+    possibly_commented(
+        containers(
+            possibly_commented(
+                primitives() | primitives().map(type)
+            )
+        )
+    )
+)
 def test_all_python_values(value):
     cpprint(value)
 
