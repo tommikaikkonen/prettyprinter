@@ -422,11 +422,12 @@ def pretty_repr(instance):
     if not is_registered(instance_type, check_subclasses=True):
         warnings.warn(
             "pretty_repr is assigned as the __repr__ method of "
-            f"'{instance_type.__qualname__}.{instance_type.__name__}'. "
-            "However, no pretty printer is registered for that type or "
+            "'{}'. However, no pretty printer is registered for that type or "
             "its subclasses. Falling back to the default "
             "repr implementation. To fix this warning, register a pretty "
-            "printer using prettyprinter.register_pretty.",
+            "printer using prettyprinter.register_pretty.".format(
+                instance_type.__qualname__
+            ),
             UserWarning
         )
         return object.__repr__(instance)
