@@ -5,7 +5,11 @@ History
 next
 ----
 
+Breaking change: by default, ``dict`` keys are printed in the default order (insertion order in CPython 3.6+). Previously they were sorted like ``pprint``.
+
 * Added ``prettyprinter.pretty_repr`` that is assignable to ``__repr__`` dunder methods, so you don't need to write it separately from the pretty printer definition.
+* Deprecated use of ``PrettyContext.set`` in favor of less misleading ``PrettyContext.assoc``
+
 
 
 0.7.0 (2017-12-23)
