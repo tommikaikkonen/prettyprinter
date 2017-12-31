@@ -14,7 +14,6 @@ import warnings
 from pprint import isrecursive, isreadable, saferepr
 from .color import colored_render_to_stream, set_default_style
 from .prettyprinter import (
-    DictOrdering,
     python_to_sdocs,
     register_pretty,
     pretty_call,
@@ -40,7 +39,6 @@ __all__ = [
     'pretty_call',
     'trailing_comment',
     'comment',
-    'DictOrdering',
     'python_to_sdocs',
     'default_render_to_stream',
     'PrettyPrinter',

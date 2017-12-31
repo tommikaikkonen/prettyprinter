@@ -30,15 +30,6 @@ from .syntax import Token
 from .utils import identity, intersperse, take
 
 
-@unique
-class DictOrdering(Enum):
-    """Choices for ordering ``dict`` keys."""
-    INSERTION = 0
-    SORTED = 1
-
-
-BASE_USER_CTX = {DictOrdering: DictOrdering.INSERTION}
-
 UNSET_SENTINEL = object()
 
 COMMA = annotate(Token.PUNCTUATION, ',')
@@ -248,6 +239,7 @@ class PrettyContext:
         'visited',
         'multiline_strategy',
         'max_seq_len',
+        'sort_dict_keys',
         'user_ctx'
     )
 
@@ -258,21 +250,20 @@ class PrettyContext:
         visited=None,
         multiline_strategy=MULTILINE_STATEGY_PLAIN,
         max_seq_len=1000,
-        user_ctx=None,
+        sort_dict_keys=False,
+        user_ctx=None
     ):
         self.indent = indent
         self.depth_left = depth_left
         self.multiline_strategy = multiline_strategy
         self.max_seq_len = max_seq_len
+        self.sort_dict_keys = sort_dict_keys
 
         if visited is None:
             visited = set()
         self.visited = visited
 
-        self.user_ctx = {
-            **BASE_USER_CTX,
-            **(user_ctx or {})
-        }
+        self.user_ctx = user_ctx or {}
 
     def _replace(self, **kwargs):
         passed_keys = set(kwargs.keys())
@@ -998,7 +989,7 @@ def pretty_dict(d, ctx, trailing_comment=None):
 
     sorted_keys = (
         sorted(d.keys(), key=_AlwaysSortable)
-        if ctx.get(DictOrdering) == DictOrdering.SORTED
+        if ctx.sort_dict_keys
         else d.keys()
     )
 
@@ -1551,13 +1542,7 @@ def python_to_sdocs(
             depth_left=depth,
             visited=set(),
             max_seq_len=max_seq_len,
-            user_ctx={
-                DictOrdering: (
-                    DictOrdering.SORTED
-                    if sort_dict_keys
-                    else DictOrdering.INSERTION
-                )
-            }
+            sort_dict_keys=sort_dict_keys
         )
     )
 
