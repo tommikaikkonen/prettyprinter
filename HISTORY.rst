@@ -2,8 +2,8 @@
 History
 =======
 
-next
-----
+0.8.0 (2017-12-30)
+------------------
 
 Breaking change: by default, ``dict`` keys are printed in the default order (insertion order in CPython 3.6+). Previously they were sorted like ``pprint``.
 
