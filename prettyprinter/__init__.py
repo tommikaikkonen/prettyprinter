@@ -14,6 +14,7 @@ import warnings
 from pprint import isrecursive, isreadable, saferepr
 from .color import colored_render_to_stream, set_default_style
 from .prettyprinter import (
+    DictOrdering,
     python_to_sdocs,
     register_pretty,
     pretty_call,
@@ -39,6 +40,7 @@ __all__ = [
     'pretty_call',
     'trailing_comment',
     'comment',
+    'DictOrdering',
     'python_to_sdocs',
     'default_render_to_stream',
     'PrettyPrinter',
@@ -64,6 +66,7 @@ _default_config = {
     'ribbon_width': 71,
     'depth': None,
     'max_seq_len': 1000,
+    'sort_dict_keys': False,
 }
 
 
@@ -96,7 +99,8 @@ def pformat(
     *,
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
-    compact=_UNSET_SENTINEL
+    compact=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL,
 ):
     """
     Returns a pretty printed representation of the object as a ``str``.
@@ -130,6 +134,11 @@ def pformat(
             _default_config['max_seq_len']
             if max_seq_len is _UNSET_SENTINEL
             else max_seq_len
+        ),
+        sort_dict_keys=(
+            _default_config['sort_dict_keys']
+            if sort_dict_keys is _UNSET_SENTINEL
+            else sort_dict_keys
         )
     )
     stream = StringIO()
@@ -147,6 +156,7 @@ def pprint(
     compact=False,
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL,
     end='\n'
 ):
     """Pretty print a Python value ``object`` to ``stream``,
@@ -159,6 +169,10 @@ def pprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
+                           sorted in the output. Defaults to ``False``, in
+                           which case the default order is used, which is the
+                           insertion order in CPython 3.6+.
     """
     # TODO: compact
     sdocs = python_to_sdocs(
@@ -187,6 +201,11 @@ def pprint(
             _default_config['max_seq_len']
             if max_seq_len is _UNSET_SENTINEL
             else max_seq_len
+        ),
+        sort_dict_keys=(
+            _default_config['sort_dict_keys']
+            if sort_dict_keys is _UNSET_SENTINEL
+            else sort_dict_keys
         )
     )
     stream = (
@@ -212,6 +231,7 @@ def cpprint(
     compact=False,
     ribbon_width=_UNSET_SENTINEL,
     max_seq_len=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL,
     style=None,
     end='\n'
 ):
@@ -226,6 +246,10 @@ def cpprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
+                           sorted in the output. Defaults to ``False``, in
+                           which case the default order is used, which is the
+                           insertion order in CPython 3.6+.
     :param style: one of ``'light'``, ``'dark'`` or a subclass
                   of ``pygments.styles.Style``. If omitted,
                   will use the default style. If the default style
@@ -258,6 +282,11 @@ def cpprint(
             _default_config['max_seq_len']
             if max_seq_len is _UNSET_SENTINEL
             else max_seq_len
+        ),
+        sort_dict_keys=(
+            _default_config['sort_dict_keys']
+            if sort_dict_keys is _UNSET_SENTINEL
+            else sort_dict_keys
         )
     )
 
@@ -352,8 +381,15 @@ def set_default_config(
     max_seq_len=_UNSET_SENTINEL,
     width=_UNSET_SENTINEL,
     ribbon_width=_UNSET_SENTINEL,
-    depth=_UNSET_SENTINEL
+    depth=_UNSET_SENTINEL,
+    sort_dict_keys=_UNSET_SENTINEL,
 ):
+    """
+    Sets the default configuration values used when calling
+    `pprint`, `cpprint`, or `pformat`, if those values weren't
+    explicitly provided. Only overrides the values provided in
+    the keyword arguments.
+    """
     global _default_config
 
     if style is not _UNSET_SENTINEL:

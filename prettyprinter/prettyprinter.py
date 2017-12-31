@@ -2,6 +2,7 @@ import inspect
 import math
 import re
 import warnings
+from enum import Enum, unique
 from functools import singledispatch, partial
 from itertools import chain, cycle
 
@@ -27,6 +28,16 @@ from .doctypes import (
 from .layout import layout_smart
 from .syntax import Token
 from .utils import identity, intersperse, take
+
+
+@unique
+class DictOrdering(Enum):
+    """Choices for ordering ``dict`` keys."""
+    INSERTION = 0
+    SORTED = 1
+
+
+BASE_USER_CTX = {DictOrdering: DictOrdering.INSERTION}
 
 UNSET_SENTINEL = object()
 
@@ -160,7 +171,7 @@ def trailing_comment(value, comment_text):
     This will force the rendering of ``value`` to be broken
     to multiple lines as Python does not have inline comments.
 
-    >>> trailing_comment('...and more', ['value'])
+    >>> trailing_comment(['value'], '...and more')
     [
         'value',
         # ...and more
@@ -223,6 +234,14 @@ def classattr(cls, attrname):
 
 
 class PrettyContext:
+    """
+    An immutable object used to track context during construction of
+    layout primitives. An instance of PrettyContext is passed to every
+    pretty printer definition.
+
+    As a performance optimization, the ``visited`` set is implemented
+    as mutable.
+    """
     __slots__ = (
         'indent',
         'depth_left',
@@ -250,10 +269,10 @@ class PrettyContext:
             visited = set()
         self.visited = visited
 
-        if user_ctx is None:
-            user_ctx = {}
-
-        self.user_ctx = user_ctx
+        self.user_ctx = {
+            **BASE_USER_CTX,
+            **(user_ctx or {})
+        }
 
     def _replace(self, **kwargs):
         passed_keys = set(kwargs.keys())
@@ -273,11 +292,23 @@ class PrettyContext:
     def use_multiline_strategy(self, strategy):
         return self._replace(multiline_strategy=strategy)
 
-    def set(self, key, value):
+    def assoc(self, key, value):
+        """
+        Return a modified PrettyContext with ``key`` set to ``value``
+        """
         return self._replace(user_ctx={
             **self.user_ctx,
             key: value,
         })
+
+    def set(self, key, value):
+        warnings.warn(
+            "PrettyContext.set will be deprecated in the future in favor of "
+            "renamed PrettyPrinter.assoc. You can fix this warning by "
+            "changing .set method calls to .assoc",
+            PendingDeprecationWarning
+        )
+        return self.assoc(key, value)
 
     def get(self, key, default=None):
         return self.user_ctx.get(key, default)
@@ -965,8 +996,14 @@ def pretty_dict(d, ctx, trailing_comment=None):
 
     has_comment = bool(trailing_comment)
 
+    sorted_keys = (
+        sorted(d.keys(), key=_AlwaysSortable)
+        if ctx.get(DictOrdering) == DictOrdering.SORTED
+        else d.keys()
+    )
+
     pairs = []
-    for k in sorted(d.keys(), key=_AlwaysSortable):
+    for k in sorted_keys:
         v = d[k]
 
         if isinstance(k, (str, bytes)):
@@ -1501,7 +1538,8 @@ def python_to_sdocs(
     width,
     depth,
     ribbon_width,
-    max_seq_len
+    max_seq_len,
+    sort_dict_keys,
 ):
     if depth is None:
         depth = float('inf')
@@ -1512,7 +1550,14 @@ def python_to_sdocs(
             indent=indent,
             depth_left=depth,
             visited=set(),
-            max_seq_len=max_seq_len
+            max_seq_len=max_seq_len,
+            user_ctx={
+                DictOrdering: (
+                    DictOrdering.SORTED
+                    if sort_dict_keys
+                    else DictOrdering.INSERTION
+                )
+            }
         )
     )
 

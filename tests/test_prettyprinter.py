@@ -414,3 +414,23 @@ def test_pretty_repr():
         return pretty_call(ctx, MyClass)
 
     assert repr(MyClass()) == pformat(MyClass())
+
+
+def test_dict_sorted_by_insertion_default():
+    """By default, dict keys should be printed
+    in insertion order."""
+    value = {
+        'x': 1,
+        'a': 2
+    }
+    expected = """{'x': 1, 'a': 2}"""
+    assert pformat(value) == expected
+
+
+def test_sort_dict_keys():
+    value = {
+        'x': 1,
+        'a': 2
+    }
+    expected = """{'a': 2, 'x': 1}"""
+    assert pformat(value, sort_dict_keys=True) == expected
