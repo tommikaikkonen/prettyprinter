@@ -213,7 +213,7 @@ def pretty_queryset(queryset, ctx):
     else:
         truncated = False
 
-    element_ctx = ctx.set(ModelVerbosity, ModelVerbosity.SHORT)
+    element_ctx = ctx.assoc(ModelVerbosity, ModelVerbosity.SHORT)
 
     return pretty_call(
         element_ctx,
