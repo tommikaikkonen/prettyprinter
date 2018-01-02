@@ -51,3 +51,20 @@ def get_terminal_width(default=79):
 
 def take(n, iterable):
     return islice(iterable, n)
+
+
+def compose(f, g):
+    if f is identity:
+        return g
+    if g is identity:
+        return f
+
+    def composed(x):
+        return f(g(x))
+
+    composed.__name__ = 'composed_{}_then_{}'.format(
+        g.__name__,
+        f.__name__
+    )
+
+    return composed

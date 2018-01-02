@@ -75,7 +75,7 @@ class Concat(Doc):
         return res
 
     def __repr__(self):
-        return "Concat({})".format(
+        return "Concat([{}])".format(
             ', '.join(repr(doc) for doc in self.docs)
         )
 

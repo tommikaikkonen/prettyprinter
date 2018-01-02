@@ -1,8 +1,11 @@
 import os
 
 import IPython.lib.pretty
+from IPython.lib.pretty import RepresentationPrinter
 
 from .. import cpprint
+
+OriginalRepresentationPrinter = RepresentationPrinter
 
 
 def install():
