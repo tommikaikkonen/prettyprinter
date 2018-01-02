@@ -2,6 +2,11 @@
 History
 =======
 
+0.8.1 (2018-01-01)
+------------------
+
+* Fixed issue #7 where having a ``str`` value for IPython's ``highlighting_style`` setting was not properly handled in ``prettyprinter``'s IPython integration, and raised an exception when trying to print data.
+
 0.8.0 (2017-12-31)
 ------------------
 
