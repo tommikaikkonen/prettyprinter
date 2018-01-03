@@ -10,6 +10,7 @@ from datetime import (
 from enum import Enum
 from itertools import chain, dropwhile
 from uuid import UUID
+from types import MappingProxyType
 
 from .doc import (
     concat,
@@ -253,3 +254,8 @@ def pretty_counter(counter, ctx):
 def pretty_enum(value, ctx):
     cls = type(value)
     return classattr(cls, value.name)
+
+
+@register_pretty(MappingProxyType)
+def pretty_mappingproxy(value, ctx):
+    return pretty_call(ctx, MappingProxyType, dict(value))
