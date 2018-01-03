@@ -36,7 +36,9 @@ class CompatRepresentationPrinter(OriginalRepresentationPrinter):
     def __init__(self, *args, **kwargs):
         self._prettyprinter_ctx = kwargs.pop('prettyprinter_ctx')
         super().__init__(*args, **kwargs)
-        self.output = NoopStream()
+
+        # self.output should be assigned by the superclass
+        assert isinstance(self.output, NoopStream)
 
         self._pending_wrapper = identity
         self._docparts = []
