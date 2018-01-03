@@ -3,8 +3,11 @@ from pygments.styles import get_style_by_name
 from pygments.style import Style
 
 import IPython.lib.pretty
+from IPython.lib.pretty import RepresentationPrinter
 
 from .. import cpprint
+
+OriginalRepresentationPrinter = RepresentationPrinter
 
 
 class _NoStyle(Style):

@@ -306,6 +306,7 @@ ALL_EXTRAS = frozenset([
     'attrs',
     'django',
     'ipython',
+    'ipython_repr_pretty',
     'python',
     'requests',
     'dataclasses',
