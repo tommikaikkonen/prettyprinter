@@ -26,7 +26,9 @@ test_requirements = [
     'hypothesis',
     'dataclasses',
     'requests',
-    'attrs'
+    'attrs',
+    'IPython',
+    'pytz'
 ]
 
 setup(
