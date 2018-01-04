@@ -2,6 +2,15 @@
 History
 =======
 
+0.9.0 (2018-01-03)
+------------------
+
+No breaking changes.
+
+* Added pretty printer definition for ``types.MappingProxyType`` thanks to GitHub user `Cologler <https://github.com/Cologler/>`_
+* Added support for ``_repr_pretty_`` in the extra ``ipython_repr_pretty``.
+
+
 0.8.1 (2018-01-01)
 ------------------
 

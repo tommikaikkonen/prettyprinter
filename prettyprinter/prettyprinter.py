@@ -138,7 +138,7 @@ def comment_doc(doc, comment_text):
     You don't need to call this unless you're doing something low-level
     with Docs; use ``comment`` instead.
 
-    Peprint will make sure the parent (or top-level) handler
+    ``prettyprinter`` will make sure the parent (or top-level) handler
     will render the comment in a proper way. E.g. if ``doc``
     represents an element in a list, then the ``list`` pretty
     printer will handle where to place the comment.

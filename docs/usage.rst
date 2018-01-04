@@ -101,6 +101,7 @@ The code in this file will be run upon entering the shell. Add these lines and c
         # Comment out any packages you are not using.
         include=[
             'ipython',
+            'ipython_repr_pretty',
             'attrs',
             'django',
             'requests',
