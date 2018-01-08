@@ -7,10 +7,7 @@ from datetime import (
     date,
     time,
 )
-from enum import Enum
 from itertools import chain, dropwhile
-from uuid import UUID
-from types import MappingProxyType
 
 from .doc import (
     concat,
@@ -38,9 +35,9 @@ else:
     _PYTZ_INSTALLED = True
 
 
-@register_pretty(UUID)
+@register_pretty('uuid.UUID')
 def pretty_uuid(value, ctx):
-    return pretty_call(ctx, UUID, str(value))
+    return pretty_call(ctx, type(value), str(value))
 
 
 @register_pretty(datetime)
@@ -242,20 +239,20 @@ def pretty_timedelta(delta, ctx):
 
 @register_pretty(OrderedDict)
 def pretty_ordereddict(d, ctx):
-    return pretty_call(ctx, OrderedDict, [*d.items()])
+    return pretty_call(ctx, type(d), [*d.items()])
 
 
 @register_pretty(Counter)
 def pretty_counter(counter, ctx):
-    return pretty_call(ctx, Counter, dict(counter))
+    return pretty_call(ctx, type(counter), dict(counter))
 
 
-@register_pretty(Enum)
+@register_pretty('enum.Enum')
 def pretty_enum(value, ctx):
     cls = type(value)
     return classattr(cls, value.name)
 
 
-@register_pretty(MappingProxyType)
+@register_pretty('types.MappingProxyType')
 def pretty_mappingproxy(value, ctx):
-    return pretty_call(ctx, MappingProxyType, dict(value))
+    return pretty_call(ctx, type(value), dict(value))
