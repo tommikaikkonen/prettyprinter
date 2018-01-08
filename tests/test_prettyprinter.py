@@ -486,3 +486,40 @@ def test_sort_dict_keys():
     }
     expected = """{'a': 2, 'x': 1}"""
     assert pformat(value, sort_dict_keys=True) == expected
+
+
+class TestDeferredType(dict):
+    pass
+
+
+def test_deferred_registration():
+    expected = 'Deferred type works.'
+
+    @register_pretty('tests.test_prettyprinter.TestDeferredType')
+    def pretty_testdeferredtype(value, ctx):
+        return expected
+
+    assert pformat(TestDeferredType()) == expected
+    assert pformat(TestDeferredType()) == expected
+
+
+class BaseTestDeferredType(dict):
+    pass
+
+
+class ConcreteTestDeferredType(BaseTestDeferredType):
+    pass
+
+
+def test_deferred_registration_subclass():
+    """Registering a printer for BaseTestDeferredType should be resolved
+    when using the subclass ConcreteTestDeferredType"""
+
+    expected = 'Deferred type works.'
+
+    @register_pretty('tests.test_prettyprinter.BaseTestDeferredType')
+    def pretty_testdeferredtype(value, ctx):
+        return expected
+
+    assert pformat(ConcreteTestDeferredType()) == expected
+    assert pformat(ConcreteTestDeferredType()) == expected

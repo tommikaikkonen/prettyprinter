@@ -378,6 +378,13 @@ def _run_pretty(pretty_fn, value, ctx, trailing_comment=None):
     return doc
 
 
+_DEFERRED_DISPATCH_BY_NAME = {}
+
+
+def get_deferred_key(type):
+    return type.__module__ + '.' + type.__qualname__
+
+
 _PREDICATE_REGISTRY = []
 
 
@@ -398,6 +405,14 @@ def pretty_python_value(value, ctx):
     trailing_comment = None
 
     value, comment, trailing_comment = unwrap_comments(value)
+
+    # Registers any deferred types
+    is_registered(
+        type(value),
+        check_subclasses=True,
+        check_deferred=True,
+        register_deferred=True
+    )
 
     if trailing_comment:
         doc = pretty_dispatch(
@@ -423,7 +438,8 @@ def register_pretty(type=None, predicate=None):
     """Returns a decorator that registers the decorated function
     as the pretty printer for instances of ``type``.
 
-    :param type: the type to register the pretty printer for.
+    :param type: the type to register the pretty printer for, or a ``str``
+                 to indicate the module and name, e.g.: 'collections.Counter'.
     :param predicate: a predicate function that takes one argument
                       and returns a boolean indicating if the value
                       should be handled by the registered pretty printer.
@@ -489,7 +505,13 @@ def register_pretty(type=None, predicate=None):
             )
 
         if type:
-            pretty_dispatch.register(type, partial(_run_pretty, fn))
+            if isinstance(type, str):
+                # We don't wrap this with _run_pretty,
+                # so that when we register this printer with an actual
+                # class, we can call register_pretty(cls)(fn)
+                _DEFERRED_DISPATCH_BY_NAME[type] = fn
+            else:
+                pretty_dispatch.register(type, partial(_run_pretty, fn))
         else:
             assert callable(predicate)
             _PREDICATE_REGISTRY.append((predicate, fn))
@@ -497,10 +519,46 @@ def register_pretty(type=None, predicate=None):
     return decorator
 
 
-def is_registered(type, check_subclasses=False):
-    if check_subclasses:
-        return pretty_dispatch.dispatch(type) is not _BASE_DISPATCH
-    return type in pretty_dispatch.registry
+def is_registered(
+    type,
+    check_subclasses=False,
+    check_deferred=True,
+    register_deferred=True
+):
+    if type in pretty_dispatch.registry:
+        return True
+
+    if (
+        check_subclasses and
+        pretty_dispatch.dispatch(type) is not _BASE_DISPATCH
+    ):
+        # type or one of its superclasses has a registered pretty printer.
+        # In case it was registered for a superclass, there may be a deferred
+        # printer registered for a class lower in the hierarchy.
+        if register_deferred:
+            for supertype in type.__mro__:
+                deferred_key = get_deferred_key(supertype)
+                if deferred_key in _DEFERRED_DISPATCH_BY_NAME:
+                    deferred_dispatch = _DEFERRED_DISPATCH_BY_NAME.pop(
+                        deferred_key
+                    )
+                    register_pretty(supertype)(deferred_dispatch)
+                    return True
+        return True
+
+    if check_deferred:
+        for supertype in type.__mro__:
+            deferred_key = get_deferred_key(supertype)
+            if deferred_key in _DEFERRED_DISPATCH_BY_NAME:
+                if register_deferred:
+                    deferred_dispatch = _DEFERRED_DISPATCH_BY_NAME.pop(
+                        deferred_key
+                    )
+                    register_pretty(supertype)(deferred_dispatch)
+                return True
+
+    return False
+
 
 
 def bracket(ctx, left, child, right):
