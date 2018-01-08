@@ -421,11 +421,16 @@ def pretty_repr(instance):
     """
 
     instance_type = type(instance)
-    if not is_registered(instance_type, check_subclasses=True):
+    if not is_registered(
+        instance_type,
+        check_subclasses=True,
+        check_deferred=True,
+        register_deferred=True
+    ):
         warnings.warn(
             "pretty_repr is assigned as the __repr__ method of "
-            "'{}'. However, no pretty printer is registered for that type or "
-            "its subclasses. Falling back to the default "
+            "'{}'. However, no pretty printer is registered for that type, "
+            "its superclasses or its subclasses. Falling back to the default "
             "repr implementation. To fix this warning, register a pretty "
             "printer using prettyprinter.register_pretty.".format(
                 instance_type.__qualname__
