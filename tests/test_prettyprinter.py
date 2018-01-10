@@ -426,14 +426,14 @@ def test_is_registered():
     assert not is_registered(MyClass)
 
     # object is not counted as a subclass
-    assert not is_registered(MyClass, check_subclasses=True)
+    assert not is_registered(MyClass, check_superclasses=True)
 
     @register_pretty(MyClass)
     def pretty_myclass(instance, ctx):
         return '...'
 
     assert is_registered(MyClass)
-    assert is_registered(MyClass, check_subclasses=True)
+    assert is_registered(MyClass, check_superclasses=True)
 
 
 def test_is_registered_subclass():
@@ -441,7 +441,7 @@ def test_is_registered_subclass():
         pass
 
     assert not is_registered(MyList)
-    assert is_registered(MyList, check_subclasses=True)
+    assert is_registered(MyList, check_superclasses=True)
 
 
 def test_pretty_repr():
@@ -486,3 +486,76 @@ def test_sort_dict_keys():
     }
     expected = """{'a': 2, 'x': 1}"""
     assert pformat(value, sort_dict_keys=True) == expected
+
+
+class TestDeferredType(dict):
+    pass
+
+
+def test_deferred_registration():
+    expected = 'Deferred type works.'
+
+    assert not is_registered(TestDeferredType, register_deferred=False)
+
+    @register_pretty('tests.test_prettyprinter.TestDeferredType')
+    def pretty_testdeferredtype(value, ctx):
+        return expected
+
+    assert not is_registered(
+        TestDeferredType,
+        check_deferred=False,
+        register_deferred=False
+    )
+    assert is_registered(
+        TestDeferredType,
+        register_deferred=False
+    )
+
+    assert pformat(TestDeferredType()) == expected
+
+    # Printer should have been moved to non-deferred registry
+    assert is_registered(
+        TestDeferredType,
+        check_deferred=False,
+        register_deferred=False
+    )
+
+
+class BaseTestDeferredType(dict):
+    pass
+
+
+class ConcreteTestDeferredType(BaseTestDeferredType):
+    pass
+
+
+def test_deferred_registration_subclass():
+    """Registering a printer for BaseTestDeferredType should be resolved
+    when using the subclass ConcreteTestDeferredType"""
+
+    expected = 'Deferred type works.'
+
+    @register_pretty('tests.test_prettyprinter.BaseTestDeferredType')
+    def pretty_testdeferredtype(value, ctx):
+        return expected
+
+    assert not is_registered(
+        ConcreteTestDeferredType,
+        check_superclasses=False,
+        register_deferred=False
+    )
+
+    assert is_registered(
+        ConcreteTestDeferredType,
+        check_superclasses=True,
+        register_deferred=False
+    )
+
+    assert pformat(ConcreteTestDeferredType()) == expected
+    assert is_registered(
+        ConcreteTestDeferredType,
+        check_superclasses=True,
+        check_deferred=False,
+        register_deferred=False
+    )
+    assert pformat(ConcreteTestDeferredType()) == expected
