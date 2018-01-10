@@ -495,12 +495,30 @@ class TestDeferredType(dict):
 def test_deferred_registration():
     expected = 'Deferred type works.'
 
+    assert not is_registered(TestDeferredType, register_deferred=False)
+
     @register_pretty('tests.test_prettyprinter.TestDeferredType')
     def pretty_testdeferredtype(value, ctx):
         return expected
 
+    assert not is_registered(
+        TestDeferredType,
+        check_deferred=False,
+        register_deferred=False
+    )
+    assert is_registered(
+        TestDeferredType,
+        register_deferred=False
+    )
+
     assert pformat(TestDeferredType()) == expected
-    assert pformat(TestDeferredType()) == expected
+
+    # Printer should have been moved to non-deferred registry
+    assert is_registered(
+        TestDeferredType,
+        check_deferred=False,
+        register_deferred=False
+    )
 
 
 class BaseTestDeferredType(dict):
@@ -521,5 +539,23 @@ def test_deferred_registration_subclass():
     def pretty_testdeferredtype(value, ctx):
         return expected
 
+    assert not is_registered(
+        ConcreteTestDeferredType,
+        check_subclasses=False,
+        register_deferred=False
+    )
+
+    assert is_registered(
+        ConcreteTestDeferredType,
+        check_subclasses=True,
+        register_deferred=False
+    )
+
     assert pformat(ConcreteTestDeferredType()) == expected
+    assert is_registered(
+        ConcreteTestDeferredType,
+        check_subclasses=True,
+        check_deferred=False,
+        register_deferred=False
+    )
     assert pformat(ConcreteTestDeferredType()) == expected
