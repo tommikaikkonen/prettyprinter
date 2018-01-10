@@ -520,6 +520,7 @@ def register_pretty(type=None, predicate=None):
 
 def is_registered(
     type,
+    *,
     check_superclasses=False,
     check_deferred=True,
     register_deferred=True
