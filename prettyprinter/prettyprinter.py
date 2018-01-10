@@ -406,7 +406,6 @@ def pretty_python_value(value, ctx):
 
     value, comment, trailing_comment = unwrap_comments(value)
 
-    # Registers any deferred types
     is_registered(
         type(value),
         check_subclasses=True,
