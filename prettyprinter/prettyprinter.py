@@ -438,7 +438,7 @@ def register_pretty(type=None, predicate=None):
     as the pretty printer for instances of ``type``.
 
     :param type: the type to register the pretty printer for, or a ``str``
-                 to indicate the module and name, e.g.: 'collections.Counter'.
+                 to indicate the module and name, e.g.: ``'collections.Counter'``.
     :param predicate: a predicate function that takes one argument
                       and returns a boolean indicating if the value
                       should be handled by the registered pretty printer.

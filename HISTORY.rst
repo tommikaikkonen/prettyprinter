@@ -2,6 +2,13 @@
 History
 =======
 
+0.10.0 (2018-01-09)
+-------------------
+
+No breaking changes.
+
+* Added support for deferred printer registration, where instead of a concrete type value, you can pass a qualified path to a type as a ``str`` to ``register_pretty``. For an example, see `the deferred printer registration for uuid.UUID <https://github.com/tommikaikkonen/prettyprinter/blob/05187126889ade1c2bf0557a40800e5c44a32bab/prettyprinter/pretty_stdlib.py#L38-L40>`_
+
 0.9.0 (2018-01-03)
 ------------------
 
