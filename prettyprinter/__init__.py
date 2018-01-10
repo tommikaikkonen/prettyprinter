@@ -423,7 +423,7 @@ def pretty_repr(instance):
     instance_type = type(instance)
     if not is_registered(
         instance_type,
-        check_subclasses=True,
+        check_superclasses=True,
         check_deferred=True,
         register_deferred=True
     ):

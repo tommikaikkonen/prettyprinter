@@ -426,14 +426,14 @@ def test_is_registered():
     assert not is_registered(MyClass)
 
     # object is not counted as a subclass
-    assert not is_registered(MyClass, check_subclasses=True)
+    assert not is_registered(MyClass, check_superclasses=True)
 
     @register_pretty(MyClass)
     def pretty_myclass(instance, ctx):
         return '...'
 
     assert is_registered(MyClass)
-    assert is_registered(MyClass, check_subclasses=True)
+    assert is_registered(MyClass, check_superclasses=True)
 
 
 def test_is_registered_subclass():
@@ -441,7 +441,7 @@ def test_is_registered_subclass():
         pass
 
     assert not is_registered(MyList)
-    assert is_registered(MyList, check_subclasses=True)
+    assert is_registered(MyList, check_superclasses=True)
 
 
 def test_pretty_repr():
@@ -541,20 +541,20 @@ def test_deferred_registration_subclass():
 
     assert not is_registered(
         ConcreteTestDeferredType,
-        check_subclasses=False,
+        check_superclasses=False,
         register_deferred=False
     )
 
     assert is_registered(
         ConcreteTestDeferredType,
-        check_subclasses=True,
+        check_superclasses=True,
         register_deferred=False
     )
 
     assert pformat(ConcreteTestDeferredType()) == expected
     assert is_registered(
         ConcreteTestDeferredType,
-        check_subclasses=True,
+        check_superclasses=True,
         check_deferred=False,
         register_deferred=False
     )

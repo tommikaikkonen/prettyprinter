@@ -408,7 +408,7 @@ def pretty_python_value(value, ctx):
 
     is_registered(
         type(value),
-        check_subclasses=True,
+        check_superclasses=True,
         check_deferred=True,
         register_deferred=True
     )
@@ -520,33 +520,35 @@ def register_pretty(type=None, predicate=None):
 
 def is_registered(
     type,
-    check_subclasses=False,
+    check_superclasses=False,
     check_deferred=True,
     register_deferred=True
 ):
+    if not check_deferred and register_deferred:
+        raise ValueError(
+            'register_deferred may not be True when check_deferred is False'
+        )
+
     if type in pretty_dispatch.registry:
         return True
 
-    if (
-        check_subclasses and
-        pretty_dispatch.dispatch(type) is not _BASE_DISPATCH
-    ):
-        # type or one of its superclasses has a registered pretty printer.
-        # In case it was registered for a superclass, there may be a deferred
-        # printer registered for a class lower in the hierarchy.
-        if register_deferred:
-            for supertype in type.__mro__:
-                deferred_key = get_deferred_key(supertype)
-                if deferred_key in _DEFERRED_DISPATCH_BY_NAME:
-                    deferred_dispatch = _DEFERRED_DISPATCH_BY_NAME.pop(
-                        deferred_key
-                    )
-                    register_pretty(supertype)(deferred_dispatch)
-                    return True
-        return True
+    if check_deferred:
+        # Check deferred printers for the type exactly.
+        deferred_key = get_deferred_key(type)
+        if deferred_key in _DEFERRED_DISPATCH_BY_NAME:
+            if register_deferred:
+                deferred_dispatch = _DEFERRED_DISPATCH_BY_NAME.pop(
+                    deferred_key
+                )
+                register_pretty(type)(deferred_dispatch)
+            return True
+
+    if not check_superclasses:
+        return False
 
     if check_deferred:
-        for supertype in type.__mro__:
+        # Check deferred printers for supertypes.
+        for supertype in type.__mro__[1:]:
             deferred_key = get_deferred_key(supertype)
             if deferred_key in _DEFERRED_DISPATCH_BY_NAME:
                 if register_deferred:
@@ -555,9 +557,7 @@ def is_registered(
                     )
                     register_pretty(supertype)(deferred_dispatch)
                 return True
-
-    return False
-
+    return pretty_dispatch.dispatch(type) is not _BASE_DISPATCH
 
 
 def bracket(ctx, left, child, right):
