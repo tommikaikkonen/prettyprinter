@@ -26,6 +26,8 @@ jobs:
           name: install dependencies
           command: |
             curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            eval "$(pyenv init -)"
             pyenv update
             pyenv install 3.5.4
             pyenv install 3.6.3
