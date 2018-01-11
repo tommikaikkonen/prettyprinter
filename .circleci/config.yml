@@ -37,7 +37,8 @@ jobs:
 
       - save_cache:
           paths:
-            - ./venv
+            - /home/circleci/.pyenv/
+            - ./.tox/
           key: v1-dependencies-{{ checksum "requirements_dev.txt" }}
         
       # run tests!
