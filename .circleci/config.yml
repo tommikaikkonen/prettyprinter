@@ -44,6 +44,8 @@ jobs:
       - run:
           name: run tests
           command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            eval "$(pyenv init -)"
             tox
 
       - store_artifacts:
