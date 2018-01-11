@@ -2,6 +2,13 @@
 History
 =======
 
+0.10.1 (2018-01-10)
+-------------------
+
+No breaking changes.
+
+* Fixed regression with types.MappingProxyType not being properly registered.
+
 0.10.0 (2018-01-09)
 -------------------
 
