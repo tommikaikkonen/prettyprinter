@@ -25,7 +25,12 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sudo pip install tox
+            curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+            pyenv update
+            pyenv install 3.5.4
+            pyenv install 3.6.3
+            pyenv global 3.6.3 3.5.4
+            pip install tox
             tox -vv --notest
 
       - save_cache:
