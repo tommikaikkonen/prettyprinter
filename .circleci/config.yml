@@ -25,7 +25,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install tox
+            sudo pip install tox
             tox -vv --notest
 
       - save_cache:
