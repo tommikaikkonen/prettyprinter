@@ -6,6 +6,7 @@
 import pytest
 import datetime
 import pytz
+import sys
 from io import StringIO
 from itertools import cycle, islice
 import json
@@ -400,7 +401,7 @@ def test_large_data_performance():
     # The bottleneck is in string to doc conversion,
     # specifically escaping strings many times.
     # There's probably more we can do here
-    assert took < datetime.timedelta(seconds=10)
+    assert took < datetime.timedelta(seconds=13)
 
 
 @settings(max_examples=5000, max_iterations=5000)
@@ -471,12 +472,13 @@ def test_pretty_repr_unregistered_uses_default_repr_and_warns():
 def test_dict_sorted_by_insertion_default():
     """By default, dict keys should be printed
     in insertion order."""
-    value = {
-        'x': 1,
-        'a': 2
-    }
-    expected = """{'x': 1, 'a': 2}"""
-    assert pformat(value) == expected
+    if sys.version_info >= (3, 6):
+        value = {
+            'x': 1,
+            'a': 2
+        }
+        expected = """{'x': 1, 'a': 2}"""
+        assert pformat(value) == expected
 
 
 def test_sort_dict_keys():

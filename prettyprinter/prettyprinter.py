@@ -1,7 +1,9 @@
 import inspect
 import math
 import re
+import sys
 import warnings
+from collections import OrderedDict
 from functools import singledispatch, partial
 from itertools import chain, cycle
 from types import (
@@ -33,6 +35,8 @@ from .layout import layout_smart
 from .syntax import Token
 from .utils import identity, intersperse, take
 
+PY_VERSION_INFO = sys.version_info
+DICT_KEY_ORDER_SUPPORTED = PY_VERSION_INFO >= (3, 6)
 
 UNSET_SENTINEL = object()
 
@@ -703,6 +707,10 @@ def pretty_call(ctx, fn, *args, **kwargs):
     """Returns a Doc that represents a function call to :keyword:`fn` with
     the remaining positional and keyword arguments.
 
+    You can only use this function on Python 3.6+. On Python 3.5, the order
+    of keyword arguments is not maintained, and you have to use
+    :func:`~prettyprinter.pretty_call_alt`.
+
     Given an arbitrary context ``ctx``,::
 
         pretty_call(ctx, sorted, [7, 4, 5], reverse=True)
@@ -728,6 +736,41 @@ def pretty_call(ctx, fn, *args, **kwargs):
     :param kwargs: keyword arguments to render to the call
     :returns: :class:`~prettyprinter.doc.Doc`
     """
+    return pretty_call_alt(ctx, fn, args, kwargs)
+
+
+def pretty_call_alt(ctx, fn, args=(), kwargs=()):
+    """Returns a Doc that represents a function call to :keyword:`fn` with
+    the ``args`` and ``kwargs``.
+
+    Given an arbitrary context ``ctx``,::
+
+        pretty_call(ctx, sorted, args=([7, 4, 5], ), kwargs=[('reverse', True)])
+
+    Will result in output::
+
+        sorted([7, 4, 5], reverse=True)
+
+    The layout algorithm will automatically break the call to multiple
+    lines if needed::
+
+        sorted(
+            [7, 4, 5],
+            reverse=True
+        )
+
+    ``pretty_call`` automatically handles syntax highlighting.
+
+    :param ctx: a context value
+    :type ctx: prettyprinter.prettyprinter.PrettyContext
+    :param fn: a callable
+    :param args: a ``tuple`` of positional arguments to render to the call
+    :param kwargs: keyword arguments to render to the call. Either an instance
+                   of ``OrderedDict``, or an iterable of two-tuples, where the
+                   first element is a `str` (key), and the second is the Python
+                   value for that keyword argument.
+    :returns: :class:`~prettyprinter.doc.Doc`
+    """
 
     fndoc = general_identifier(fn)
 
@@ -751,6 +794,22 @@ def pretty_call(ctx, fn, *args, **kwargs):
         .use_multiline_strategy(MULTILINE_STATEGY_HANG)
     )
 
+    if not DICT_KEY_ORDER_SUPPORTED and isinstance(kwargs, dict):
+        warnings.warn(
+            "A dict was passed to pretty_call_alt to represent kwargs, "
+            "but Python 3.5 doesn't maintain key order for dicts. The order "
+            "of keyword arguments will be undefined in the output. "
+            "To fix this, pass a list of two-tuples or an instance of "
+            "OrderedDict instead.",
+            UserWarning
+        )
+
+    kwargitems = (
+        kwargs.items()
+        if isinstance(kwargs, (OrderedDict, dict))
+        else kwargs
+    )
+
     return build_fncall(
         ctx,
         fndoc,
@@ -760,7 +819,7 @@ def pretty_call(ctx, fn, *args, **kwargs):
         ),
         kwargdocs=(
             (kwarg, pretty_python_value(v, nested_ctx))
-            for kwarg, v in kwargs.items()
+            for kwarg, v in kwargitems
         ),
     )
 
@@ -927,7 +986,7 @@ def pretty_type(_type, ctx):
     if _type is type(None):  # noqa
         # NoneType is not available in the global namespace,
         # clearer to print type(None)
-        return pretty_call(ctx, type, None)
+        return pretty_call_alt(ctx, type, args=(None, ))
 
     result = general_identifier(_type)
 
@@ -1023,7 +1082,7 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
             return concat([left, right])
         else:
             assert isinstance(value, set)
-            return pretty_call(ctx, set)
+            return pretty_call_alt(ctx, set)
 
     if ctx.depth_left == 0:
         return concat([left, ELLIPSIS, right])
@@ -1070,8 +1129,8 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
 @register_pretty(frozenset)
 def pretty_frozenset(value, ctx):
     if value:
-        return pretty_call(ctx, frozenset, list(value))
-    return pretty_call(ctx, frozenset)
+        return pretty_call_alt(ctx, frozenset, args=(list(value), ))
+    return pretty_call_alt(ctx, frozenset)
 
 
 class _AlwaysSortable(object):
@@ -1265,14 +1324,14 @@ NEG_INF_FLOAT = float('-inf')
 @register_pretty(float)
 def pretty_float(value, ctx):
     if ctx.depth_left == 0:
-        return pretty_call(ctx, float, ...)
+        return pretty_call_alt(ctx, float, args=(..., ))
 
     if value == INF_FLOAT:
-        return pretty_call(ctx, float, 'inf')
+        return pretty_call_alt(ctx, float, args=('inf', ))
     elif value == NEG_INF_FLOAT:
-        return pretty_call(ctx, float, '-inf')
+        return pretty_call_alt(ctx, float, args=('-inf', ))
     elif math.isnan(value):
-        return pretty_call(ctx, float, 'nan')
+        return pretty_call_alt(ctx, float, args=('nan', ))
 
     return annotate(Token.NUMBER_FLOAT, repr(value))
 
@@ -1280,7 +1339,7 @@ def pretty_float(value, ctx):
 @register_pretty(int)
 def pretty_int(value, ctx):
     if ctx.depth_left == 0:
-        return pretty_call(ctx, int, ...)
+        return pretty_call_alt(ctx, int, args=(..., ))
     return annotate(Token.NUMBER_INT, repr(value))
 
 
@@ -1548,10 +1607,10 @@ def pretty_str(s, ctx):
 
     if ctx.depth_left == 0:
         if isinstance(s, str):
-            return pretty_call(ctx, constructor, ...)
+            return pretty_call_alt(ctx, constructor, args=(..., ))
         else:
             assert isinstance(s, bytes)
-            return pretty_call(ctx, constructor, ...)
+            return pretty_call_alt(ctx, constructor, args=(..., ))
 
     multiline_strategy = ctx.multiline_strategy
     prettyprinter_indent = ctx.indent

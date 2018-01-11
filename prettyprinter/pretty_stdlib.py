@@ -23,7 +23,7 @@ from .prettyprinter import (
     classattr,
     identifier,
     register_pretty,
-    pretty_call,
+    pretty_call_alt,
     pretty_python_value,
 )
 
@@ -37,7 +37,7 @@ else:
 
 @register_pretty('uuid.UUID')
 def pretty_uuid(value, ctx):
-    return pretty_call(ctx, type(value), str(value))
+    return pretty_call_alt(ctx, type(value), args=(str(value), ))
 
 
 @register_pretty(datetime)
@@ -65,19 +65,22 @@ def pretty_datetime(dt, ctx):
     if dt.tzinfo is not None:
         kwargs.append(('tzinfo', dt.tzinfo))
 
-    if dt.fold:
+    # Doesn't exist before Python 3.6
+    if getattr(dt, 'fold', None):
         kwargs.append(('fold', 1))
 
     if len(kwargs) == 3:  # year, month, day
-        return pretty_call(
+        return pretty_call_alt(
             ctx,
             datetime,
-            dt.year,
-            dt.month,
-            dt.day,
+            args=(
+                dt.year,
+                dt.month,
+                dt.day
+            )
         )
 
-    return pretty_call(ctx, datetime, **OrderedDict(kwargs))
+    return pretty_call_alt(ctx, datetime, kwargs=kwargs)
 
 
 @register_pretty(tzinfo)
@@ -96,24 +99,24 @@ def pretty_timezone(tz, ctx):
         return identifier('datetime.timezone.utc')
 
     if tz._name is None:
-        return pretty_call(ctx, timezone, tz._offset)
-    return pretty_call(ctx, timezone, tz._offset, tz._name)
+        return pretty_call_alt(ctx, timezone, args=(tz._offset, ))
+    return pretty_call_alt(ctx, timezone, args=(tz._offset, tz._name))
 
 
 def pretty_pytz_timezone(tz, ctx):
     if tz == pytz.utc:
         return identifier('pytz.utc')
-    return pretty_call(ctx, pytz.timezone, tz.zone)
+    return pretty_call_alt(ctx, pytz.timezone, args=(tz.zone, ))
 
 
 def pretty_pytz_dst_timezone(tz, ctx):
     if tz.zone and pytz.timezone(tz.zone) == tz:
         return pretty_pytz_timezone(tz, ctx)
 
-    calldoc = pretty_call(
+    calldoc = pretty_call_alt(
         ctx,
         pytz.tzinfo.DstTzInfo,
-        (tz._utcoffset, tz._dst, tz._tzname)
+        args=((tz._utcoffset, tz._dst, tz._tzname), )
     )
 
     if tz.zone:
@@ -144,7 +147,7 @@ def pretty_time(value, ctx):
     if value.tzinfo is not None:
         additional_kws.append(('tzinfo', value.tzinfo))
 
-    if value.fold != 0:
+    if getattr(value, 'fold', 0) != 0:
         additional_kws.append(('fold', value.fold))
 
     kwargs = chain(
@@ -155,22 +158,26 @@ def pretty_time(value, ctx):
         additional_kws
     )
 
-    return pretty_call(
+    return pretty_call_alt(
         ctx,
         time,
-        **OrderedDict(kwargs)
+        kwargs=kwargs
     )
 
 
 @register_pretty(date)
 def pretty_date(value, ctx):
-    return pretty_call(ctx, date, value.year, value.month, value.day)
+    return pretty_call_alt(
+        ctx,
+        date,
+        args=(value.year, value.month, value.day)
+    )
 
 
 @register_pretty(timedelta)
 def pretty_timedelta(delta, ctx):
     if ctx.depth_left == 0:
-        return pretty_call(ctx, timedelta, ...)
+        return pretty_call_alt(ctx, timedelta, args=(..., ))
 
     pos_delta = abs(delta)
     negative = delta != pos_delta
@@ -239,12 +246,12 @@ def pretty_timedelta(delta, ctx):
 
 @register_pretty(OrderedDict)
 def pretty_ordereddict(d, ctx):
-    return pretty_call(ctx, type(d), [*d.items()])
+    return pretty_call_alt(ctx, type(d), args=(list(d.items()), ))
 
 
 @register_pretty(Counter)
 def pretty_counter(counter, ctx):
-    return pretty_call(ctx, type(counter), dict(counter))
+    return pretty_call_alt(ctx, type(counter), args=(dict(counter), ))
 
 
 @register_pretty('enum.Enum')
@@ -255,4 +262,4 @@ def pretty_enum(value, ctx):
 
 @register_pretty('types.MappingProxyType')
 def pretty_mappingproxy(value, ctx):
-    return pretty_call(ctx, type(value), dict(value))
+    return pretty_call_alt(ctx, type(value), args=(dict(value), ))

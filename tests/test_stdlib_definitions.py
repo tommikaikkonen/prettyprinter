@@ -9,13 +9,13 @@ from prettyprinter import pformat
 def test_counter():
     value = Counter({'a': 1, 'b': 200})
     expected = "collections.Counter({'a': 1, 'b': 200})"
-    assert pformat(value, width=999) == expected
+    assert pformat(value, width=999, sort_dict_keys=True) == expected
 
 
 def test_ordereddict():
     value = OrderedDict([('a', 1), ('b', 2)])
     expected = "collections.OrderedDict([('a', 1), ('b', 2)])"
-    assert pformat(value, width=999) == expected
+    assert pformat(value, width=999, sort_dict_keys=True) == expected
 
 
 def test_enum():
@@ -31,7 +31,7 @@ def test_enum():
 def test_mappingproxytype():
     value = MappingProxyType({'a': 1, 'b': 2})
     expected = "mappingproxy({'a': 1, 'b': 2})"
-    assert pformat(value) == expected
+    assert pformat(value, sort_dict_keys=True) == expected
 
 
 def test_uuid():
