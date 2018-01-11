@@ -253,6 +253,6 @@ def pretty_enum(value, ctx):
     return classattr(cls, value.name)
 
 
-@register_pretty('types.MappingProxyType')
+@register_pretty('builtins.mappingproxy')
 def pretty_mappingproxy(value, ctx):
     return pretty_call(ctx, type(value), dict(value))

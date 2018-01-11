@@ -3,7 +3,7 @@ from enum import Enum
 from types import MappingProxyType
 from uuid import UUID
 
-from prettyprinter import pformat
+from prettyprinter import pformat, is_registered
 
 
 def test_counter():
@@ -29,6 +29,11 @@ def test_enum():
 
 
 def test_mappingproxytype():
+    assert is_registered(
+        MappingProxyType,
+        check_deferred=True,
+        register_deferred=False
+    )
     value = MappingProxyType({'a': 1, 'b': 2})
     expected = "mappingproxy({'a': 1, 'b': 2})"
     assert pformat(value) == expected
