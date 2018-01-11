@@ -29,6 +29,7 @@ test_requirements = [
     'attrs',
     'IPython',
     'pytz'
+    'tox-pyenv'
 ]
 
 setup(
