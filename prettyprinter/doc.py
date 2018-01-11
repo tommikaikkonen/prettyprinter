@@ -1,4 +1,4 @@
-from .doctypes import (
+from .doctypes import (  # noqa
     AlwaysBreak,
     Concat,
     Contextual,
@@ -13,7 +13,7 @@ from .doctypes import (
     SOFTLINE,
     HARDLINE,
 )
-from .utils import intersperse
+from .utils import intersperse  # noqa
 
 
 def validate_doc(doc):

@@ -45,7 +45,7 @@ def install():
     try:
         _rows, columns = os.popen('stty size', 'r').read().split()
         columns = int(columns)
-    except:
+    except:  # noqa
         columns = 79
 
     class IPythonCompatPrinter:
