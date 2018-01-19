@@ -12,7 +12,7 @@ from itertools import cycle, islice
 import json
 import timeit
 
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 from hypothesis.extra.pytz import timezones
 from hypothesis import strategies as st
 from prettyprinter import (
@@ -242,6 +242,11 @@ def containers(primitives):
     return st.recursive(primitives, extend)
 
 
+@settings(
+    # This is a heavy test, but it's especially
+    # slow on Python 3.5.
+    suppress_health_check=HealthCheck.too_slow
+)
 @given(
     possibly_commented(
         containers(
