@@ -18,6 +18,7 @@ from .prettyprinter import (
     python_to_sdocs,
     register_pretty,
     pretty_call,
+    pretty_call_alt,
     comment,
     trailing_comment,
 )
@@ -38,6 +39,7 @@ __all__ = [
     'set_default_config',
     'register_pretty',
     'pretty_call',
+    'pretty_call_alt',
     'trailing_comment',
     'comment',
     'python_to_sdocs',
