@@ -245,7 +245,7 @@ def containers(primitives):
 @settings(
     # This is a heavy test, but it's especially
     # slow on Python 3.5.
-    suppress_health_check=HealthCheck.too_slow
+    suppress_health_check=[HealthCheck.too_slow]
 )
 @given(
     possibly_commented(
