@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from requests import (
     PreparedRequest,
     Request,
@@ -10,14 +8,18 @@ from requests.models import DEFAULT_REDIRECT_LIMIT
 from requests.hooks import default_hooks
 from requests.structures import CaseInsensitiveDict
 
-from prettyprinter import pretty_call, comment, register_pretty
+from prettyprinter import pretty_call_alt, comment, register_pretty
 
 
 MAX_CONTENT_CHARS = 500
 
 
 def pretty_headers(headers, ctx):
-    return pretty_call(ctx, CaseInsensitiveDict, dict(headers.items()))
+    return pretty_call_alt(
+        ctx,
+        CaseInsensitiveDict,
+        args=(dict(headers.items()), )
+    )
 
 
 def pretty_request(request, ctx):
@@ -50,7 +52,11 @@ def pretty_request(request, ctx):
     if request.hooks and request.hooks != default_hooks():
         kwargs.append(('hooks', request.hooks))
 
-    return pretty_call(ctx, 'requests.Request', **OrderedDict(kwargs))
+    return pretty_call_alt(
+        ctx,
+        'requests.Request',
+        kwargs=kwargs
+    )
 
 
 def pretty_prepared_request(request, ctx):
@@ -76,21 +82,30 @@ def pretty_prepared_request(request, ctx):
     if request.hooks != default_hooks():
         kwargs.append(('hooks', request.hooks))
 
-    return pretty_call(ctx, 'requests.PreparedRequest', **OrderedDict(kwargs))
+    return pretty_call_alt(
+        ctx,
+        'requests.PreparedRequest',
+        kwargs=kwargs
+    )
 
 
 def pretty_response(resp, ctx):
     content_consumed = bool(resp._content_consumed)
 
     if not content_consumed:
+        kwargs = [
+            ('status_code', )
+        ]
         return comment(
-            pretty_call(
+            pretty_call_alt(
                 ctx,
                 'requests.Response',
-                status_code=comment(resp.status_code, resp.reason),
-                url=resp.url,
-                elapsed=resp.elapsed,
-                headers=resp.headers,
+                kwargs=[
+                    ('status_code', comment(resp.status_code, resp.reason)),
+                    ('url', resp.url),
+                    ('elapsed', resp.elapsed),
+                    ('headers', resp.headers)
+                ]
             ),
             'Response content not loaded yet'
         )
@@ -125,7 +140,11 @@ def pretty_response(resp, ctx):
         else:
             kwargs.append(('text', text))
 
-    return pretty_call(ctx, 'requests.Response', **OrderedDict(kwargs))
+    return pretty_call_alt(
+        ctx,
+        'requests.Response',
+        kwargs=kwargs
+    )
 
 
 def pretty_session(session, ctx):
@@ -152,7 +171,11 @@ def pretty_session(session, ctx):
     if session.cookies:
         kwargs.append(('cookies', session.cookies))
 
-    return pretty_call(ctx, 'requests.Session', **OrderedDict(kwargs))
+    return pretty_call_alt(
+        ctx,
+        'requests.Session',
+        kwargs=kwargs
+    )
 
 
 def install():
