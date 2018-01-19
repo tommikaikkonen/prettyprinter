@@ -22,7 +22,7 @@ from prettyprinter import (
     pretty_repr,
     register_pretty,
     is_registered,
-    pretty_call,
+    pretty_call_alt,
 )
 from pprint import (
     pprint as nativepprint,
@@ -456,7 +456,7 @@ def test_pretty_repr():
 
     @register_pretty(MyClass)
     def pretty_myclass(value, ctx):
-        return pretty_call(ctx, MyClass)
+        return pretty_call_alt(ctx, MyClass)
 
     assert repr(MyClass()) == pformat(MyClass())
 
