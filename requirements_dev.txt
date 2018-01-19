@@ -19,3 +19,6 @@ ipython==6.2.1
 requests==2.18.4
 pytz==2017.3
 attrs==17.4.0
+Django==1.10.8
+pytest-django==3.1.2
+pytest-pythonpath==0.7.1

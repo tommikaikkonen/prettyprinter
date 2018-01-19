@@ -25,11 +25,14 @@ test_requirements = [
     'pytest',
     'hypothesis',
     'dataclasses',
+    'django>=1.10.8'
     'requests',
     'attrs',
     'IPython',
     'pytz'
-    'tox-pyenv'
+    'tox-pyenv',
+    'pytest-django',
+    'pytest-pythonpath'
 ]
 
 setup(
