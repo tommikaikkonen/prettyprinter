@@ -29,8 +29,8 @@ jobs:
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             eval "$(pyenv init -)"
             pyenv update
-            pyenv install 3.5.4
-            pyenv install 3.6.3
+            pyenv install 3.5.4 --skip-existing
+            pyenv install 3.6.3 --skip-existing
             pyenv global 3.6.3 3.5.4
             pip install tox
             tox -vv --notest
