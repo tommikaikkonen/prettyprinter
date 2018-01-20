@@ -4,7 +4,7 @@ PrettyPrinter
 
 Documentation_
 
-Syntax-highlighting, declarative and composable pretty printer for Python 3.6+
+Syntax-highlighting, declarative and composable pretty printer for Python 3.5+
 
 .. code:: bash
     

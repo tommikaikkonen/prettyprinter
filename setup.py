@@ -38,7 +38,7 @@ test_requirements = [
 setup(
     name='prettyprinter',
     version='0.10.1',
-    description="Syntax-highlighting, declarative and composable pretty printer for Python 3.6+",
+    description="Syntax-highlighting, declarative and composable pretty printer for Python 3.5+",
     long_description=readme + '\n\n' + history,
     author="Tommi Kaikkonen",
     author_email='kaikkonentommi@gmail.com',
@@ -55,6 +55,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.5',
     ],
     test_suite='tests',
     tests_require=test_requirements,

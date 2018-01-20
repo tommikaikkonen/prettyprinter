@@ -2,6 +2,16 @@
 History
 =======
 
+0.11.0 (2018-01-20)
+-------------------
+
+No breaking changes.
+
+* Added Python 3.5 support
+* Added ``pretty_call_alt`` function that doesn't depend on ``dict``s maintaining insertion order
+* Fixed bug in ``set_default_config`` where most configuration values were not updated
+* Added ``get_default_config``
+
 0.10.1 (2018-01-10)
 -------------------
 
