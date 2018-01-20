@@ -745,7 +745,7 @@ def pretty_call_alt(ctx, fn, args=(), kwargs=()):
 
     Given an arbitrary context ``ctx``,::
 
-        pretty_call(ctx, sorted, args=([7, 4, 5], ), kwargs=[('reverse', True)])
+        pretty_call_alt(ctx, sorted, args=([7, 4, 5], ), kwargs=[('reverse', True)])
 
     Will result in output::
 
@@ -759,7 +759,7 @@ def pretty_call_alt(ctx, fn, args=(), kwargs=()):
             reverse=True
         )
 
-    ``pretty_call`` automatically handles syntax highlighting.
+    ``pretty_call_alt`` automatically handles syntax highlighting.
 
     :param ctx: a context value
     :type ctx: prettyprinter.prettyprinter.PrettyContext
