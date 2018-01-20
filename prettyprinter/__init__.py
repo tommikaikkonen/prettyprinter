@@ -8,6 +8,7 @@ __version__ = '0.10.1'
 
 from io import StringIO
 from importlib import import_module
+from types import MappingProxyType
 import sys
 import warnings
 
@@ -37,6 +38,7 @@ __all__ = [
     'install_extras',
     'set_default_style',
     'set_default_config',
+    'get_default_config',
     'register_pretty',
     'pretty_call',
     'pretty_call_alt',
@@ -69,6 +71,11 @@ _default_config = {
     'max_seq_len': 1000,
     'sort_dict_keys': False,
 }
+
+
+def get_default_config():
+    """Returns a read-only view of the current configuration"""
+    return MappingProxyType(_default_config)
 
 
 class PrettyPrinter:
@@ -406,6 +413,18 @@ def set_default_config(
 
     if max_seq_len is not _UNSET_SENTINEL:
         new_defaults['max_seq_len'] = max_seq_len
+
+    if width is not _UNSET_SENTINEL:
+        new_defaults['width'] = width
+
+    if ribbon_width is not _UNSET_SENTINEL:
+        new_defaults['ribbon_width'] = ribbon_width
+
+    if depth is not _UNSET_SENTINEL:
+        new_defaults['depth'] = depth
+
+    if sort_dict_keys is not _UNSET_SENTINEL:
+        new_defaults['sort_dict_keys'] = sort_dict_keys
 
     _default_config = new_defaults
     return new_defaults
