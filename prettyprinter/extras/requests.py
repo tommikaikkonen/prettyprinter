@@ -4,7 +4,6 @@ from prettyprinter import pretty_call_alt, comment, register_pretty
 MAX_CONTENT_CHARS = 500
 
 
-
 def pretty_headers(headers, ctx):
     return pretty_call_alt(
         ctx,
