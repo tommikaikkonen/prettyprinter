@@ -25,11 +25,13 @@ jobs:
             curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
             echo -e 'export PATH="/home/circleci/.pyenv/bin:$PATH"\n' >> $BASH_ENV
             echo -e 'eval "$(pyenv init -)"\n' >> $BASH_ENV
-            echo $BASH_ENV
-            cat $BASH_ENV
+            echo "1"
             export PATH="/home/circleci/.pyenv/bin:$PATH"
+            echo "2"
             eval "$(pyenv init -)"
+            echo "3"
             pyenv update
+            echo "4"
             pyenv install 3.5.4 --skip-existing
             pyenv install 3.6.3 --skip-existing
             echo -e 'pyenv global 3.6.3 3.5.4\n' >> $BASH_ENV
