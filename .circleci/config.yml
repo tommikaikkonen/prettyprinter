@@ -15,38 +15,47 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+          - v1-python-versions
+
+      - run:
+          name: install Python versions
+          command: |
+            curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+            echo "export PATH=\"/home/circleci/.pyenv/bin:$PATH\"\n" >> $BASH_ENV
+            echo "eval \"$(pyenv init -)\"\n" >> $BASH_ENV
+            source $BASH_ENV
+            pyenv update
+            pyenv install 3.5.4 --skip-existing
+            pyenv install 3.6.3 --skip-existing
+            echo "pyenv global 3.6.3 3.5.4" >> $BASH_ENV
+
+      - save_cache:
+          paths:
+            - /home/circleci/.pyenv/
+          key: v1-python-versions
+
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "requirements_dev.txt" }}
-          # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-
+          - v3-dependencies-{{ checksum "requirements_dev.txt" }}
 
       - run:
           name: install dependencies
           command: |
-            curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-            export PATH="/home/circleci/.pyenv/bin:$PATH"
-            eval "$(pyenv init -)"
-            pyenv update
-            pyenv install 3.5.4 --skip-existing
-            pyenv install 3.6.3 --skip-existing
-            pyenv global 3.6.3 3.5.4
             pip install tox
             tox -vv --notest
 
       - save_cache:
           paths:
-            - /home/circleci/.pyenv/
             - ./.tox/
-          key: v2-dependencies-{{ checksum "requirements_dev.txt" }}
+          key: v3-dependencies-{{ checksum "requirements_dev.txt" }}
         
       # run tests!
       - run:
           name: run tests
           command: |
-            export PATH="/home/circleci/.pyenv/bin:$PATH"
-            eval "$(pyenv init -)"
             tox
 
       - store_artifacts:
