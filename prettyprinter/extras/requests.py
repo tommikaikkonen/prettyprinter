@@ -72,7 +72,7 @@ def pretty_prepared_request(request, ctx):
         if count_bytes > count_display_bytes:
             truncated_body = comment(
                 request.body[:count_display_bytes],
-                '... and {} more bytes'.format(count_bytes)
+                '... and {} more bytes'.format(count_bytes - count_display_bytes)
             )
         else:
             truncated_body = request.body
