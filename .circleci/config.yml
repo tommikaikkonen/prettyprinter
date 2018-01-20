@@ -23,15 +23,16 @@ jobs:
           name: install Python versions
           command: |
             curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-            echo -e "export PATH=\"/home/circleci/.pyenv/bin:\$PATH\"\n" >> $BASH_ENV
-            echo -e "eval \"\$(pyenv init -)\"\n" >> $BASH_ENV
+            echo -e 'export PATH="/home/circleci/.pyenv/bin:$PATH"\n' >> $BASH_ENV
+            echo -e 'eval "$(pyenv init -)"\n' >> $BASH_ENV
             echo $BASH_ENV
             cat $BASH_ENV
-            source $BASH_ENV
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            eval "$(pyenv init -)"
             pyenv update
             pyenv install 3.5.4 --skip-existing
             pyenv install 3.6.3 --skip-existing
-            echo -e "pyenv global 3.6.3 3.5.4\n" >> $BASH_ENV
+            echo -e 'pyenv global 3.6.3 3.5.4\n' >> $BASH_ENV
 
       - save_cache:
           paths:
