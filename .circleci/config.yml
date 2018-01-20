@@ -27,9 +27,10 @@ jobs:
             eval "$(pyenv init -)"
             pyenv install 3.5.4 --skip-existing
             pyenv install 3.6.3 --skip-existing
-            echo -e 'export PATH="/home/circleci/.pyenv/bin:$PATH"\n' >> $BASH_ENV
-            echo -e 'eval "$(pyenv init -)"\n' >> $BASH_ENV
-            echo -e 'pyenv global 3.6.3 3.5.4\n' >> $BASH_ENV
+            echo "Installed Python versions"
+            echo 'export PATH="/home/circleci/.pyenv/bin:$PATH"' >> $BASH_ENV
+            echo 'eval "$(pyenv init -)"' >> $BASH_ENV
+            echo 'pyenv global 3.6.3 3.5.4' >> $BASH_ENV
 
       - save_cache:
           paths:
