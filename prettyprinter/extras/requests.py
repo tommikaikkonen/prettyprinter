@@ -1,28 +1,20 @@
-from requests import (
-    PreparedRequest,
-    Request,
-    Response,
-    Session,
-)
-from requests.models import DEFAULT_REDIRECT_LIMIT
-from requests.hooks import default_hooks
-from requests.structures import CaseInsensitiveDict
-
 from prettyprinter import pretty_call_alt, comment, register_pretty
 
 
 MAX_CONTENT_CHARS = 500
 
 
+
 def pretty_headers(headers, ctx):
     return pretty_call_alt(
         ctx,
-        CaseInsensitiveDict,
+        type(headers),
         args=(dict(headers.items()), )
     )
 
 
 def pretty_request(request, ctx):
+
     kwargs = [
         ('method', request.method),
         ('url', request.url),
@@ -49,8 +41,10 @@ def pretty_request(request, ctx):
     if request.params:
         kwargs.append(('params', request.params))
 
-    if request.hooks and request.hooks != default_hooks():
-        kwargs.append(('hooks', request.hooks))
+    if request.hooks:
+        from requests.hooks import default_hooks
+        if request.hooks != default_hooks():
+            kwargs.append(('hooks', request.hooks))
 
     return pretty_call_alt(
         ctx,
@@ -60,6 +54,8 @@ def pretty_request(request, ctx):
 
 
 def pretty_prepared_request(request, ctx):
+    from requests.hooks import default_hooks
+
     kwargs = [
         ('method', request.method),
         ('url', request.url),
@@ -71,12 +67,20 @@ def pretty_prepared_request(request, ctx):
     if request.body is not None:
         count_bytes = len(request.body)
 
+        count_display_bytes = 10
+        count_bytes = len(request.body)
+
+        if count_bytes > count_display_bytes:
+            truncated_body = comment(
+                request.body[:count_display_bytes],
+                '... and {} more bytes'.format(count_bytes)
+            )
+        else:
+            truncated_body = request.body
+
         kwargs.append((
             'body',
-            comment(
-                request.body[:10],
-                '... and {} more bytes'.format(count_bytes - 10)
-            )
+            truncated_body
         ))
 
     if request.hooks != default_hooks():
@@ -148,6 +152,8 @@ def pretty_response(resp, ctx):
 
 
 def pretty_session(session, ctx):
+    from requests.models import DEFAULT_REDIRECT_LIMIT
+
     kwargs = []
 
     if session.headers:
@@ -179,8 +185,8 @@ def pretty_session(session, ctx):
 
 
 def install():
-    register_pretty(CaseInsensitiveDict)(pretty_headers)
-    register_pretty(Response)(pretty_response)
-    register_pretty(Request)(pretty_request)
-    register_pretty(PreparedRequest)(pretty_prepared_request)
-    register_pretty(Session)(pretty_session)
+    register_pretty('requests.structures.CaseInsensitiveDict')(pretty_headers)
+    register_pretty('requests.sessions.Session')(pretty_session)
+    register_pretty('requests.models.Response')(pretty_response)
+    register_pretty('requests.models.Request')(pretty_request)
+    register_pretty('requests.models.PreparedRequest')(pretty_prepared_request)
