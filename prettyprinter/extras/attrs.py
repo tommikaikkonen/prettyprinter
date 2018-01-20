@@ -34,8 +34,6 @@ def pretty_attrs(value, ctx):
             if default_value != getattr(value, attribute.name):
                 display_attr = True
         else:
-            print('has default', attribute)
-            print('val', getattr(value, attribute.name))
             if attribute.default != getattr(value, attribute.name):
                 display_attr = True
 
