@@ -7,7 +7,11 @@ from requests import (
 )
 from requests.structures import CaseInsensitiveDict
 
-from prettyprinter import install_extras, pformat, pprint
+from prettyprinter import (
+    install_extras,
+    pformat,
+    pprint,
+)
 
 install_extras(['requests'])
 
@@ -18,10 +22,10 @@ def test_session():
     assert pformat(sess, width=999) == """\
 requests.Session(
     headers=requests.structures.CaseInsensitiveDict({
-        'User-Agent': 'python-requests/2.18.4',
-        'Accept-Encoding': 'gzip, deflate',
         'Accept': '*/*',
-        'Connection': 'keep-alive'
+        'Accept-Encoding': 'gzip, deflate',
+        'Connection': 'keep-alive',
+        'User-Agent': 'python-requests/2.18.4'
     }),
     auth=('user', 'pass')
 )"""
@@ -49,7 +53,7 @@ def test_prepared_request():
     request = Request(
         'POST',
         'https://example.com/pages/1',
-        json={'a': 1, 'b': 2, 'c': 3},
+        json={'a': ['b', 'c', 'd']},
         headers={
             'Content-Type': 'application/json',
         }
@@ -60,10 +64,10 @@ requests.PreparedRequest(
     method='POST',
     url='https://example.com/pages/1',
     headers=requests.structures.CaseInsensitiveDict({
-        'Content-Type': 'application/json',
-        'Content-Length': '24'
+        'Content-Length': '22',
+        'Content-Type': 'application/json'
     }),
-    body=b'{"a": 1, "'  # ... and 24 more bytes
+    body=b'{"a": ["b"'  # ... and 12 more bytes
 )"""
 
 
@@ -71,7 +75,7 @@ def test_response():
     request = Request(
         'POST',
         'https://example.com/pages/1',
-        json={'a': 1, 'b': 2, 'c': 3},
+        json={'a': ['b', 'c', 'd']},
         headers={
             'Content-Type': 'application/json',
         }
@@ -98,8 +102,8 @@ requests.Response(
     url='https://example.com/pages/1',
     elapsed=datetime.timedelta(seconds=2),
     headers=requests.structures.CaseInsensitiveDict({
-        'Content-Type': 'text/plain',
-        'Content-Length': 26
+        'Content-Length': 26,
+        'Content-Type': 'text/plain'
     })
 )"""
 
@@ -112,8 +116,8 @@ requests.Response(
     status_code=200,  # OK
     elapsed=datetime.timedelta(seconds=2),
     headers=requests.structures.CaseInsensitiveDict({
-        'Content-Type': 'text/plain',
-        'Content-Length': 26
+        'Content-Length': 26,
+        'Content-Type': 'text/plain'
     }),
     text='This is the response body.'
 )"""

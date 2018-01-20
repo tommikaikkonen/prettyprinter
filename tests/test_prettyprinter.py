@@ -474,8 +474,8 @@ def test_pretty_repr_unregistered_uses_default_repr_and_warns():
     assert len(record) == 1
 
 
-def test_dict_sorted_by_insertion_default():
-    """By default, dict keys should be printed
+def test_dict_sorted_by_insertion():
+    """dict keys should be printed
     in insertion order."""
     if sys.version_info >= (3, 6):
         value = {
@@ -483,7 +483,7 @@ def test_dict_sorted_by_insertion_default():
             'a': 2
         }
         expected = """{'x': 1, 'a': 2}"""
-        assert pformat(value) == expected
+        assert pformat(value, sort_dict_keys=False) == expected
 
 
 def test_sort_dict_keys():
