@@ -29,8 +29,6 @@ jobs:
             pyenv install 3.6.3 --skip-existing
             pyenv global 3.6.3 3.5.4
             echo "Installed Python versions"
-            echo 'export PATH="/home/circleci/.pyenv/bin:$PATH"' >> $BASH_ENV
-            echo 'eval "$(pyenv init -)"' >> $BASH_ENV
 
       - save_cache:
           paths:
@@ -45,6 +43,8 @@ jobs:
       - run:
           name: install dependencies
           command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            eval "$(pyenv init -)"
             pip install tox
             tox -vv --notest
 
@@ -57,6 +57,8 @@ jobs:
       - run:
           name: run tests
           command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            eval "$(pyenv init -)"
             tox
 
       - store_artifacts:
