@@ -28,9 +28,9 @@ jobs:
             echo "1"
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             echo "2"
-            eval "$(pyenv init -)"
-            echo "3"
             pyenv update
+            echo "3"
+            eval "$(pyenv init -)"
             echo "4"
             pyenv install 3.5.4 --skip-existing
             pyenv install 3.6.3 --skip-existing
