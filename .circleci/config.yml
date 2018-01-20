@@ -27,11 +27,10 @@ jobs:
             echo -e 'eval "$(pyenv init -)"\n' >> $BASH_ENV
             echo "1"
             export PATH="/home/circleci/.pyenv/bin:$PATH"
+            which pyenv
             echo "2"
-            pyenv update
-            echo "3"
             eval "$(pyenv init -)"
-            echo "4"
+            echo "3"
             pyenv install 3.5.4 --skip-existing
             pyenv install 3.6.3 --skip-existing
             echo -e 'pyenv global 3.6.3 3.5.4\n' >> $BASH_ENV
