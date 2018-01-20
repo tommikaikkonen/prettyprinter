@@ -96,9 +96,6 @@ def pretty_response(resp, ctx):
     content_consumed = bool(resp._content_consumed)
 
     if not content_consumed:
-        kwargs = [
-            ('status_code', )
-        ]
         return comment(
             pretty_call_alt(
                 ctx,
