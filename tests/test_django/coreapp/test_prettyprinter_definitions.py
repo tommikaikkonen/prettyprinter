@@ -8,41 +8,60 @@ install_extras(['django'])
 
 @pytest.mark.django_db
 def test_simple_case():
-    instance = MyModel.objects.create(name='John', version=2)
-    expected_uuid = "uuid.UUID('{}')".format(str(instance.uuid))
-    expected = """\
-coreapp.models.MyModel(
-    id={},
-    uuid={},
-    version=2,
-    name='John'
-)""".format(instance.id, expected_uuid)
+    instance = MyModel.objects.create(name='John', slug='john', version=2)
+    expected = "coreapp.models.MyModel(id={}, slug='john', version=2, name='John')".format(
+        instance.id
+    )
     assert pformat(instance, width=999) == expected
 
 
 @pytest.mark.django_db
 def test_blank_field():
-    instance = MyModel.objects.create(name='', version=2)
-    expected_uuid = "uuid.UUID('{}')".format(str(instance.uuid))
+    instance = MyModel.objects.create(name='', slug=None, version=2)
     expected = """\
 coreapp.models.MyModel(
     id={},
-    uuid={},
     version=2,
+    # Null fields: slug
     # Blank fields: name
-)""".format(instance.id, expected_uuid)
+)""".format(instance.id)
     assert pformat(instance, width=999) == expected
 
 
 @pytest.mark.django_db
 def test_default_field():
-    instance = MyModel.objects.create(name='', version=1)
-    expected_uuid = "uuid.UUID('{}')".format(str(instance.uuid))
+    instance = MyModel.objects.create(name='', slug='a', version=1)
     expected = """\
 coreapp.models.MyModel(
     id={},
-    uuid={},
+    slug='a',
     # Blank fields: name
     # Default value fields: version
-)""".format(instance.id, expected_uuid)
+)""".format(instance.id)
     assert pformat(instance, width=999) == expected
+
+
+@pytest.mark.django_db
+def test_queryset():
+    for i in range(11):
+        MyModel.objects.create(
+            name='Name{}'.format(i),
+            version=1,
+            slug='slug-{}'.format(i)
+        )
+
+    qs = MyModel.objects.all()
+    assert pformat(qs, width=999) == """\
+django.db.models.query.QuerySet([
+    coreapp.models.MyModel(id=1),
+    coreapp.models.MyModel(id=2),
+    coreapp.models.MyModel(id=3),
+    coreapp.models.MyModel(id=4),
+    coreapp.models.MyModel(id=5),
+    coreapp.models.MyModel(id=6),
+    coreapp.models.MyModel(id=7),
+    coreapp.models.MyModel(id=8),
+    coreapp.models.MyModel(id=9),
+    coreapp.models.MyModel(id=10),
+    coreapp.models.MyModel(id=11)
+])"""
