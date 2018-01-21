@@ -4,7 +4,7 @@ import re
 import sys
 import warnings
 from collections import OrderedDict
-from functools import singledispatch, partial, wraps
+from functools import singledispatch, partial
 from itertools import chain, cycle
 from types import (
     FunctionType,
