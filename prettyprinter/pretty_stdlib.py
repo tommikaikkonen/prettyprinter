@@ -2,6 +2,7 @@ from collections import (
     Counter,
     OrderedDict,
     defaultdict,
+    deque,
 )
 from datetime import (
     datetime,
@@ -255,6 +256,20 @@ def pretty_defaultdict(d, ctx):
         ctx,
         constructor,
         args=(d.default_factory, dict(d))
+    )
+
+
+@register_pretty(deque)
+def pretty_deque(value, ctx):
+    kwargs = []
+    if value.maxlen is not None:
+        kwargs.append(('maxlen', value.maxlen))
+
+    return pretty_call_alt(
+        ctx,
+        type(value),
+        args=(list(value), ),
+        kwargs=kwargs
     )
 
 

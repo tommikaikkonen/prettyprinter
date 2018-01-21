@@ -2,6 +2,7 @@ from collections import (
     Counter,
     OrderedDict,
     defaultdict,
+    deque,
 )
 from enum import Enum
 from types import MappingProxyType
@@ -25,6 +26,14 @@ def test_ordereddict():
 def test_defaultdict():
     value = defaultdict(list)
     assert pformat(value, width=999) == 'collections.defaultdict(list, {})'
+
+
+def test_deque():
+    value = deque([1, 2], maxlen=10)
+    assert pformat(value, width=999) == 'collections.deque([1, 2], maxlen=10)'
+
+    value2 = deque([1, 2])
+    assert pformat(value2, width=999) == 'collections.deque([1, 2])'
 
 
 def test_enum():
