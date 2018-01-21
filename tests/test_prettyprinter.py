@@ -495,6 +495,44 @@ def test_sort_dict_keys():
     assert pformat(value, sort_dict_keys=True) == expected
 
 
+def test_dict_subclass():
+    class MyDict(dict):
+        pass
+
+    empty = MyDict()
+    constructor_str = 'tests.test_prettyprinter.test_dict_subclass.<locals>.MyDict'
+    assert pformat(empty) == constructor_str + '()'
+
+    value = MyDict({'a': 1})
+    assert pformat(value) == constructor_str + "({'a': 1})"
+
+    truncated = MyDict({'a': 1, 'b': 2})
+    assert pformat(truncated, max_seq_len=1) == constructor_str + """\
+({
+    'a': 1
+    # ...and 1 more elements
+})"""
+
+
+def test_list_subclass():
+    class MyList(list):
+        pass
+
+    empty = MyList()
+    constructor_str = 'tests.test_prettyprinter.test_list_subclass.<locals>.MyList'
+    assert pformat(empty) == constructor_str + '()'
+
+    value = MyList([1, 2])
+    assert pformat(value) == constructor_str + "([1, 2])"
+
+    truncated = MyList([1, 2])
+    assert pformat(truncated, max_seq_len=1) == constructor_str + """\
+([
+    1,
+    # ...and 1 more elements
+])"""
+
+
 class TestDeferredType(dict):
     pass
 

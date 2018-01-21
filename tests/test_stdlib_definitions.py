@@ -1,4 +1,8 @@
-from collections import Counter, OrderedDict
+from collections import (
+    Counter,
+    OrderedDict,
+    defaultdict,
+)
 from enum import Enum
 from types import MappingProxyType
 from uuid import UUID
@@ -16,6 +20,11 @@ def test_ordereddict():
     value = OrderedDict([('a', 1), ('b', 2)])
     expected = "collections.OrderedDict([('a', 1), ('b', 2)])"
     assert pformat(value, width=999, sort_dict_keys=True) == expected
+
+
+def test_defaultdict():
+    value = defaultdict(list)
+    assert pformat(value, width=999) == 'collections.defaultdict(list, {})'
 
 
 def test_enum():

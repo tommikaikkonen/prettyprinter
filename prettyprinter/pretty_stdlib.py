@@ -1,4 +1,8 @@
-from collections import Counter, OrderedDict
+from collections import (
+    Counter,
+    OrderedDict,
+    defaultdict,
+)
 from datetime import (
     datetime,
     timedelta,
@@ -242,6 +246,16 @@ def pretty_timedelta(delta, ctx):
         doc = concat([NEG_OP, doc])
 
     return doc
+
+
+@register_pretty(defaultdict)
+def pretty_defaultdict(d, ctx):
+    constructor = type(d)
+    return pretty_call_alt(
+        ctx,
+        constructor,
+        args=(d.default_factory, dict(d))
+    )
 
 
 @register_pretty(OrderedDict)

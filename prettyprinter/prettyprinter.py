@@ -4,7 +4,7 @@ import re
 import sys
 import warnings
 from collections import OrderedDict
-from functools import singledispatch, partial
+from functools import singledispatch, partial, wraps
 from itertools import chain, cycle
 from types import (
     FunctionType,
@@ -1040,30 +1040,17 @@ def pretty_builtin_function(fn, ctx):
 @register_pretty(list)
 @register_pretty(set)
 def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
+    constructor = type(value)
+    is_native_type = constructor in (tuple, list, set)
     if len(value) > ctx.max_seq_len:
-        try:
-            truncated = value[:ctx.max_seq_len]
-        except TypeError:
-            # E.g. sets are not subscriptable.
-            # Possible edge case: what if a subclass does not
-            # take an iterable constructor argument? Or
-            # has other constructor arguments that won't
-            # be correctly passed to the truncated copy?
-            # This case is _not_ handled.
-            truncated = type(value)(take(ctx.max_seq_len, value))
-
         truncation_comment = '...and {} more elements'.format(
             len(value) - ctx.max_seq_len
         )
 
-        return pretty_bracketable_iterable(
-            truncated,
-            ctx,
-            trailing_comment=(
-                truncation_comment + '. ' + trailing_comment
-                if trailing_comment
-                else truncation_comment
-            )
+        trailing_comment = (
+            truncation_comment + '. ' + trailing_comment
+            if trailing_comment
+            else truncation_comment
         )
 
     dangle = False
@@ -1079,13 +1066,26 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
 
     if not value:
         if isinstance(value, (list, tuple)):
-            return concat([left, right])
+            if is_native_type:
+                return concat([left, right])
+            return pretty_call_alt(ctx, constructor)
         else:
-            assert isinstance(value, set)
-            return pretty_call_alt(ctx, set)
+            # E.g. set() or SubclassOfSet()
+            return pretty_call_alt(ctx, constructor)
 
     if ctx.depth_left == 0:
-        return concat([left, ELLIPSIS, right])
+        if isinstance(value, (list, tuple)):
+            literal = concat([left, ELLIPSIS, right])
+            if is_native_type:
+                return literal
+            return build_fncall(
+                ctx,
+                general_identifier(constructor),
+                argdocs=(literal, ),
+                hug_sole_arg=True
+            )
+        else:
+            return pretty_call_alt(ctx, constructor, args=(..., ))
 
     if len(value) == 1:
         sole_value = list(value)[0]
@@ -1109,14 +1109,14 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
                     .use_multiline_strategy(MULTILINE_STATEGY_HANG)
                 )
             )
-            for el in value
+            for el in take(ctx.max_seq_len, value)
         )
 
     if trailing_comment:
         els = chain(els, [commentdoc(trailing_comment)])
         dangle = False
 
-    return sequence_of_docs(
+    literal = sequence_of_docs(
         ctx,
         left,
         els,
@@ -1125,12 +1125,23 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
         force_break=bool(trailing_comment)
     )
 
+    if is_native_type:
+        return literal
+
+    return build_fncall(
+        ctx,
+        general_identifier(constructor),
+        argdocs=(literal, ),
+        hug_sole_arg=True
+    )
+
 
 @register_pretty(frozenset)
 def pretty_frozenset(value, ctx):
+    constructor = type(value)
     if value:
-        return pretty_call_alt(ctx, frozenset, args=(list(value), ))
-    return pretty_call_alt(ctx, frozenset)
+        return pretty_call_alt(ctx, constructor, args=(list(value), ))
+    return pretty_call_alt(ctx, constructor)
 
 
 class _AlwaysSortable(object):
@@ -1151,22 +1162,30 @@ class _AlwaysSortable(object):
 
 @register_pretty(dict)
 def pretty_dict(d, ctx, trailing_comment=None):
+    constructor = type(d)
+    is_native_type = constructor is dict
     if ctx.depth_left == 0:
-        return concat([LBRACE, ELLIPSIS, RBRACE])
+        literal = concat([LBRACE, ELLIPSIS, RBRACE])
+
+        if is_native_type:
+            return literal
+
+        return build_fncall(
+            ctx,
+            general_identifier(constructor),
+            argdocs=(literal, ),
+            hug_sole_arg=True
+        )
 
     if len(d) > ctx.max_seq_len:
         count_truncated = len(d) - ctx.max_seq_len
         truncation_comment = '...and {} more elements'.format(
             count_truncated
         )
-        return pretty_dict(
-            type(d)(take(ctx.max_seq_len, d.items())),
-            ctx,
-            trailing_comment=(
-                truncation_comment + '. ' + trailing_comment
-                if trailing_comment
-                else truncation_comment
-            )
+        trailing_comment = (
+            truncation_comment + '. ' + trailing_comment
+            if trailing_comment
+            else truncation_comment
         )
 
     has_comment = bool(trailing_comment)
@@ -1178,7 +1197,7 @@ def pretty_dict(d, ctx, trailing_comment=None):
     )
 
     pairs = []
-    for k in sorted_keys:
+    for k in take(ctx.max_seq_len, sorted_keys):
         v = d[k]
 
         if isinstance(k, (str, bytes)):
@@ -1314,7 +1333,18 @@ def pretty_dict(d, ctx, trailing_comment=None):
     else:
         doc = group(doc)
 
-    return doc
+    if is_native_type:
+        return doc
+
+    if not parts:
+        return pretty_call_alt(ctx, constructor)
+
+    return build_fncall(
+        ctx,
+        general_identifier(constructor),
+        argdocs=(doc, ),
+        hug_sole_arg=True
+    )
 
 
 INF_FLOAT = float('inf')
@@ -1323,24 +1353,35 @@ NEG_INF_FLOAT = float('-inf')
 
 @register_pretty(float)
 def pretty_float(value, ctx):
+    constructor = type(value)
+
     if ctx.depth_left == 0:
-        return pretty_call_alt(ctx, float, args=(..., ))
+        return pretty_call_alt(ctx, constructor, args=(..., ))
 
     if value == INF_FLOAT:
-        return pretty_call_alt(ctx, float, args=('inf', ))
+        return pretty_call_alt(ctx, constructor, args=('inf', ))
     elif value == NEG_INF_FLOAT:
-        return pretty_call_alt(ctx, float, args=('-inf', ))
+        return pretty_call_alt(ctx, constructor, args=('-inf', ))
     elif math.isnan(value):
-        return pretty_call_alt(ctx, float, args=('nan', ))
+        return pretty_call_alt(ctx, constructor, args=('nan', ))
 
-    return annotate(Token.NUMBER_FLOAT, repr(value))
+    doc = annotate(Token.NUMBER_FLOAT, repr(value))
+    if constructor is float:
+        return doc
+    return build_fncall(ctx, general_identifier(constructor), argdocs=(doc, ))
 
 
 @register_pretty(int)
 def pretty_int(value, ctx):
+    constructor = type(value)
     if ctx.depth_left == 0:
-        return pretty_call_alt(ctx, int, args=(..., ))
-    return annotate(Token.NUMBER_INT, repr(value))
+        return pretty_call_alt(ctx, constructor, args=(..., ))
+
+    doc = annotate(Token.NUMBER_INT, repr(value))
+    if constructor is int:
+        return doc
+
+    return build_fncall(ctx, general_identifier(constructor), argdocs=(doc, ))
 
 
 @register_pretty(type(...))
@@ -1606,11 +1647,7 @@ def pretty_str(s, ctx):
     is_native_type = constructor in (str, bytes)
 
     if ctx.depth_left == 0:
-        if isinstance(s, str):
-            return pretty_call_alt(ctx, constructor, args=(..., ))
-        else:
-            assert isinstance(s, bytes)
-            return pretty_call_alt(ctx, constructor, args=(..., ))
+        return pretty_call_alt(ctx, constructor, args=(..., ))
 
     multiline_strategy = ctx.multiline_strategy
     prettyprinter_indent = ctx.indent
