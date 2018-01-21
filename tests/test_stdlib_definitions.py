@@ -1,4 +1,5 @@
 from collections import (
+    ChainMap,
     Counter,
     OrderedDict,
     defaultdict,
@@ -34,6 +35,14 @@ def test_deque():
 
     value2 = deque([1, 2])
     assert pformat(value2, width=999) == 'collections.deque([1, 2])'
+
+
+def test_chainmap():
+    empty = ChainMap()
+    assert pformat(empty, width=999) == 'collections.ChainMap()'
+
+    value = ChainMap({'a': 1}, {'b': 2}, {'a': 1})
+    assert pformat(value, width=999) == "collections.ChainMap({'a': 1}, {'b': 2}, {'a': 1})"
 
 
 def test_enum():

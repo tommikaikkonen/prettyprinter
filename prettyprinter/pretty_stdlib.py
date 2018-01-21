@@ -1,4 +1,5 @@
 from collections import (
+    ChainMap,
     Counter,
     OrderedDict,
     defaultdict,
@@ -247,6 +248,19 @@ def pretty_timedelta(delta, ctx):
         doc = concat([NEG_OP, doc])
 
     return doc
+
+
+@register_pretty(ChainMap)
+def pretty_chainmap(value, ctx):
+    constructor = type(value)
+    if (
+        not value.maps or
+        len(value.maps) == 1 and
+        not value.maps[0]
+    ):
+        return pretty_call_alt(ctx, constructor)
+
+    return pretty_call_alt(ctx, constructor, args=value.maps)
 
 
 @register_pretty(defaultdict)
