@@ -2,6 +2,17 @@
 History
 =======
 
+0.12.0 (2018-01-22)
+-------------------
+
+No breaking changes.
+
+* Added a definition for classes that look like they were built with ``collections.namedtuple``
+* If a pretty printer raises an exception, it is caught and emitted as a warning, and the default repr implementation will be used instead.
+* Added definitions for ``collections.ChainMap``, ``collections.defaultdict``, ``collections.deque`` and ``functools.partial``
+* Made pretty printers for primitive types (dict, list, set, etc.) render a subclass constructor around them
+
+
 0.11.0 (2018-01-20)
 -------------------
 
