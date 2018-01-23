@@ -9,7 +9,7 @@ No breaking changes.
 
 * Added a definition for classes that look like they were built with ``collections.namedtuple``
 * If a pretty printer raises an exception, it is caught and emitted as a warning, and the default repr implementation will be used instead.
-* Added definitions for ``collections.ChainMap``, ``collections.defaultdict``, ``collections.deque`` and ``functools.partial``
+* Added definitions for ``collections.ChainMap``, ``collections.defaultdict``, ``collections.deque``, ``functools.partial``, and for exception objects.
 * Made pretty printers for primitive types (dict, list, set, etc.) render a subclass constructor around them
 
 

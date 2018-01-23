@@ -89,3 +89,9 @@ functools.partial(
     [2, 3, 1],
     reverse=True
 )"""
+
+
+def test_exception():
+    exc = ValueError(1)
+    assert is_registered(ValueError, check_superclasses=True)
+    assert pformat(exc) == 'ValueError(1)'

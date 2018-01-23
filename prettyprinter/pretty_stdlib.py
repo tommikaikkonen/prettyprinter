@@ -317,3 +317,12 @@ def pretty_partial(value, ctx):
         args=(value.func, ) + value.args,
         kwargs=value.keywords
     )
+
+
+@register_pretty(BaseException)
+def pretty_baseexception(exc, ctx):
+    return pretty_call_alt(
+        ctx,
+        type(exc),
+        args=exc.args
+    )
