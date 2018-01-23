@@ -604,3 +604,20 @@ def test_deferred_registration_subclass():
         register_deferred=False
     )
     assert pformat(ConcreteTestDeferredType()) == expected
+
+
+def test_bad_printer_caught():
+    class MyClass:
+        pass
+
+    @register_pretty(MyClass)
+    def pretty_myclass(value, ctx):
+        raise ValueError(value)
+
+    value = MyClass()
+
+    with pytest.warns(UserWarning, match='Falling back to default repr') as record:
+        result = pformat(value)
+
+    assert result == repr(value)
+    assert len(record) == 1

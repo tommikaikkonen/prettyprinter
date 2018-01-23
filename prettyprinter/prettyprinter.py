@@ -6,6 +6,7 @@ import warnings
 from collections import OrderedDict
 from functools import singledispatch, partial
 from itertools import chain, cycle
+from traceback import format_exception
 from types import (
     FunctionType,
     BuiltinFunctionType,
@@ -325,6 +326,22 @@ class PrettyContext:
         return id(value) in self.visited
 
 
+def _warn_about_bad_printer(pretty_fn, value, exc):
+    fnname = '{}.{}'.format(
+        pretty_fn.__module__,
+        pretty_fn.__qualname__
+    )
+    warnings.warn(
+        "The pretty printer for {}, {}, raised an exception. "
+        "Falling back to default repr.\n\n{}".format(
+            type(value).__name__,
+            fnname,
+            ''.join(format_exception(type(exc), exc, exc.__traceback__))
+        ),
+        UserWarning
+    )
+
+
 def _run_pretty(pretty_fn, value, ctx, trailing_comment=None):
     if ctx.is_visited(value):
         return _pretty_recursion(value)
@@ -357,11 +374,14 @@ def _run_pretty(pretty_fn, value, ctx, trailing_comment=None):
                 )
                 doc = pretty_fn(value, ctx)
             else:
-                # TypeError came from the function implementation;
-                # reraise.
-                raise e
+                _warn_about_bad_printer(pretty_fn, value, exc=e)
+                doc = repr(value)
     else:
-        doc = pretty_fn(value, ctx)
+        try:
+            doc = pretty_fn(value, ctx)
+        except Exception as e:
+            _warn_about_bad_printer(pretty_fn, value, exc=e)
+            doc = repr(value)
 
     if not (
         isinstance(doc, str) or
