@@ -306,3 +306,14 @@ def pretty_enum(value, ctx):
 @register_pretty('builtins.mappingproxy')
 def pretty_mappingproxy(value, ctx):
     return pretty_call_alt(ctx, type(value), args=(dict(value), ))
+
+
+@register_pretty('functools.partial')
+def pretty_partial(value, ctx):
+    constructor = type(value)
+    return pretty_call_alt(
+        ctx,
+        constructor,
+        args=(value.func, ) + value.args,
+        kwargs=value.keywords
+    )

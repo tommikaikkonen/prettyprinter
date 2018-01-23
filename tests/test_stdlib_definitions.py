@@ -7,6 +7,7 @@ from collections import (
     namedtuple,
 )
 from enum import Enum
+from functools import partial
 from types import MappingProxyType
 from uuid import UUID
 
@@ -78,3 +79,13 @@ def test_namedtuple():
     value = MyClass(one=1, two=2)
     constructor_str = 'tests.test_stdlib_definitions.MyClass'
     assert pformat(value, width=999) == constructor_str + '(one=1, two=2)'
+
+
+def test_partial():
+    value = partial(sorted, [2, 3, 1], reverse=True)
+    assert pformat(value) == """\
+functools.partial(
+    sorted,  # built-in function
+    [2, 3, 1],
+    reverse=True
+)"""
