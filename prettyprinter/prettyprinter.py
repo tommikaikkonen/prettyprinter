@@ -1036,11 +1036,41 @@ def pretty_builtin_function(fn, ctx):
     )
 
 
+namedtuple_clsattrs = (
+    '__slots__',
+    '_make',
+    '_replace',
+    '_asdict'
+)
+
+
+def _is_namedtuple(value):
+    cls = type(value)
+
+    for attrname in namedtuple_clsattrs:
+        try:
+            getattr(cls, attrname)
+        except AttributeError:
+            return False
+
+    return True
+
+
+def pretty_namedtuple(value, ctx, trailing_comment=None):
+    constructor = type(value)
+    kwargs = zip(constructor._fields, value)
+    return pretty_call_alt(ctx, constructor, kwargs=kwargs)
+
+
 @register_pretty(tuple)
 @register_pretty(list)
 @register_pretty(set)
 def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
     constructor = type(value)
+
+    if isinstance(value, tuple) and _is_namedtuple(value):
+        return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
+
     is_native_type = constructor in (tuple, list, set)
     if len(value) > ctx.max_seq_len:
         truncation_comment = '...and {} more elements'.format(

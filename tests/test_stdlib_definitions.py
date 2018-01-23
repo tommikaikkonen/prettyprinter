@@ -4,6 +4,7 @@ from collections import (
     OrderedDict,
     defaultdict,
     deque,
+    namedtuple,
 )
 from enum import Enum
 from types import MappingProxyType
@@ -70,3 +71,10 @@ def test_uuid():
     value = UUID('3ec21c4e-8125-478c-aa2c-c66de452c2eb')
     expected = "uuid.UUID('3ec21c4e-8125-478c-aa2c-c66de452c2eb')"
     assert pformat(value) == expected
+
+
+def test_namedtuple():
+    MyClass = namedtuple('MyClass', ['one', 'two'])
+    value = MyClass(one=1, two=2)
+    constructor_str = 'tests.test_stdlib_definitions.MyClass'
+    assert pformat(value, width=999) == constructor_str + '(one=1, two=2)'
