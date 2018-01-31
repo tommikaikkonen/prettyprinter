@@ -7,7 +7,7 @@ Documentation_
 Syntax-highlighting, declarative and composable pretty printer for Python 3.5+
 
 .. code:: bash
-    
+
     pip install prettyprinter
 
 - Drop in replacement for the standard library ``pprint``: just rename ``pprint`` to ``prettyprinter`` in your imports.
@@ -15,16 +15,16 @@ Syntax-highlighting, declarative and composable pretty printer for Python 3.5+
 - Write pretty printers for your own types with a dead simple, declarative interface
 
 .. image:: prettyprinterscreenshot.png
-    :alt: 
+    :alt:
 
 .. image:: ../prettyprinterscreenshot.png
-    :alt: 
+    :alt:
 
 .. image:: prettyprinterlightscreenshot.png
-    :alt: 
+    :alt:
 
 .. image:: ../prettyprinterlightscreenshot.png
-    :alt: 
+    :alt:
 
 Pretty print common Python values:
 
@@ -89,6 +89,7 @@ Comes packaged with the following pretty printer definitions:
 - ``attrs`` - any new class you create will be pretty printed automatically
 - ``django`` - your Models and QuerySets will be pretty printed automatically
 - ``requests`` - automatically pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
+- ``ast`` - any new class you create will be pretty printed automatically
 
 * Free software: MIT license
 * Documentation: Documentation_.

@@ -319,6 +319,7 @@ ALL_EXTRAS = frozenset([
     'python',
     'requests',
     'dataclasses',
+    'ast',
 ])
 EMPTY_SET = frozenset()
 
@@ -343,6 +344,7 @@ def install_extras(
     - ``'ipython_repr_pretty'`` - automatically prints objects that define a ``_repr_pretty_``
         method to integrate with
         `IPython.lib.pretty <http://ipython.readthedocs.io/en/stable/api/generated/IPython.lib.pretty.html#extending>`_.
+    - ``'ast'`` - automatically pretty prints classes created using the ``ast`` module.
 
     :param include: an iterable of strs representing the extras to include.
         All extras are included by default.
