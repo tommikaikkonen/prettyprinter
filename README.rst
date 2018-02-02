@@ -89,7 +89,6 @@ Comes packaged with the following pretty printer definitions:
 - ``attrs`` - any new class you create will be pretty printed automatically
 - ``django`` - your Models and QuerySets will be pretty printed automatically
 - ``requests`` - automatically pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
-- ``ast`` - any new class you create will be pretty printed automatically
 
 * Free software: MIT license
 * Documentation: Documentation_.

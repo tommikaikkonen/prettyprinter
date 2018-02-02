@@ -326,3 +326,14 @@ def pretty_baseexception(exc, ctx):
         type(exc),
         args=exc.args
     )
+
+
+@register_pretty('_ast.AST')
+def pretty_nodes(value, ctx):
+    cls = type(value)
+    kwargs = [(k, getattr(value, k, None)) for k in value._fields]
+    if cls.__module__ == '_ast':
+        cls_name = 'ast.%s' % cls.__qualname__
+    else:
+        cls_name = cls
+    return pretty_call_alt(ctx, cls_name, kwargs=kwargs)

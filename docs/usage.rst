@@ -106,7 +106,6 @@ The code in this file will be run upon entering the shell. Add these lines and c
             'django',
             'requests',
             'dataclasses',
-            'ast',
         ],
         warn_on_error=True
     )
