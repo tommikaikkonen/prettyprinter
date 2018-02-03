@@ -5,7 +5,7 @@ Usage
 Install the package with ``pip``:
 
 .. code:: bash
-    
+
     pip install prettyprinter
 
 Then, instead of
@@ -42,7 +42,7 @@ Call :func:`~prettyprinter.cpprint` for colored output or :func:`~prettyprinter.
 The default style is meant for a dark background. If you're on a light background, or want to set your own theme, you may do so with :func:`~prettyprinter.set_default_style`
 
 .. code:: python
-    
+
     >>> from prettyprinter import set_default_style
     >>> set_default_style('light')
 
@@ -55,7 +55,7 @@ Adding a pretty printer function to the global namespace
 If you're so inclined, you could add :func:`~prettyprinter.cpprint` to the global namespace in your application so you can use it in a similar way as the built in ``print`` function:
 
 .. code:: python
-    
+
     import builtins
     import prettyprinter
     builtins.pretty = prettyprinter.cpprint
@@ -71,7 +71,7 @@ Usage with IPython
 You can use prettyprinter with IPython so that values in the REPL will be printed with ``prettyprinter`` using syntax highlighting. You need to call ``prettyprinter`` initialization functions at the start of an IPython session, which IPython facilitates with `profile startup files`_. To initialize prettyprinter in your default profile, add and edit a new startup file with the following commands:
 
 .. code:: bash
-    
+
     touch "`ipython locate profile default`/startup/init_prettyprinter.py"
     nano "`ipython locate profile default`/startup/init_prettyprinter.py"
 
@@ -126,7 +126,7 @@ PrettyPrinter integrates with the default shell by overriding ``sys.displayhook`
 If you don't want to run this every time you open a shell, create a Python startup file that executes the above statements and point the environment variable ``PYTHONSTARTUP`` to that file in your shell initialization file (such as ``~/.bashrc``), and rerun ``~/.bashrc`` to assign the correct ``PYTHONSTARTUP`` value in your current shell session. Here's a bash script to do that for you:
 
 .. code:: bash
-    
+
     echo 'import prettyprinter; prettyprinter.install_extras(["python"])\n' >> ~/python_startup.py
     echo "\nexport PYTHONSTARTUP=~/python_startup.py" >> ~/.bashrc
     source ~/.bashrc
@@ -141,13 +141,13 @@ If you're using a light background in your terminal, run this to add a line to t
 Then, after starting the ``python`` shell,
 
 .. code:: bash
-    
+
     python
 
 values evaluated in the shell should be printed with PrettyPrinter without any other setup.
 
 .. code:: python
-    
+
     >>> {'a': 1, 'b': 2}
     {'a': 1, 'b': 2} # <- the output should be colored when run in a terminal.
 
@@ -184,14 +184,14 @@ You can register a pretty printer:
 To get an output like this with simple data:
 
 .. code:: python
-    
+
     >>> prettyprinter.pprint(MyClass(1, 2))
     MyClass(one=1, two=2)
 
 The real utility is in how nested data pretty printing is handled for you, and how the function call is broken to multiple lines for easier legibility:
 
 .. code:: python
-    
+
     >>> prettyprinter.pprint(MyClass({'abc': 1, 'defg': 2, 'hijk': 3}, [1, 2]))
     MyClass(
         one={
