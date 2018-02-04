@@ -1,11 +1,7 @@
 import ast
 import pytest
 
-from prettyprinter import (
-    install_extras,
-    pformat,
-    pprint,
-)
+from prettyprinter import pformat
 
 
 def test_parsed():
