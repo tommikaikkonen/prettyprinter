@@ -203,30 +203,11 @@ hashable_primitives = (
 )
 
 
-def identity(x):
-    return x
-
-
-def hashables():
-    def extend(base):
-        return base.flatmap(
-            lambda strat: st.tuples(
-                strat,
-                st.sampled_from([
-                    st.tuples,
-                    st.frozensets,
-                ])
-            )
-        ).map(lambda strat__extend: strat__extend[1](strat__extend[0]))
-
-    return st.recursive(hashable_primitives, extend)
-
-
 def hashable_containers(primitives):
     def extend(base):
         return st.one_of(
-            st.frozensets(base),
-            st.lists(base).map(tuple),
+            st.frozensets(base, average_size=10, max_size=50),
+            st.lists(base, average_size=10, max_size=50).map(tuple),
         )
     return st.recursive(primitives, extend)
 
@@ -234,12 +215,17 @@ def hashable_containers(primitives):
 def containers(primitives):
     def extend(base):
         return st.one_of(
-            st.lists(base),
-            st.lists(base).map(tuple),
-            st.dictionaries(keys=hashable_containers(primitives), values=base),
+            st.lists(base, average_size=10, max_size=50),
+            st.lists(base, average_size=10, max_size=50).map(tuple),
+            st.dictionaries(
+                keys=hashable_containers(primitives),
+                values=base,
+                average_size=5,
+                max_size=10
+            ),
         )
 
-    return st.recursive(primitives, extend)
+    return st.recursive(primitives, extend, max_leaves=50)
 
 
 @settings(
