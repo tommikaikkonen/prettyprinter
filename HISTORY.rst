@@ -2,6 +2,13 @@
 History
 =======
 
+0.13.0 (2018-02-03)
+-------------------
+
+No breaking changes.
+
+* Added definitions for the ``ast`` standard library module thanks to GitHub user ``johnnoone``.
+
 0.12.0 (2018-01-22)
 -------------------
 
