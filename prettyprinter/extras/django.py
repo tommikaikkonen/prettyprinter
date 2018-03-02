@@ -154,7 +154,7 @@ def pretty_base_model(instance, ctx):
                 )
 
                 value__display = find(
-                    lambda value__display: value__display[0],
+                    lambda value__display: value__display[0] == value,
                     ungrouped_choices,
                 )
 

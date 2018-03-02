@@ -9,7 +9,14 @@ install_extras(['django'])
 @pytest.mark.django_db
 def test_simple_case():
     instance = MyModel.objects.create(name='John', slug='john', version=2)
-    expected = "coreapp.models.MyModel(id={}, slug='john', version=2, name='John')".format(
+    expected = """\
+coreapp.models.MyModel(
+    id={},
+    slug='john',
+    version=2,
+    name='John',
+    # Default value fields: kind
+)""".format(
         instance.id
     )
     assert pformat(instance, width=999) == expected
@@ -24,6 +31,7 @@ coreapp.models.MyModel(
     version=2,
     # Null fields: slug
     # Blank fields: name
+    # Default value fields: kind
 )""".format(instance.id)
     assert pformat(instance, width=999) == expected
 
@@ -36,10 +44,28 @@ coreapp.models.MyModel(
     id={},
     slug='a',
     # Blank fields: name
-    # Default value fields: version
+    # Default value fields: kind, version
 )""".format(instance.id)
     assert pformat(instance, width=999) == expected
 
+
+@pytest.mark.django_db
+def test_choices_display():
+    instance = MyModel.objects.create(
+        name='John',
+        slug='john',
+        version=1,
+        kind='B'
+    )
+    expected = """\
+coreapp.models.MyModel(
+    id={},
+    slug='john',
+    kind='B',  # Display for B
+    name='John',
+    # Default value fields: version
+)""".format(instance.id)
+    assert pformat(instance, width=999) == expected
 
 @pytest.mark.django_db
 def test_queryset():

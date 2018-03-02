@@ -10,3 +10,12 @@ class MyModel(models.Model):
         unique=True
     )
     version = models.IntegerField(default=1)
+    kind = models.CharField(
+        max_length=1,
+        choices=(
+            ('A', 'Display for A'),
+            ('B', 'Display for B'),
+            ('C', 'Display for C'),
+        ),
+        default='A'
+    )
