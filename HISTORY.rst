@@ -2,6 +2,13 @@
 History
 =======
 
+0.13.1 (2018-02-03)
+-------------------
+
+No breaking changes.
+
+* Fixed GH issue #17 where Django models showed an incorrect display name for fields with choices.
+
 0.13.0 (2018-02-03)
 -------------------
 
