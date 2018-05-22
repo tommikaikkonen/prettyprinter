@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from dataclasses import (
     fields,
-    _MISSING,
+    MISSING,
 )
 
 from prettyprinter.prettyprinter import pretty_call, register_pretty
@@ -21,7 +21,7 @@ def pretty_dataclass_instance(value, ctx):
     field_defs = fields(value)
 
     kwargs = []
-    for field_def in field_defs.values():
+    for field_def in field_defs:
         # repr is True by default,
         # therefore if this if False, the user
         # has explicitly indicated they don't want
@@ -32,14 +32,14 @@ def pretty_dataclass_instance(value, ctx):
         display_attr = False
 
         if (
-            field_def.default is _MISSING and
-            field_def.default_factory is _MISSING
+            field_def.default is MISSING and
+            field_def.default_factory is MISSING
         ):
             display_attr = True
-        elif field_def.default is not _MISSING:
+        elif field_def.default is not MISSING:
             if field_def.default != getattr(value, field_def.name):
                 display_attr = True
-        elif field_def.default_factory is not _MISSING:
+        elif field_def.default_factory is not MISSING:
             default_value = field_def.default_factory()
             if default_value != getattr(value, field_def.name):
                 display_attr = True
