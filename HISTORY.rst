@@ -2,6 +2,13 @@
 History
 =======
 
+0.13.2 (2018-05-29)
+-------------------
+
+No breaking changes.
+
+* Fixed the dataclasses pretty printer that had regressed after changes to the dataclasses API. Fix was contributed by GitHub user ``dangirsh``.
+
 0.13.1 (2018-02-03)
 -------------------
 
