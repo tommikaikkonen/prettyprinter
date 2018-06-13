@@ -4,6 +4,7 @@ from pygments.style import Style
 
 import IPython.lib.pretty
 from IPython.lib.pretty import RepresentationPrinter
+import shutil
 
 from .. import cpprint
 
@@ -41,12 +42,8 @@ def pygments_style_from_name_or_cls(name_or_cls, ishell):
 
 def install():
     ipy = get_ipython()  # noqa
-
-    try:
-        _rows, columns = os.popen('stty size', 'r').read().split()
-        columns = int(columns)
-    except:  # noqa
-        columns = 79
+    
+    columns = shutil.get_terminal_size((79, None)).columns
 
     class IPythonCompatPrinter:
         def __init__(self, stream, *args, **kwargs):
