@@ -4,7 +4,6 @@ from pygments.style import Style
 
 import IPython.lib.pretty
 from IPython.lib.pretty import RepresentationPrinter
-import shutil
 
 from .. import cpprint
 from ..utils import get_terminal_width
