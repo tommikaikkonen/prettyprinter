@@ -1,5 +1,6 @@
 import os
 from itertools import islice
+import shutil
 
 
 def intersperse(x, ys):
