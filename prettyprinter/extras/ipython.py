@@ -7,6 +7,7 @@ from IPython.lib.pretty import RepresentationPrinter
 import shutil
 
 from .. import cpprint
+from ..utils import get_terminal_width
 
 OriginalRepresentationPrinter = RepresentationPrinter
 
@@ -43,7 +44,7 @@ def pygments_style_from_name_or_cls(name_or_cls, ishell):
 def install():
     ipy = get_ipython()  # noqa
     
-    columns = shutil.get_terminal_size((79, None)).columns
+    columns = get_terminal_width()
 
     class IPythonCompatPrinter:
         def __init__(self, stream, *args, **kwargs):
