@@ -1,3 +1,4 @@
+import os
 from collections import (
     ChainMap,
     Counter,
@@ -8,8 +9,11 @@ from collections import (
 )
 from enum import Enum
 from functools import partial
+from pathlib import PosixPath, PurePosixPath, PureWindowsPath, WindowsPath
 from types import MappingProxyType
 from uuid import UUID
+
+import pytest
 
 from prettyprinter import pformat, is_registered
 
@@ -95,3 +99,25 @@ def test_exception():
     exc = ValueError(1)
     assert is_registered(ValueError, check_superclasses=True)
     assert pformat(exc) == 'ValueError(1)'
+
+
+@pytest.mark.parametrize('typ, name, args, pathstr', [
+    pytest.param(
+        PosixPath, 'PosixPath', ('a', '..', 'b/c'), "'a/../b/c'",
+        marks=pytest.mark.skipif(os.name == 'nt', reason='POSIX only'),
+    ),
+    (PurePosixPath, 'PurePosixPath', ('a', '..', 'b/c'), "'a/../b/c'"),
+    pytest.param(
+        WindowsPath, 'WindowsPath', ('C:\\', '..', 'b\\c'), "'C:/../b/c'",
+        marks=pytest.mark.skipif(os.name != 'nt', reason='Windows only'),
+    ),
+    (PureWindowsPath, 'PureWindowsPath', ('C:\\', '..', 'b\\c'), "'C:/../b/c'"),
+])
+def test_purepath(typ, name, args, pathstr):
+    path = typ(*args)
+    assert is_registered(typ, check_superclasses=True)
+    assert pformat(path) == 'pathlib.{}({})'.format(name, pathstr)
+    assert pformat(path, width=20) == """\
+pathlib.{}(
+    {}
+)""".format(name, pathstr)

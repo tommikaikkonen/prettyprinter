@@ -337,3 +337,8 @@ def pretty_nodes(value, ctx):
     else:
         cls_name = cls
     return pretty_call_alt(ctx, cls_name, kwargs=kwargs)
+
+
+@register_pretty('pathlib.PurePath')
+def pretty_pathlib(value, ctx):
+    return pretty_call_alt(ctx, type(value), args=(value.as_posix(),))
