@@ -40,7 +40,7 @@ No breaking changes.
 No breaking changes.
 
 * Added Python 3.5 support
-* Added ``pretty_call_alt`` function that doesn't depend on ``dict``s maintaining insertion order
+* Added ``pretty_call_alt`` function that doesn't depend on ``dict`` maintaining insertion order
 * Fixed bug in ``set_default_config`` where most configuration values were not updated
 * Added ``get_default_config``
 
