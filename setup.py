@@ -13,7 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'colorful>=0.4.0',
-    'Pygments>=2.2.0'
+    'Pygments>=2.2.0',
 ]
 
 setup_requirements = [
@@ -25,14 +25,14 @@ test_requirements = [
     'pytest',
     'hypothesis',
     'dataclasses',
-    'django>=1.10.8'
+    'django>=1.10.8',
     'requests',
     'attrs',
     'IPython',
-    'pytz'
+    'pytz',
     'tox-pyenv',
     'pytest-django',
-    'pytest-pythonpath'
+    'pytest-pythonpath',
 ]
 
 setup(
