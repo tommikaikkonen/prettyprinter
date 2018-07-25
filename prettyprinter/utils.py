@@ -1,5 +1,6 @@
 import os
 from itertools import islice
+import shutil
 
 
 def intersperse(x, ys):
@@ -41,12 +42,7 @@ def identity(x):
 
 
 def get_terminal_width(default=79):
-    try:
-        _rows, columns = os.popen('stty size', 'r').read().split()
-        columns = int(columns)
-    except Exception:
-        return default
-    return columns
+    return shutil.get_terminal_size((default, None)).columns
 
 
 def take(n, iterable):
