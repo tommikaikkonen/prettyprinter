@@ -2,6 +2,15 @@
 History
 =======
 
+0.14.0 (2018-07-25)
+-------------------
+
+Most likely no breaking changes.
+
+* Added definitions for ``pathlib`` standard library module thanks to GitHub user ``RazerM``
+* Fixed unexpected error output inside Jupyter notebooks thanks to GitHub user ``jdanbrown``
+* Fixed missing commas in ``setup.py`` requirements list
+
 0.13.2 (2018-05-29)
 -------------------
 
