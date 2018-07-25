@@ -10,7 +10,6 @@ from requests.structures import CaseInsensitiveDict
 from prettyprinter import (
     install_extras,
     pformat,
-    pprint,
 )
 
 install_extras(['requests'])

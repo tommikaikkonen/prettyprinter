@@ -336,7 +336,6 @@ def test_str_bug():
     assert res == expected
 
 
-
 def test_many_cases():
     # top-level multiline str.
     pprint('abcd' * 40)
@@ -351,12 +350,12 @@ def test_many_cases():
 
     # long urls.
     pprint([
-        'https://www.example.com/User/john/files/Projects/prettyprinter/images/original/image0001.jpg'
+        'https://www.example.com/User/john/files/Projects/prettyprinter/images/original/image0001.jpg'  # noqa
             '?q=verylongquerystring&maxsize=1500&signature=af429fkven2aA'
             '#content1-header-something-something'
     ] * 5)
     nativepprint([
-        'https://www.example.com/User/john/files/Projects/prettyprinter/images/original/image0001.jpg'
+        'https://www.example.com/User/john/files/Projects/prettyprinter/images/original/image0001.jpg'  # noqa
             '?q=verylongquerystring&maxsize=1500&signature=af429fkven2aA'
             '#content1-header-something-something'
     ] * 5)

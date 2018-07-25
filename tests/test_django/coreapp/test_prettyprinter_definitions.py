@@ -67,6 +67,7 @@ coreapp.models.MyModel(
 )""".format(instance.id)
     assert pformat(instance, width=999) == expected
 
+
 @pytest.mark.django_db
 def test_queryset():
     for i in range(11):

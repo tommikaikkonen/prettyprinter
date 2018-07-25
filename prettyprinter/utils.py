@@ -1,4 +1,3 @@
-import os
 from itertools import islice
 import shutil
 

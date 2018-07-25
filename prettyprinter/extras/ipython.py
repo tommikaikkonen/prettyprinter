@@ -1,4 +1,3 @@
-import os
 from pygments.styles import get_style_by_name
 from pygments.style import Style
 
@@ -42,7 +41,7 @@ def pygments_style_from_name_or_cls(name_or_cls, ishell):
 
 def install():
     ipy = get_ipython()  # noqa
-    
+
     columns = get_terminal_width()
 
     class IPythonCompatPrinter:
