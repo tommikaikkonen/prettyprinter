@@ -9,7 +9,7 @@ from collections import (
 )
 from enum import Enum
 from functools import partial
-from pathlib import PosixPath, PurePosixPath, PureWindowsPath, WindowsPath
+from pathlib import PosixPath, PurePosixPath, PureWindowsPath, WindowsPath, Path
 from types import MappingProxyType
 from uuid import UUID
 
@@ -121,3 +121,15 @@ def test_purepath(typ, name, args, pathstr):
 pathlib.{}(
     {}
 )""".format(name, pathstr)
+
+
+def test_fp():
+    temp_path = Path('./_____test')
+    value = open(temp_path, 'w')
+    assert pformat(
+        value) == "FP"\
+        "(\n    encoding='UTF-8',"\
+	"\n    closed=False,"""\
+	"\n    path='_____test',"\
+	"\n    modes='open for writing, truncating the file first'\n)"
+    temp_path.unlink()

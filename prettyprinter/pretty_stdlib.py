@@ -342,3 +342,26 @@ def pretty_nodes(value, ctx):
 @register_pretty('pathlib.PurePath')
 def pretty_pathlib(value, ctx):
     return pretty_call_alt(ctx, type(value), args=(value.as_posix(),))
+
+
+@register_pretty('_io.TextIOWrapper')
+def pretty_fp(value, ctx):
+    cls = 'FP'
+    fields = [('mode', 'r'), ('encoding', None),
+              ('buffer', None), ('closed', None)]
+    mode_definition = {
+        'r': 'open for reading(default)',
+        'w': 'open for writing, truncating the file first',
+        'x': 'open for exclusive creation, failing if the file already exists',
+        'a': 'open for writing, appending to the end of the file if it exists',
+        'b': 'binary mode',
+        't': 'text mode(default)',
+        '+': 'open a disk file for updating(reading and writing)',
+        'U': 'universal newlines mode(deprecated) ',
+    }
+    kwargs = dict([(k, getattr(value, k, default)) for k, default in fields])
+    kwargs['path'] = kwargs['buffer'].name
+    kwargs['modes'] = '\n'.join([mode_definition[k] for k in kwargs['mode']])
+    del kwargs['buffer']
+    del kwargs['mode']
+    return pretty_call_alt(ctx, cls, kwargs=kwargs)
