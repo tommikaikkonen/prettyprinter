@@ -121,3 +121,28 @@ def test_purepath(typ, name, args, pathstr):
 pathlib.{}(
     {}
 )""".format(name, pathstr)
+
+
+@pytest.mark.parametrize('typ, name', [
+    pytest.param(
+        PosixPath, 'PosixPath',
+        marks=pytest.mark.skipif(os.name == 'nt', reason='POSIX only'),
+    ),
+    (PurePosixPath, 'PurePosixPath'),
+    pytest.param(
+        WindowsPath, 'WindowsPath',
+        marks=pytest.mark.skipif(os.name != 'nt', reason='Windows only'),
+    ),
+    (PureWindowsPath, 'PureWindowsPath'),
+])
+def test_purelongpath(typ, name):
+    as_str = "/a-b" * 10
+    path = typ(as_str)
+    assert pformat(path) == 'pathlib.{}({!r})'.format(name, as_str)
+    assert pformat(path, width=20) == """\
+pathlib.{}(
+    '/a-b/a-b/a-b/'
+    'a-b/a-b/a-b/'
+    'a-b/a-b/a-b/'
+    'a-b'
+)""".format(name)

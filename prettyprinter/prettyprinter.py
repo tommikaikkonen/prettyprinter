@@ -1585,30 +1585,40 @@ def escaped_len(s, use_quote):
     return len(escape_str_for_quote(use_quote, s))
 
 
-def str_to_lines(max_len, use_quote, s):
+def str_to_lines(max_len, use_quote, s, pattern=None):
     if len(s) <= max_len:
         if s:
             yield s
         return
 
+    if pattern is None:
+
+        if isinstance(s, str):
+            whitespace_pattern = WHITESPACE_PATTERN_TEXT
+            nonword_pattern = NONWORD_PATTERN_TEXT
+        else:
+            assert isinstance(s, bytes)
+            whitespace_pattern = WHITESPACE_PATTERN_BYTES
+            nonword_pattern = NONWORD_PATTERN_BYTES
+
+        alternating_words_ws = whitespace_pattern.split(s)
+        pattern = whitespace_pattern
+
+        if len(alternating_words_ws) <= 1:
+            # no whitespace: try splitting with nonword pattern.
+            alternating_words_ws = nonword_pattern.split(s)
+            pattern = nonword_pattern
+
+    else:
+        alternating_words_ws = pattern.split(s)
+
     if isinstance(s, str):
-        whitespace_pattern = WHITESPACE_PATTERN_TEXT
-        nonword_pattern = NONWORD_PATTERN_TEXT
         empty = ''
     else:
         assert isinstance(s, bytes)
-        whitespace_pattern = WHITESPACE_PATTERN_BYTES
-        nonword_pattern = NONWORD_PATTERN_BYTES
         empty = b''
 
-    alternating_words_ws = whitespace_pattern.split(s)
-
-    if len(alternating_words_ws) <= 1:
-        # no whitespace: try splitting with nonword pattern.
-        alternating_words_ws = nonword_pattern.split(s)
-        starts_with_whitespace = bool(nonword_pattern.match(alternating_words_ws[0]))
-    else:
-        starts_with_whitespace = bool(whitespace_pattern.match(alternating_words_ws[0]))
+    starts_with_whitespace = bool(pattern.match(alternating_words_ws[0]))
 
     # List[Tuple[str, bool]]
     # The boolean associated with each part indicates if it is a
@@ -1695,6 +1705,15 @@ def pretty_str(s, ctx):
     # will be printed as StrSubclass('the actual string')
     constructor = type(s)
     is_native_type = constructor in (str, bytes)
+    pattern = None
+    # Support for pathlib is implemented here (but only registered in
+    # pretty_stdlib) so that it can use a custom pattern.
+    if (constructor.__module__, constructor.__name__) in [
+            ("pathlib", "PosixPath"), ("pathlib", "PurePosixPath"),
+            ("pathlib", "WindowsPath"), ("pathlib", "PureWindowsPath"),
+    ]:
+        pattern = re.compile("(/)")
+        s = s.as_posix()
 
     if ctx.depth_left == 0:
         return pretty_call_alt(ctx, constructor, args=(..., ))
@@ -1729,6 +1748,7 @@ def pretty_str(s, ctx):
             max_len=each_line_max_str_len,
             use_quote=use_quote,
             s=s,
+            pattern=pattern,
         )
 
         parts = intersperse(
