@@ -5,7 +5,7 @@ from django.db.models import Model, ForeignKey
 from django.db.models.query import QuerySet
 
 from ..prettyprinter import (
-    MULTILINE_STATEGY_HANG,
+    MULTILINE_STRATEGY_HANG,
     build_fncall,
     pretty_call_alt,
     pretty_python_value,
@@ -95,7 +95,7 @@ def pretty_base_model(instance, ctx):
     value_ctx = (
         ctx
         .nested_call()
-        .use_multiline_strategy(MULTILINE_STATEGY_HANG)
+        .use_multiline_strategy(MULTILINE_STRATEGY_HANG)
     )
 
     null_fieldnames = []
