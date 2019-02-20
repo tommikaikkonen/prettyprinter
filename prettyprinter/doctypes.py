@@ -32,6 +32,9 @@ class Annotated(Doc):
     def __repr__(self):
         return 'Annotated({})'.format(repr(self.doc))
 
+    def normalize(self):
+        return Annotated(normalize_doc(self.doc), self.annotation)
+
 
 class Nil(Doc):
     def __repr__(self):
@@ -96,7 +99,7 @@ class Nest(Doc):
             return AlwaysBreak(
                 Nest(self.indent, inner_normalized.doc)
             )
-        return Nest(self.indent, normalize_doc(self.doc))
+        return Nest(self.indent, inner_normalized)
 
     def __repr__(self):
         return 'Nest({}, {})'.format(
