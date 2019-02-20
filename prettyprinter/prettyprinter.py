@@ -73,28 +73,28 @@ NONWORD_PATTERN_BYTES = re.compile(rb'(\W+)')
     'aaaaaa'
 )
 """
-MULTILINE_STATEGY_PARENS = 'MULTILINE_STATEGY_PARENS'
+MULTILINE_STRATEGY_PARENS = 'MULTILINE_STRATEGY_PARENS'
 
 # For dict values
 """
     'aaaaaaaaaa'
     'aaaaa'
 """
-MULTILINE_STATEGY_INDENTED = 'MULTILINE_STATEGY_INDENTED'
+MULTILINE_STRATEGY_INDENTED = 'MULTILINE_STRATEGY_INDENTED'
 
 # For sequence elements
 """
 'aaaaaaaaa'
     'aaaaaa'
 """
-MULTILINE_STATEGY_HANG = 'MULTILINE_STATEGY_HANG'
+MULTILINE_STRATEGY_HANG = 'MULTILINE_STRATEGY_HANG'
 
 # For top level strs
 """
 'aaaaaaaaa'
 'aaaaaa'
 """
-MULTILINE_STATEGY_PLAIN = 'MULTILINE_STATEGY_PLAIN'
+MULTILINE_STRATEGY_PLAIN = 'MULTILINE_STRATEGY_PLAIN'
 
 
 IMPLICIT_MODULES = {
@@ -257,7 +257,7 @@ class PrettyContext:
         indent,
         depth_left,
         visited=None,
-        multiline_strategy=MULTILINE_STATEGY_PLAIN,
+        multiline_strategy=MULTILINE_STRATEGY_PLAIN,
         max_seq_len=1000,
         sort_dict_keys=False,
         user_ctx=None
@@ -811,7 +811,7 @@ def pretty_call_alt(ctx, fn, args=(), kwargs=()):
     nested_ctx = (
         ctx
         .nested_call()
-        .use_multiline_strategy(MULTILINE_STATEGY_HANG)
+        .use_multiline_strategy(MULTILINE_STRATEGY_HANG)
     )
 
     if not DICT_KEY_ORDER_SUPPORTED and isinstance(kwargs, dict):
@@ -1145,7 +1145,7 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
                 ctx=(
                     ctx
                     .nested_call()
-                    .use_multiline_strategy(MULTILINE_STATEGY_PLAIN)
+                    .use_multiline_strategy(MULTILINE_STRATEGY_PLAIN)
                 )
             )
         ]
@@ -1156,7 +1156,7 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
                 ctx=(
                     ctx
                     .nested_call()
-                    .use_multiline_strategy(MULTILINE_STATEGY_HANG)
+                    .use_multiline_strategy(MULTILINE_STRATEGY_HANG)
                 )
             )
             for el in take(ctx.max_seq_len, value)
@@ -1254,7 +1254,7 @@ def pretty_dict(d, ctx, trailing_comment=None):
             kdoc = pretty_str(
                 k,
                 # not a nested call on purpose
-                ctx=ctx.use_multiline_strategy(MULTILINE_STATEGY_PARENS),
+                ctx=ctx.use_multiline_strategy(MULTILINE_STRATEGY_PARENS),
             )
         else:
             kdoc = pretty_python_value(
@@ -1267,7 +1267,7 @@ def pretty_dict(d, ctx, trailing_comment=None):
             ctx=(
                 ctx
                 .nested_call()
-                .use_multiline_strategy(MULTILINE_STATEGY_INDENTED)
+                .use_multiline_strategy(MULTILINE_STRATEGY_INDENTED)
             ),
         )
 
@@ -1340,7 +1340,7 @@ def pretty_dict(d, ctx, trailing_comment=None):
                                     ctx=(
                                         ctx
                                         .nested_call()
-                                        .use_multiline_strategy(MULTILINE_STATEGY_PLAIN)
+                                        .use_multiline_strategy(MULTILINE_STRATEGY_PLAIN)
                                     ),
                                 ),
                                 COMMA if not last else NIL,
@@ -1586,6 +1586,7 @@ def escaped_len(s, use_quote):
 
 
 def str_to_lines(max_len, use_quote, s, pattern=None):
+    assert max_len > 0, "max_len must be positive"
     if len(s) <= max_len:
         if s:
             yield s
@@ -1740,16 +1741,27 @@ def pretty_str(s, ctx):
         each_line_starts_on_col = indent + prettyprinter_indent
         each_line_ends_on_col = min(page_width, each_line_starts_on_col + ribbon_width)
 
-        each_line_max_str_len = each_line_ends_on_col - each_line_starts_on_col - 2
+        each_line_max_str_len = max(
+            each_line_ends_on_col - each_line_starts_on_col - 2,
+            # If we're printing the string inside a highly nested data
+            # structure, we may naturally run out of available width.
+            # In these cases, we need to give some space for printing
+            # such that we don't get stuck in an infinite loop when
+            # str_to_lines is called.
+            8 + len('""')
+        )
 
         use_quote = determine_quote_strategy(s)
 
-        lines = str_to_lines(
+        lines = list(str_to_lines(
             max_len=each_line_max_str_len,
             use_quote=use_quote,
             s=s,
             pattern=pattern,
-        )
+        ))
+
+        if len(lines) == 1:
+            return flat_version
 
         parts = intersperse(
             HARDLINE,
@@ -1764,14 +1776,14 @@ def pretty_str(s, ctx):
         )
 
         if not is_native_type:
-            multiline_strategy = MULTILINE_STATEGY_PLAIN
+            multiline_strategy = MULTILINE_STRATEGY_PLAIN
 
-        if multiline_strategy == MULTILINE_STATEGY_PLAIN:
+        if multiline_strategy == MULTILINE_STRATEGY_PLAIN:
             res = always_break(concat(parts))
             if is_native_type:
                 return res
             return build_fncall(ctx, constructor, argdocs=[res])
-        elif multiline_strategy == MULTILINE_STATEGY_HANG:
+        elif multiline_strategy == MULTILINE_STRATEGY_HANG:
             return always_break(
                 nest(
                     prettyprinter_indent,
@@ -1779,10 +1791,10 @@ def pretty_str(s, ctx):
                 )
             )
         else:
-            if multiline_strategy == MULTILINE_STATEGY_PARENS:
+            if multiline_strategy == MULTILINE_STRATEGY_PARENS:
                 left_paren, right_paren = LPAREN, RPAREN
             else:
-                assert multiline_strategy == MULTILINE_STATEGY_INDENTED
+                assert multiline_strategy == MULTILINE_STRATEGY_INDENTED
                 left_paren, right_paren = '', ''
 
             return always_break(
@@ -1797,7 +1809,7 @@ def pretty_str(s, ctx):
                     ),
                     (
                         HARDLINE
-                        if multiline_strategy == MULTILINE_STATEGY_PARENS
+                        if multiline_strategy == MULTILINE_STRATEGY_PARENS
                         else NIL
                     ),
                     right_paren
