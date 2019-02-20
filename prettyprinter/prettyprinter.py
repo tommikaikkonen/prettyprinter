@@ -1586,6 +1586,7 @@ def escaped_len(s, use_quote):
 
 
 def str_to_lines(max_len, use_quote, s):
+    assert max_len > 0, "max_len must be positive"
     if len(s) <= max_len:
         if s:
             yield s
@@ -1712,7 +1713,9 @@ def pretty_str(s, ctx):
         singleline_str_chars = len(s) + len('""')
         flat_version = pretty_single_line_str(s, prettyprinter_indent)
 
-        if singleline_str_chars <= available_width:
+        if (
+            singleline_str_chars <= available_width
+        ):
             if is_native_type:
                 return flat_version
             return build_fncall(ctx, constructor, argdocs=[flat_version])
@@ -1721,15 +1724,26 @@ def pretty_str(s, ctx):
         each_line_starts_on_col = indent + prettyprinter_indent
         each_line_ends_on_col = min(page_width, each_line_starts_on_col + ribbon_width)
 
-        each_line_max_str_len = each_line_ends_on_col - each_line_starts_on_col - 2
+        each_line_max_str_len = max(
+            each_line_ends_on_col - each_line_starts_on_col - 2,
+            # If we're printing the string inside a highly nested data
+            # structure, we may naturally run out of available width.
+            # In these cases, we need to give some space for printing
+            # such that we don't get stuck in an infinite loop when
+            # str_to_lines is called.
+            8 + len('""')
+        )
 
         use_quote = determine_quote_strategy(s)
 
-        lines = str_to_lines(
+        lines = list(str_to_lines(
             max_len=each_line_max_str_len,
             use_quote=use_quote,
             s=s,
-        )
+        ))
+
+        if len(lines) == 1:
+            return flat_version
 
         parts = intersperse(
             HARDLINE,
