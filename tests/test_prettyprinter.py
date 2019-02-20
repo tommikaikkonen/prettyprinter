@@ -380,6 +380,22 @@ def test_gh_issue_25():
     )
 
 
+def test_gh_issue_28():
+    start = datetime.datetime.now()
+    pprint([])
+    end = datetime.datetime.now()
+    took = end - start
+
+    start2 = datetime.datetime.now()
+    pprint([[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]])
+    end2 = datetime.datetime.now()
+    took2 = end2 - start2
+
+    # Checks (with the simplest heuristic I could think of)
+    # that nesting does not introduce exponential runtime.
+    assert took2 < took * 100
+
+
 def test_large_data_performance():
     data = [
         {
