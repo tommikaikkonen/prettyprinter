@@ -65,4 +65,7 @@ target/
 *.sublime-project
 *.sublime-workspace
 
+# Vim
+.*.swp
+
 .DS_Store
