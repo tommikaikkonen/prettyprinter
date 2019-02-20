@@ -373,6 +373,13 @@ def test_nested_structures(value):
     pprint(value)
 
 
+def test_gh_issue_25():
+    pprint(
+        {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': 1}}}}}}}}}}}}},
+        width=30
+    )
+
+
 def test_large_data_performance():
     data = [
         {

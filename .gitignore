@@ -69,3 +69,6 @@ target/
 .*.swp
 
 .DS_Store
+
+# VSCode
+.vscode
