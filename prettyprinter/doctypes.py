@@ -109,25 +109,51 @@ class Nest(Doc):
 
 
 class FlatChoice(Doc):
-    __slots__ = ('when_broken', 'when_flat')
+    __slots__ = (
+        '_when_broken',
+        '_when_flat',
+        'normalize_on_access',
+        '_broken_normalized',
+        '_flat_normalized',
+    )
 
-    def __init__(self, when_broken, when_flat):
-        self.when_broken = when_broken
-        self.when_flat = when_flat
+    def __init__(self, when_broken, when_flat, normalize_on_access=False):
+        self._when_broken = when_broken
+        self._when_flat = when_flat
+
+        # If we were to strictly normalize this Doc, we'd have
+        # to normalize both subtrees, which can be costly if they're
+        # large. The layout algorithm only accesses one of the
+        # properties based on the current mode (break/flat).
+        # Hence we delay the normalization to when that access
+        # happens.
+        self.normalize_on_access = normalize_on_access
+        self._broken_normalized = False
+        self._flat_normalized = False
 
     def normalize(self):
-        broken_normalized = normalize_doc(self.when_broken)
-        if isinstance(broken_normalized, AlwaysBreak):
-            return broken_normalized
-
-        flat_normalized = normalize_doc(self.when_flat)
-        if isinstance(flat_normalized, AlwaysBreak):
-            return broken_normalized
+        if self.normalize_on_access:
+            return self
 
         return FlatChoice(
-            broken_normalized,
-            flat_normalized
+            self._when_broken,
+            self._when_flat,
+            normalize_on_access=True
         )
+
+    @property
+    def when_broken(self):
+        if self.normalize_on_access and not self._broken_normalized:
+            self._when_broken = normalize_doc(self._when_broken)
+            self._broken_normalized = True
+        return self._when_broken
+
+    @property
+    def when_flat(self):
+        if self._broken_normalized and not self._flat_normalized:
+            self._when_flat = normalize_doc(self._when_flat)
+            self._flat_normalized = True
+        return self._when_flat
 
     def __repr__(self):
         return 'FlatChoice(when_broken={}, when_flat={})'.format(
