@@ -1701,20 +1701,11 @@ def str_to_lines(max_len, use_quote, s, pattern=None):
 
 @register_pretty(str)
 @register_pretty(bytes)
-def pretty_str(s, ctx):
+def pretty_str(s, ctx, split_pattern=None):
     # Subclasses of str/bytes
     # will be printed as StrSubclass('the actual string')
     constructor = type(s)
     is_native_type = constructor in (str, bytes)
-    pattern = None
-    # Support for pathlib is implemented here (but only registered in
-    # pretty_stdlib) so that it can use a custom pattern.
-    if (constructor.__module__, constructor.__name__) in [
-            ("pathlib", "PosixPath"), ("pathlib", "PurePosixPath"),
-            ("pathlib", "WindowsPath"), ("pathlib", "PureWindowsPath"),
-    ]:
-        pattern = re.compile("(/)")
-        s = s.as_posix()
 
     if ctx.depth_left == 0:
         return pretty_call_alt(ctx, constructor, args=(..., ))
@@ -1738,7 +1729,7 @@ def pretty_str(s, ctx):
             return build_fncall(ctx, constructor, argdocs=[flat_version])
 
         # multiline string
-        each_line_starts_on_col = indent + prettyprinter_indent
+        each_line_starts_on_col = indent
         each_line_ends_on_col = min(page_width, each_line_starts_on_col + ribbon_width)
 
         each_line_max_str_len = max(
@@ -1757,7 +1748,7 @@ def pretty_str(s, ctx):
             max_len=each_line_max_str_len,
             use_quote=use_quote,
             s=s,
-            pattern=pattern,
+            pattern=split_pattern,
         ))
 
         if len(lines) == 1:
