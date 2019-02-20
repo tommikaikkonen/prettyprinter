@@ -1713,9 +1713,7 @@ def pretty_str(s, ctx):
         singleline_str_chars = len(s) + len('""')
         flat_version = pretty_single_line_str(s, prettyprinter_indent)
 
-        if (
-            singleline_str_chars <= available_width
-        ):
+        if singleline_str_chars <= available_width:
             if is_native_type:
                 return flat_version
             return build_fncall(ctx, constructor, argdocs=[flat_version])
