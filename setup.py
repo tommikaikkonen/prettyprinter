@@ -17,22 +17,22 @@ requirements = [
 ]
 
 setup_requirements = [
-    'pytest-runner',
+    'pytest-runner==3.0',
     # TODO(tommikaikkonen): put setup requirements (distutils extensions, etc.) here
 ]
 
 test_requirements = [
-    'pytest',
-    'hypothesis',
-    'dataclasses',
+    'pytest==4.3.0',
+    'hypothesis==3.33.0',
+    'dataclasses==0.6',
     'django>=1.10.8',
-    'requests',
-    'attrs',
-    'IPython',
-    'pytz',
-    'tox-pyenv',
-    'pytest-django',
-    'pytest-pythonpath',
+    'requests==2.21.0',
+    'attrs==17.4.0',
+    'IPython==6.2.1',
+    'pytz==2017.3',
+    'tox-pyenv==1.1.0',
+    'pytest-django==3.4.7',
+    'pytest-pythonpath==0.7.3',
 ]
 
 setup(
