@@ -1107,9 +1107,6 @@ def pretty_namedtuple(value, ctx, trailing_comment=None):
     return pretty_call_alt(ctx, constructor, kwargs=kwargs)
 
 
-_cnamedtuple_fieldnames_by_class = WeakKeyDictionary()
-
-
 # Given a cnamedtuple class, returns a tuple
 # of fieldnames. Each fieldname at ith index of
 # the tuple corresponds to the ith element in the cnamedtuple.
@@ -1148,13 +1145,28 @@ def resolve_cnamedtuple_fieldnames(tuptype):
     return tuple(fieldnames_by_idx)
 
 
+# Keys: classes/constructors
+# Values: a tuple of fieldnames is resolving them was successful.
+#         Otherwise, an exception that was raised when attempting
+#         to resolve the fieldnames.
+_cnamedtuple_fieldnames_by_class = WeakKeyDictionary()
+
+
 # Examples of cnamedtuples:
 # - return value of time.strptime()
 # - return value of os.uname()
-def pretty_cnamedtuple(value, ctx, fieldnames, trailing_comment=None):
+def pretty_cnamedtuple(value, ctx, trailing_comment=None):
     cls = type(value)
-    assert fieldnames
-    assert isinstance(fieldnames, tuple)
+    if cls not in _cnamedtuple_fieldnames_by_class:
+        try:
+            fieldnames = resolve_cnamedtuple_fieldnames(cls)
+        except Exception as exc:
+            fieldnames = exc
+        _cnamedtuple_fieldnames_by_class[cls] = fieldnames
+
+    fieldnames = _cnamedtuple_fieldnames_by_class[cls]
+    if isinstance(fieldnames, Exception):
+        raise fieldnames
 
     return pretty_call_alt(
         ctx,
@@ -1176,27 +1188,14 @@ def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
 
     if isinstance(value, tuple):
         if _is_cnamedtuple(value):
-            # We check if the cnamedtuple fieldnames have been resolved
-            # here rather than in pretty_cnamedtuple, so that in the
-            # case that resolving the fieldnames fails, we can bail
-            # and use normal tuple rendering
-            if constructor not in _cnamedtuple_fieldnames_by_class:
-                try:
-                    fieldnames = resolve_cnamedtuple_fieldnames(constructor)
-                except Exception:
-                    fieldnames = None
-                _cnamedtuple_fieldnames_by_class[constructor] = fieldnames
-            else:
-                fieldnames = _cnamedtuple_fieldnames_by_class[constructor]
-
-            if fieldnames is not None:
+            try:
                 return pretty_cnamedtuple(
                     value,
                     ctx,
-                    fieldnames=fieldnames,
                     trailing_comment=trailing_comment
                 )
-            # else: render as a normal tuple
+            except Exception:
+                pass  # render as a normal tuple
         elif _is_namedtuple(value):
             return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
 
