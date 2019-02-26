@@ -26,7 +26,7 @@ test_requirements = [
     'hypothesis==3.33.0',
     'dataclasses==0.6',
     'django>=1.10.8',
-    'requests==2.18.4',
+    'requests==2.21.0',
     'attrs==17.4.0',
     'IPython==6.2.1',
     'pytz==2017.3',

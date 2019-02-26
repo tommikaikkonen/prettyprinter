@@ -24,7 +24,7 @@ requests.Session(
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate',
         'Connection': 'keep-alive',
-        'User-Agent': 'python-requests/2.18.4'
+        'User-Agent': 'python-requests/2.21.0'
     }),
     auth=('user', 'pass')
 )"""
