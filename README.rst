@@ -80,15 +80,15 @@ As well as your own, without any manual string formatting:
         )
     }
 
-Comes packaged with the following pretty printer definitions:
+Comes packaged with the following pretty printer definitions, which you can enable by calling ``prettyprinter.install_extras()``:
 
 - ``datetime`` - (installed by default)
 - ``enum`` - (installed by default)
 - ``pytz`` - (installed by default)
 - ``dataclasses`` - any new class you create will be pretty printed automatically
-- ``attrs`` - any new class you create will be pretty printed automatically
-- ``django`` - your Models and QuerySets will be pretty printed automatically
-- ``requests`` - automatically pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
+- ``attrs`` - pretty prints any new class you create with ``attrs``
+- ``django`` - pretty prints your Models and QuerySets
+- ``requests`` - pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
 
 * Free software: MIT license
 * Documentation: Documentation_.
