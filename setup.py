@@ -33,6 +33,7 @@ test_requirements = [
     'tox-pyenv==1.1.0',
     'pytest-django==3.4.7',
     'pytest-pythonpath==0.7.3',
+    'numpy',
 ]
 
 setup(
