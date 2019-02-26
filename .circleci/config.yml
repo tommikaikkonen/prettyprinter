@@ -22,7 +22,7 @@ jobs:
       - run:
           name: install Python versions
           command: |
-            curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+            [ ! -d "/home/circleci/.pyenv" ] && curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             eval "$(pyenv init -)"
             pyenv install 3.5.4 --skip-existing
