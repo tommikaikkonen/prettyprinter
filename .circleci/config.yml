@@ -45,7 +45,7 @@ jobs:
           command: |
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             eval "$(pyenv init -)"
-            pip install tox
+            pip install 'tox==2.9.1'
             tox -vv --notest
 
       - save_cache:
