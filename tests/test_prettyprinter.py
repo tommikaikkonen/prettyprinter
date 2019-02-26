@@ -6,6 +6,7 @@
 import pytest
 import datetime
 import pytz
+import time
 import sys
 from io import StringIO
 from itertools import cycle, islice
@@ -378,6 +379,28 @@ def test_gh_issue_25():
         {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': 1}}}}}}}}}}}}},
         width=30
     )
+
+
+def test_cnamedtuple():
+    data = time.strptime("2000", "%Y")
+    assert pformat(data) == """\
+time.struct_time((
+    2000,  # tm_year
+    1,  # tm_mon
+    1,  # tm_mday
+    0,  # tm_hour
+    0,  # tm_min
+    0,  # tm_sec
+    5,  # tm_wday
+    1,  # tm_yday
+    -1  # tm_isdst
+))"""
+    # The cnamedtuple implementation has a caching
+    # mechanism for the resolved order of fieldnames.
+    # Those fieldnames should have been cached on the first
+    # call, so check that this alternative code path does
+    # not throw.
+    pformat(data)
 
 
 def test_gh_issue_28():

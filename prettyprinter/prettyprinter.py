@@ -12,6 +12,7 @@ from types import (
     BuiltinFunctionType,
     BuiltinMethodType
 )
+from weakref import WeakKeyDictionary
 
 from .doc import (
     always_break,
@@ -1063,6 +1064,16 @@ namedtuple_clsattrs = (
     '_asdict'
 )
 
+c_namedtuple_identify_by_clsattrs = (
+    'n_fields',
+    'n_sequence_fields',
+    'n_unnamed_fields'
+)
+c_namedtuple_nonfield_clsattrs = (
+    set(dir(type(tuple()))) |
+    set(c_namedtuple_identify_by_clsattrs)
+)
+
 
 def _is_namedtuple(value):
     cls = type(value)
@@ -1076,10 +1087,85 @@ def _is_namedtuple(value):
     return True
 
 
+def _is_cnamedtuple(value):
+    cls = type(value)
+    for attrname in c_namedtuple_identify_by_clsattrs:
+        try:
+            val = getattr(cls, attrname)
+        except AttributeError:
+            return False
+        else:
+            if not isinstance(val, int):
+                return False
+
+    return True
+
+
 def pretty_namedtuple(value, ctx, trailing_comment=None):
     constructor = type(value)
     kwargs = zip(constructor._fields, value)
     return pretty_call_alt(ctx, constructor, kwargs=kwargs)
+
+
+_cnamedtuple_fieldnames_by_class = WeakKeyDictionary()
+
+
+# Given a cnamedtuple class, returns a tuple
+# of fieldnames. Each fieldname at ith index of
+# the tuple corresponds to the ith element in the cnamedtuple.
+def resolve_cnamedtuple_fieldnames(tuptype):
+    accessible_fields = set(dir(tuptype)) - c_namedtuple_nonfield_clsattrs
+
+    # You can see which fieldnames are registered for a cnamedtuple,
+    # but there is no public API to see which fieldname is associated
+    # with nth element in the tuple. As long as the cnamedtuple constructor
+    # doesn't do validation on its input, we can resolve the
+    # fieldnames to the tuple elements by passing in unique objects
+    # and then enumerating over the fieldnames, and see which index
+    # they were passed as.
+    uniq_tup = tuple(object() for _ in range(tuptype.n_fields))
+    uniq_idx_by_id = {id(val): idx for idx, val in enumerate(uniq_tup)}
+
+    # This might throw if the constructor does validation.
+    # It must be caught by the caller.
+    trial_val = tuptype(uniq_tup)
+
+    fieldnames_by_idx = [None for _ in range(tuptype.n_fields)]
+
+    for fieldname in accessible_fields:
+        val = getattr(trial_val, fieldname)
+        idx = uniq_idx_by_id.get(id(val))
+        if idx is not None:
+            assert idx >= 0
+            assert idx < tuptype.n_fields
+            fieldnames_by_idx[idx] = fieldname
+
+    # Sanity check.
+    for fieldname in fieldnames_by_idx:
+        if fieldname is None:
+            raise ValueError("Could not resolve all fieldnames")
+
+    return tuple(fieldnames_by_idx)
+
+
+# Examples of cnamedtuples:
+# - return value of time.strptime()
+# - return value of os.uname()
+def pretty_cnamedtuple(value, ctx, fieldnames, trailing_comment=None):
+    cls = type(value)
+    assert fieldnames
+    assert isinstance(fieldnames, tuple)
+
+    return pretty_call_alt(
+        ctx,
+        cls,
+        args=tuple([
+            tuple(
+                comment(val, fieldname)
+                for val, fieldname in zip(value, fieldnames)
+            )
+        ])
+    )
 
 
 @register_pretty(tuple)
@@ -1088,8 +1174,31 @@ def pretty_namedtuple(value, ctx, trailing_comment=None):
 def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
     constructor = type(value)
 
-    if isinstance(value, tuple) and _is_namedtuple(value):
-        return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
+    if isinstance(value, tuple):
+        if _is_cnamedtuple(value):
+            # We check if the cnamedtuple fieldnames have been resolved
+            # here rather than in pretty_cnamedtuple, so that in the
+            # case that resolving the fieldnames fails, we can bail
+            # and use normal tuple rendering
+            if constructor not in _cnamedtuple_fieldnames_by_class:
+                try:
+                    fieldnames = resolve_cnamedtuple_fieldnames(constructor)
+                except Exception:
+                    fieldnames = None
+                _cnamedtuple_fieldnames_by_class[constructor] = fieldnames
+            else:
+                fieldnames = _cnamedtuple_fieldnames_by_class[constructor]
+
+            if fieldnames is not None:
+                return pretty_cnamedtuple(
+                    value,
+                    ctx,
+                    fieldnames=fieldnames,
+                    trailing_comment=trailing_comment
+                )
+            # else: render as a normal tuple
+        elif _is_namedtuple(value):
+            return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
 
     is_native_type = constructor in (tuple, list, set)
     if len(value) > ctx.max_seq_len:
