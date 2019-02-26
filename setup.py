@@ -22,7 +22,7 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    'pytest==3.3.1',
+    'pytest==4.3.0',
     'hypothesis==3.33.0',
     'dataclasses==0.6',
     'django>=1.10.8',
@@ -31,8 +31,8 @@ test_requirements = [
     'IPython==6.2.1',
     'pytz==2017.3',
     'tox-pyenv==1.1.0',
-    'pytest-django====3.1.2',
-    'pytest-pythonpath==0.7.1',
+    'pytest-django==3.4.7',
+    'pytest-pythonpath==0.7.3',
 ]
 
 setup(
