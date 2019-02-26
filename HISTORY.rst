@@ -2,6 +2,17 @@
 History
 =======
 
+0.15.0 (2019-02-25)
+-------------------
+
+This release brings bugfixes, an enhancement to pathlib prettyprinting (thanks `@anntzer <https://github.com/anntzer>`_ ) and a nice performance boost. There was an redundant subtree call in a tree normalization procedure that caused exponential runtime, worsening quickly if data was highly nested. That extra call is now removed.
+
+* `Fix exponential runtime in highly nested data <https://github.com/tommikaikkonen/prettyprinter/pull/34>`_
+* `Fix infinite loop when rendering strings in highly nested data <https://github.com/tommikaikkonen/prettyprinter/pull/33>`_
+* `Only split Path prettyprints on "/", not on "-" or other nonword chars. <https://github.com/tommikaikkonen/prettyprinter/pull/29>`_ , thanks `@anntzer <https://github.com/anntzer>`_
+* `Add vim swapfiles to gitignore <https://github.com/tommikaikkonen/prettyprinter/pull/30>`_ , thanks `@anntzer <https://github.com/anntzer>`_
+* `Fix typo <https://github.com/tommikaikkonen/prettyprinter/pull/31>`_ , thanks `@anntzer <https://github.com/anntzer>`_
+
 0.14.0 (2018-07-25)
 -------------------
 
