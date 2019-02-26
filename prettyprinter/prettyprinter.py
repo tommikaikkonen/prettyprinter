@@ -1585,31 +1585,41 @@ def escaped_len(s, use_quote):
     return len(escape_str_for_quote(use_quote, s))
 
 
-def str_to_lines(max_len, use_quote, s):
+def str_to_lines(max_len, use_quote, s, pattern=None):
     assert max_len > 0, "max_len must be positive"
     if len(s) <= max_len:
         if s:
             yield s
         return
 
+    if pattern is None:
+
+        if isinstance(s, str):
+            whitespace_pattern = WHITESPACE_PATTERN_TEXT
+            nonword_pattern = NONWORD_PATTERN_TEXT
+        else:
+            assert isinstance(s, bytes)
+            whitespace_pattern = WHITESPACE_PATTERN_BYTES
+            nonword_pattern = NONWORD_PATTERN_BYTES
+
+        alternating_words_ws = whitespace_pattern.split(s)
+        pattern = whitespace_pattern
+
+        if len(alternating_words_ws) <= 1:
+            # no whitespace: try splitting with nonword pattern.
+            alternating_words_ws = nonword_pattern.split(s)
+            pattern = nonword_pattern
+
+    else:
+        alternating_words_ws = pattern.split(s)
+
     if isinstance(s, str):
-        whitespace_pattern = WHITESPACE_PATTERN_TEXT
-        nonword_pattern = NONWORD_PATTERN_TEXT
         empty = ''
     else:
         assert isinstance(s, bytes)
-        whitespace_pattern = WHITESPACE_PATTERN_BYTES
-        nonword_pattern = NONWORD_PATTERN_BYTES
         empty = b''
 
-    alternating_words_ws = whitespace_pattern.split(s)
-
-    if len(alternating_words_ws) <= 1:
-        # no whitespace: try splitting with nonword pattern.
-        alternating_words_ws = nonword_pattern.split(s)
-        starts_with_whitespace = bool(nonword_pattern.match(alternating_words_ws[0]))
-    else:
-        starts_with_whitespace = bool(whitespace_pattern.match(alternating_words_ws[0]))
+    starts_with_whitespace = bool(pattern.match(alternating_words_ws[0]))
 
     # List[Tuple[str, bool]]
     # The boolean associated with each part indicates if it is a
@@ -1691,7 +1701,7 @@ def str_to_lines(max_len, use_quote, s):
 
 @register_pretty(str)
 @register_pretty(bytes)
-def pretty_str(s, ctx):
+def pretty_str(s, ctx, split_pattern=None):
     # Subclasses of str/bytes
     # will be printed as StrSubclass('the actual string')
     constructor = type(s)
@@ -1719,7 +1729,7 @@ def pretty_str(s, ctx):
             return build_fncall(ctx, constructor, argdocs=[flat_version])
 
         # multiline string
-        each_line_starts_on_col = indent + prettyprinter_indent
+        each_line_starts_on_col = indent
         each_line_ends_on_col = min(page_width, each_line_starts_on_col + ribbon_width)
 
         each_line_max_str_len = max(
@@ -1738,6 +1748,7 @@ def pretty_str(s, ctx):
             max_len=each_line_max_str_len,
             use_quote=use_quote,
             s=s,
+            pattern=split_pattern,
         ))
 
         if len(lines) == 1:

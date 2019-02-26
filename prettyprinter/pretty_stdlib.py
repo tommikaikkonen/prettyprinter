@@ -14,6 +14,7 @@ from datetime import (
     time,
 )
 from itertools import chain, dropwhile
+import re
 
 from .doc import (
     concat,
@@ -31,6 +32,7 @@ from .prettyprinter import (
     register_pretty,
     pretty_call_alt,
     pretty_python_value,
+    pretty_str,
 )
 
 try:
@@ -339,6 +341,14 @@ def pretty_nodes(value, ctx):
     return pretty_call_alt(ctx, cls_name, kwargs=kwargs)
 
 
+pathstr_split_pattern = re.compile("(/+)")
+
+
 @register_pretty('pathlib.PurePath')
-def pretty_pathlib(value, ctx):
-    return pretty_call_alt(ctx, type(value), args=(value.as_posix(),))
+def pretty_path(value, ctx):
+    strdoc = pretty_str(
+        value.as_posix(),
+        ctx,
+        split_pattern=pathstr_split_pattern
+    )
+    return build_fncall(ctx, type(value), argdocs=(strdoc, ))
