@@ -415,6 +415,13 @@ def _safe_get_terminal_size():
         return None
 
 
+def safe_get_asyncgen_hooks():
+    try:
+        return sys.get_asyncgen_hooks()
+    except Exception:
+        return None
+
+
 @pytest.mark.parametrize('value, reconstructable', [
     (time.strptime("2000", "%Y"), True),
     (os.stat(os.__file__), True),
@@ -423,14 +430,14 @@ def _safe_get_terminal_size():
     (resource.getrusage(resource.RUSAGE_SELF), True),
     (sys.flags, False),
     (sys.float_info, False),
-    (sys.get_asyncgen_hooks(), False),
+    (safe_get_asyncgen_hooks(), False),
     (sys.hash_info, False),
     (sys.thread_info, False),
     (sys.version_info, False),
     (time.localtime(), True),
 ])
 def test_cnamedtuples(value, reconstructable):
-    # ignore os.get_terminal_size edge case
+    # ignore calls that failed
     if value is None:
         return
 
