@@ -3,6 +3,7 @@ import math
 import re
 import sys
 import warnings
+import ast
 from collections import OrderedDict
 from functools import singledispatch, partial
 from itertools import chain, cycle
@@ -1069,10 +1070,6 @@ c_namedtuple_identify_by_clsattrs = (
     'n_sequence_fields',
     'n_unnamed_fields'
 )
-c_namedtuple_nonfield_clsattrs = (
-    set(dir(type(tuple()))) |
-    set(c_namedtuple_identify_by_clsattrs)
-)
 
 
 def _is_namedtuple(value):
@@ -1107,42 +1104,23 @@ def pretty_namedtuple(value, ctx, trailing_comment=None):
     return pretty_call_alt(ctx, constructor, kwargs=kwargs)
 
 
-# Given a cnamedtuple class, returns a tuple
+# Given a cnamedtuple value, returns a tuple
 # of fieldnames. Each fieldname at ith index of
 # the tuple corresponds to the ith element in the cnamedtuple.
-def resolve_cnamedtuple_fieldnames(tuptype):
-    accessible_fields = set(dir(tuptype)) - c_namedtuple_nonfield_clsattrs
-
-    # You can see which fieldnames are registered for a cnamedtuple,
-    # but there is no public API to see which fieldname is associated
-    # with nth element in the tuple. As long as the cnamedtuple constructor
-    # doesn't do validation on its input, we can resolve the
-    # fieldnames to the tuple elements by passing in unique objects
-    # and then enumerating over the fieldnames, and see which index
-    # they were passed as.
-    uniq_tup = tuple(object() for _ in range(tuptype.n_fields))
-    uniq_idx_by_id = {id(val): idx for idx, val in enumerate(uniq_tup)}
-
-    # This might throw if the constructor does validation.
-    # It must be caught by the caller.
-    trial_val = tuptype(uniq_tup)
-
-    fieldnames_by_idx = [None for _ in range(tuptype.n_fields)]
-
-    for fieldname in accessible_fields:
-        val = getattr(trial_val, fieldname)
-        idx = uniq_idx_by_id.get(id(val))
-        if idx is not None:
-            assert idx >= 0
-            assert idx < tuptype.n_fields
-            fieldnames_by_idx[idx] = fieldname
-
-    # Sanity check.
-    for fieldname in fieldnames_by_idx:
-        if fieldname is None:
-            raise ValueError("Could not resolve all fieldnames")
-
-    return tuple(fieldnames_by_idx)
+def resolve_cnamedtuple_fieldnames(value):
+    # The cnamedtuple repr returns a non-evaluable representation
+    # of the value. It has the keyword arguments for each element
+    # of the named tuple in the correct order. You can see the
+    # source here:
+    # https://github.com/python/cpython/blob/53b9e1a1c1d86187ad6fbee492b697ef8be74205/Objects/structseq.c#L168-L241
+    # As long as the repr is implemented like that, we can count
+    # on this function to work.
+    expr_node = ast.parse(repr(value), mode='eval')
+    call_node = expr_node.body
+    return tuple(
+        keyword_node.arg
+        for keyword_node in call_node.keywords
+    )
 
 
 # Keys: classes/constructors
@@ -1159,7 +1137,7 @@ def pretty_cnamedtuple(value, ctx, trailing_comment=None):
     cls = type(value)
     if cls not in _cnamedtuple_fieldnames_by_class:
         try:
-            fieldnames = resolve_cnamedtuple_fieldnames(cls)
+            fieldnames = resolve_cnamedtuple_fieldnames(value)
         except Exception as exc:
             fieldnames = exc
         _cnamedtuple_fieldnames_by_class[cls] = fieldnames

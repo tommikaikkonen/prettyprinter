@@ -7,6 +7,8 @@ import pytest
 import datetime
 import pytz
 import time
+import os
+import resource
 import sys
 from io import StringIO
 from itertools import cycle, islice
@@ -37,7 +39,10 @@ from prettyprinter.doc import (
     fill,
 )
 from prettyprinter.utils import intersperse
-from prettyprinter.prettyprinter import str_to_lines
+from prettyprinter.prettyprinter import (
+    str_to_lines,
+    resolve_cnamedtuple_fieldnames,
+)
 from prettyprinter import (
     comment,
     trailing_comment,
@@ -381,7 +386,7 @@ def test_gh_issue_25():
     )
 
 
-def test_cnamedtuple():
+def test_time_struct_time():
     data = time.strptime("2000", "%Y")
     assert pformat(data) == """\
 time.struct_time((
@@ -401,6 +406,44 @@ time.struct_time((
     # call, so check that this alternative code path does
     # not throw.
     pformat(data)
+
+
+def _safe_get_terminal_size():
+    try:
+        return os.get_terminal_size()
+    except Exception:
+        return None
+
+
+@pytest.mark.parametrize('value, reconstructable', [
+    (time.strptime("2000", "%Y"), True),
+    (os.stat(os.__file__), True),
+    (os.times(), False),
+    (_safe_get_terminal_size(), True),
+    (resource.getrusage(resource.RUSAGE_SELF), True),
+    (sys.flags, False),
+    (sys.float_info, False),
+    (sys.get_asyncgen_hooks(), False),
+    (sys.hash_info, False),
+    (sys.thread_info, False),
+    (sys.version_info, False),
+    (time.localtime(), True),
+])
+def test_cnamedtuples(value, reconstructable):
+    # ignore os.get_terminal_size edge case
+    if value is None:
+        return
+
+    # should not throw
+    fieldnames = resolve_cnamedtuple_fieldnames(value)
+    printed = pformat(value)
+
+    for fieldname in fieldnames:
+        assert fieldname in printed
+
+    if reconstructable:
+        reconstructed = eval(printed)
+        assert reconstructed == value
 
 
 def test_gh_issue_28():
