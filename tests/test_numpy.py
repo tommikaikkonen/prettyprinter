@@ -1,15 +1,32 @@
 import numpy as np
+import pytest
 
 from prettyprinter import install_extras, pformat
 
+install_extras(["numpy"])
 
-def test_numpy():
-    for tp in np.sctypes["uint"] + np.sctypes["int"] + np.sctypes["float"]:
-        np_scalar = tp(1)
-        py_scalar = np.array(1, tp).item()  # builtin int/float.
-        assert pformat(np_scalar) == pformat(py_scalar)
-    assert pformat(np.bool_(True)) == pformat(True)
-    install_extras(["numpy"])
-    for tp in (np.sctypes["uint"] + np.sctypes["int"] + np.sctypes["float"]
-               + [np.bool_]):
-        assert "(" in pformat(tp(1))
+
+@pytest.mark.parametrize('nptype', (
+    np.sctypes["uint"] +
+    np.sctypes["int"] +
+    np.sctypes["float"]
+))
+def test_numpy_numeric_types(nptype):
+    val = nptype(1)
+    py_val = val.item()
+
+    if type(py_val) in (int, float):
+        inner_printed = pformat(py_val)
+    else:
+        # numpy renders types such as float128,
+        # that are not representable in native Python
+        # types, with Python syntax
+        inner_printed = repr(py_val)
+
+    expected = "numpy.{}({})".format(nptype.__name__, inner_printed)
+    assert pformat(val) == expected
+
+
+def test_numpy_bool_type():
+    assert pformat(np.bool_(False)) == "numpy.bool_(False)"
+    assert pformat(np.bool_(True)) == "numpy.bool_(True)"

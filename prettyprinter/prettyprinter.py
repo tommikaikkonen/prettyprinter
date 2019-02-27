@@ -1399,7 +1399,6 @@ def pretty_dict(d, ctx, trailing_comment=None):
 
 INF_FLOAT = float('inf')
 NEG_INF_FLOAT = float('-inf')
-_NUMPY_EXTRA_INSTALLED = False
 
 
 @register_pretty(float)
@@ -1419,12 +1418,7 @@ def pretty_float(value, ctx):
     doc = annotate(Token.NUMBER_FLOAT, repr(value))
     if constructor is float:
         return doc
-    # Depending on the architecture, either numpy.float32 or numpy.float64
-    # can inherit from float.
-    if not _NUMPY_EXTRA_INSTALLED and constructor.__module__ == "numpy":
-        import numpy
-        if constructor is numpy.float_:
-            return doc
+
     return build_fncall(ctx, general_identifier(constructor), argdocs=(doc, ))
 
 
@@ -1447,16 +1441,34 @@ def pretty_ellipsis(value, ctx):
 
 
 @register_pretty(bool)
-@register_pretty(type(None))
-@register_pretty("numpy.bool_")
-def pretty_singletons(value, ctx):
+def pretty_bool(value, ctx):
     constructor = type(value)
-    doc = annotate(Token.KEYWORD_CONSTANT, repr(value))
-    if (_NUMPY_EXTRA_INSTALLED
-            and get_deferred_key(constructor) == "numpy.bool_"):
-        return build_fncall(
-            ctx, general_identifier(constructor), argdocs=(doc, ))
-    return doc
+
+    doc = annotate(Token.KEYWORD_CONSTANT, 'True' if value else 'False')
+    if constructor is bool:
+        return doc
+    return build_fncall(
+        ctx,
+        general_identifier(constructor),
+        argdocs=(doc, )
+    )
+
+NoneType = type(None)
+
+
+@register_pretty(NoneType)
+def pretty_none(value, ctx):
+    constructor = type(value)
+
+    doc = annotate(Token.KEYWORD_CONSTANT, 'None')
+    if constructor is NoneType:
+        return doc
+
+    return build_fncall(
+        ctx,
+        general_identifier(constructor),
+        argdocs=(doc, )
+    )
 
 
 SINGLE_QUOTE_TEXT = "'"

@@ -28,9 +28,6 @@ from .render import default_render_to_stream
 # Registers standard library types
 # as a side effect
 import prettyprinter.pretty_stdlib  # noqa
-# Without this line, "prettyprinter.prettyprinter" ends up being a reference to
-# *this* module rather than to its prettyprinter submodule.
-del prettyprinter
 
 
 __all__ = [
