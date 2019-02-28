@@ -3,6 +3,7 @@ import math
 import re
 import sys
 import warnings
+import ast
 from collections import OrderedDict
 from functools import singledispatch, partial
 from itertools import chain, cycle
@@ -12,6 +13,7 @@ from types import (
     BuiltinFunctionType,
     BuiltinMethodType
 )
+from weakref import WeakKeyDictionary
 
 from .doc import (
     always_break,
@@ -1063,6 +1065,12 @@ namedtuple_clsattrs = (
     '_asdict'
 )
 
+c_namedtuple_identify_by_clsattrs = (
+    'n_fields',
+    'n_sequence_fields',
+    'n_unnamed_fields'
+)
+
 
 def _is_namedtuple(value):
     cls = type(value)
@@ -1076,10 +1084,78 @@ def _is_namedtuple(value):
     return True
 
 
+def _is_cnamedtuple(value):
+    cls = type(value)
+    for attrname in c_namedtuple_identify_by_clsattrs:
+        try:
+            val = getattr(cls, attrname)
+        except AttributeError:
+            return False
+        else:
+            if not isinstance(val, int):
+                return False
+
+    return True
+
+
 def pretty_namedtuple(value, ctx, trailing_comment=None):
     constructor = type(value)
     kwargs = zip(constructor._fields, value)
     return pretty_call_alt(ctx, constructor, kwargs=kwargs)
+
+
+# Given a cnamedtuple value, returns a tuple
+# of fieldnames. Each fieldname at ith index of
+# the tuple corresponds to the ith element in the cnamedtuple.
+def resolve_cnamedtuple_fieldnames(value):
+    # The cnamedtuple repr returns a non-evaluable representation
+    # of the value. It has the keyword arguments for each element
+    # of the named tuple in the correct order. You can see the
+    # source here:
+    # https://github.com/python/cpython/blob/53b9e1a1c1d86187ad6fbee492b697ef8be74205/Objects/structseq.c#L168-L241
+    # As long as the repr is implemented like that, we can count
+    # on this function to work.
+    expr_node = ast.parse(repr(value), mode='eval')
+    call_node = expr_node.body
+    return tuple(
+        keyword_node.arg
+        for keyword_node in call_node.keywords
+    )
+
+
+# Keys: classes/constructors
+# Values: a tuple of fieldnames is resolving them was successful.
+#         Otherwise, an exception that was raised when attempting
+#         to resolve the fieldnames.
+_cnamedtuple_fieldnames_by_class = WeakKeyDictionary()
+
+
+# Examples of cnamedtuples:
+# - return value of time.strptime()
+# - return value of os.uname()
+def pretty_cnamedtuple(value, ctx, trailing_comment=None):
+    cls = type(value)
+    if cls not in _cnamedtuple_fieldnames_by_class:
+        try:
+            fieldnames = resolve_cnamedtuple_fieldnames(value)
+        except Exception as exc:
+            fieldnames = exc
+        _cnamedtuple_fieldnames_by_class[cls] = fieldnames
+
+    fieldnames = _cnamedtuple_fieldnames_by_class[cls]
+    if isinstance(fieldnames, Exception):
+        raise fieldnames
+
+    return pretty_call_alt(
+        ctx,
+        cls,
+        args=tuple([
+            tuple(
+                comment(val, fieldname)
+                for val, fieldname in zip(value, fieldnames)
+            )
+        ])
+    )
 
 
 @register_pretty(tuple)
@@ -1088,8 +1164,18 @@ def pretty_namedtuple(value, ctx, trailing_comment=None):
 def pretty_bracketable_iterable(value, ctx, trailing_comment=None):
     constructor = type(value)
 
-    if isinstance(value, tuple) and _is_namedtuple(value):
-        return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
+    if isinstance(value, tuple):
+        if _is_cnamedtuple(value):
+            try:
+                return pretty_cnamedtuple(
+                    value,
+                    ctx,
+                    trailing_comment=trailing_comment
+                )
+            except Exception:
+                pass  # render as a normal tuple
+        elif _is_namedtuple(value):
+            return pretty_namedtuple(value, ctx, trailing_comment=trailing_comment)
 
     is_native_type = constructor in (tuple, list, set)
     if len(value) > ctx.max_seq_len:

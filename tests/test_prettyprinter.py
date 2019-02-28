@@ -6,6 +6,9 @@
 import pytest
 import datetime
 import pytz
+import time
+import os
+import resource
 import sys
 from io import StringIO
 from itertools import cycle, islice
@@ -36,7 +39,10 @@ from prettyprinter.doc import (
     fill,
 )
 from prettyprinter.utils import intersperse
-from prettyprinter.prettyprinter import str_to_lines
+from prettyprinter.prettyprinter import (
+    str_to_lines,
+    resolve_cnamedtuple_fieldnames,
+)
 from prettyprinter import (
     comment,
     trailing_comment,
@@ -378,6 +384,73 @@ def test_gh_issue_25():
         {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': {'a': 1}}}}}}}}}}}}},
         width=30
     )
+
+
+def test_time_struct_time():
+    data = time.strptime("2000", "%Y")
+    assert pformat(data) == """\
+time.struct_time((
+    2000,  # tm_year
+    1,  # tm_mon
+    1,  # tm_mday
+    0,  # tm_hour
+    0,  # tm_min
+    0,  # tm_sec
+    5,  # tm_wday
+    1,  # tm_yday
+    -1  # tm_isdst
+))"""
+    # The cnamedtuple implementation has a caching
+    # mechanism for the resolved order of fieldnames.
+    # Those fieldnames should have been cached on the first
+    # call, so check that this alternative code path does
+    # not throw.
+    pformat(data)
+
+
+def _safe_get_terminal_size():
+    try:
+        return os.get_terminal_size()
+    except Exception:
+        return None
+
+
+def safe_get_asyncgen_hooks():
+    try:
+        return sys.get_asyncgen_hooks()
+    except Exception:
+        return None
+
+
+@pytest.mark.parametrize('value, reconstructable', [
+    (time.strptime("2000", "%Y"), True),
+    (os.stat(os.__file__), True),
+    (os.times(), False),
+    (_safe_get_terminal_size(), True),
+    (resource.getrusage(resource.RUSAGE_SELF), True),
+    (sys.flags, False),
+    (sys.float_info, False),
+    (safe_get_asyncgen_hooks(), False),
+    (sys.hash_info, False),
+    (sys.thread_info, False),
+    (sys.version_info, False),
+    (time.localtime(), True),
+])
+def test_cnamedtuples(value, reconstructable):
+    # ignore calls that failed
+    if value is None:
+        return
+
+    # should not throw
+    fieldnames = resolve_cnamedtuple_fieldnames(value)
+    printed = pformat(value)
+
+    for fieldname in fieldnames:
+        assert fieldname in printed
+
+    if reconstructable:
+        reconstructed = eval(printed)
+        assert reconstructed == value
 
 
 def test_gh_issue_28():
