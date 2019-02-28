@@ -316,6 +316,7 @@ ALL_EXTRAS = frozenset([
     'django',
     'ipython',
     'ipython_repr_pretty',
+    'numpy',
     'python',
     'requests',
     'dataclasses',
@@ -337,6 +338,7 @@ def install_extras(
         module.
     - ``'django'`` - automatically pretty prints Model and QuerySet subclasses defined in your
         Django apps.
+    - ``numpy`` - pretty prints numpy scalars with explicit types
     - ``'requests'`` - automatically pretty prints Requests, Responses, Sessions, etc.
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
     - ``'python'`` - makes prettyprinter the default printer in the default Python shell.

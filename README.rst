@@ -88,6 +88,7 @@ Comes packaged with the following pretty printer definitions, which you can enab
 - ``dataclasses`` - any new class you create will be pretty printed automatically
 - ``attrs`` - pretty prints any new class you create with ``attrs``
 - ``django`` - pretty prints your Models and QuerySets
+- ``numpy`` - pretty prints numpy scalars with explicit types
 - ``requests`` - pretty prints Requests, Responses, Sessions, and more from the ``requests`` library
 
 * Free software: MIT license

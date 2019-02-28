@@ -1418,6 +1418,7 @@ def pretty_float(value, ctx):
     doc = annotate(Token.NUMBER_FLOAT, repr(value))
     if constructor is float:
         return doc
+
     return build_fncall(ctx, general_identifier(constructor), argdocs=(doc, ))
 
 
@@ -1440,9 +1441,25 @@ def pretty_ellipsis(value, ctx):
 
 
 @register_pretty(bool)
+def pretty_bool(value, ctx):
+    constructor = type(value)
+
+    doc = annotate(Token.KEYWORD_CONSTANT, 'True' if value else 'False')
+    if constructor is bool:
+        return doc
+    return build_fncall(
+        ctx,
+        general_identifier(constructor),
+        argdocs=(doc, )
+    )
+
+
+NONE_DOC = annotate(Token.KEYWORD_CONSTANT, 'None')
+
+
 @register_pretty(type(None))
-def pretty_singletons(value, ctx):
-    return annotate(Token.KEYWORD_CONSTANT, repr(value))
+def pretty_none(value, ctx):
+    return NONE_DOC
 
 
 SINGLE_QUOTE_TEXT = "'"
