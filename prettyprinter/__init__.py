@@ -331,7 +331,10 @@ def install_extras(
     raise_on_error=False,
     warn_on_error=True
 ):
-    """Installs extras. The following extras are available:
+    """Installs extras.
+
+    Installing an extra means registering pretty printers for objects from third
+    party libraries and/or enabling integrations with other python programs.
 
     - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
     - ``'dataclasses'`` - automatically pretty prints classes created using the ``dataclasses``
