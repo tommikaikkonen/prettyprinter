@@ -1453,22 +1453,13 @@ def pretty_bool(value, ctx):
         argdocs=(doc, )
     )
 
-NoneType = type(None)
+
+NONE_DOC = annotate(Token.KEYWORD_CONSTANT, 'None')
 
 
-@register_pretty(NoneType)
+@register_pretty(type(None))
 def pretty_none(value, ctx):
-    constructor = type(value)
-
-    doc = annotate(Token.KEYWORD_CONSTANT, 'None')
-    if constructor is NoneType:
-        return doc
-
-    return build_fncall(
-        ctx,
-        general_identifier(constructor),
-        argdocs=(doc, )
-    )
+    return NONE_DOC
 
 
 SINGLE_QUOTE_TEXT = "'"
