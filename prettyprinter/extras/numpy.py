@@ -1,4 +1,3 @@
-from .. import prettyprinter
 from ..prettyprinter import (
     register_pretty,
     pretty_bool,
