@@ -6,7 +6,7 @@ History
 -------------------
 
 * `Adds a new extra for numpy. <https://github.com/tommikaikkonen/prettyprinter/pull/39>`_ The extra currently registers pretty printers for numpy scalar types. Enable it with ``import prettyprinter; prettyprinter.install_extras(['numpy'])``. Thanks `@anntzer <https://github.com/anntzer>`_
-* `C-API named tuples are now automatically prettyprinted. <https://github.com/tommikaikkonen/prettyprinter/pull/34>`_ C-API named tuples are returned from expressions such as ``sys.flags``, ``time.strptime(...)``, and ``os.stat(...)``. The fieldname of each tuple element is annotated using a comment in the output.
+* `C-API named tuples are now automatically prettyprinted. <https://github.com/tommikaikkonen/prettyprinter/pull/38>`_ C-API named tuples are returned from expressions such as ``sys.flags``, ``time.strptime(...)``, and ``os.stat(...)``. The fieldname of each tuple element is annotated using a comment in the output.
 
 0.15.0 (2019-02-25)
 -------------------
