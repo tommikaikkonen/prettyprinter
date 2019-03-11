@@ -8,7 +8,7 @@ from collections import (
     namedtuple,
 )
 from enum import Enum
-from functools import partial
+from functools import partial, partialmethod
 from pathlib import PosixPath, PurePosixPath, PureWindowsPath, WindowsPath
 from types import MappingProxyType
 from uuid import UUID
@@ -85,14 +85,15 @@ def test_namedtuple():
     assert pformat(value, width=999) == constructor_str + '(one=1, two=2)'
 
 
-def test_partial():
-    value = partial(sorted, [2, 3, 1], reverse=True)
+@pytest.mark.parametrize('typ', [partial, partialmethod])
+def test_partial(typ):
+    value = typ(sorted, [2, 3, 1], reverse=True)
     assert pformat(value) == """\
-functools.partial(
+functools.{}(
     sorted,  # built-in function
     [2, 3, 1],
     reverse=True
-)"""
+)""".format(typ.__name__)
 
 
 def test_exception():

@@ -311,6 +311,7 @@ def pretty_mappingproxy(value, ctx):
 
 
 @register_pretty('functools.partial')
+@register_pretty('functools.partialmethod')
 def pretty_partial(value, ctx):
     constructor = type(value)
     return pretty_call_alt(
