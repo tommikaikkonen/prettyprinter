@@ -73,6 +73,14 @@ _default_config = {
 }
 
 
+def _merge_defaults(
+    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys,
+):
+    kwargs = locals()
+    return {key: kwargs[key] if kwargs[key] is not _UNSET_SENTINEL else default
+            for key, default in _default_config.items()}
+
+
 def get_default_config():
     """Returns a read-only view of the current configuration"""
     return MappingProxyType(_default_config)
@@ -115,38 +123,15 @@ def pformat(
     Accepts the same parameters as :func:`~prettyprinter.pprint`.
     The output is not colored.
     """
-    # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
     stream = StringIO()
@@ -182,38 +167,15 @@ def pprint(
                            which case the default order is used, which is the
                            insertion order in CPython 3.6+.
     """
-    # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
     stream = (
@@ -266,38 +228,15 @@ def cpprint(
     """
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
-
     stream = (
         # This is not in _default_config in case
         # sys.stdout changes.
@@ -305,7 +244,6 @@ def cpprint(
         if stream is _UNSET_SENTINEL
         else stream
     )
-
     colored_render_to_stream(stream, sdocs, style=style)
     if end:
         stream.write(end)
