@@ -341,7 +341,8 @@ def install_extras(
         module.
     - ``'django'`` - automatically pretty prints Model and QuerySet subclasses defined in your
         Django apps.
-    - ``numpy`` - pretty prints numpy scalars with explicit types
+    - ``numpy`` - automatically pretty prints numpy scalars with explicit types, and,
+      for numpy>=1.14, numpy arrays.
     - ``'requests'`` - automatically pretty prints Requests, Responses, Sessions, etc.
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
     - ``'python'`` - makes prettyprinter the default printer in the default Python shell.
