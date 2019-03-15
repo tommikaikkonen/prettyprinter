@@ -4,7 +4,7 @@
 
 __author__ = """Tommi Kaikkonen"""
 __email__ = 'kaikkonentommi@gmail.com'
-__version__ = '0.16.0'
+__version__ = '0.17.0'
 
 from io import StringIO
 from importlib import import_module
