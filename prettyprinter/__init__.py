@@ -177,6 +177,10 @@ def pprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param max_seq_len: a maximum sequence length that applies to subclasses of
+                        lists, sets, frozensets, tuples and dicts. A trailing
+                        comment that indicates the number of truncated elements.
+                        Setting max_seq_len to ``None`` disables truncation.
     :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
@@ -254,6 +258,10 @@ def cpprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param max_seq_len: a maximum sequence length that applies to subclasses of
+                        lists, sets, frozensets, tuples and dicts. A trailing
+                        comment that indicates the number of truncated elements.
+                        Setting max_seq_len to ``None`` disables truncation.
     :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
