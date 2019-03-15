@@ -73,6 +73,14 @@ _default_config = {
 }
 
 
+def _merge_defaults(
+    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys,
+):
+    kwargs = locals()
+    return {key: kwargs[key] if kwargs[key] is not _UNSET_SENTINEL else default
+            for key, default in _default_config.items()}
+
+
 def get_default_config():
     """Returns a read-only view of the current configuration"""
     return MappingProxyType(_default_config)
@@ -115,38 +123,15 @@ def pformat(
     Accepts the same parameters as :func:`~prettyprinter.pprint`.
     The output is not colored.
     """
-    # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
     stream = StringIO()
@@ -177,43 +162,24 @@ def pprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param max_seq_len: a maximum sequence length that applies to subclasses of
+                        lists, sets, frozensets, tuples and dicts. A trailing
+                        comment that indicates the number of truncated elements.
+                        Setting max_seq_len to ``None`` disables truncation.
     :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
                            insertion order in CPython 3.6+.
     """
-    # TODO: compact
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
     stream = (
@@ -254,6 +220,10 @@ def cpprint(
     :param depth: maximum depth to print nested structures
     :param ribbon_width: a soft maximum allowed number of columns in the output,
                          after indenting the line
+    :param max_seq_len: a maximum sequence length that applies to subclasses of
+                        lists, sets, frozensets, tuples and dicts. A trailing
+                        comment that indicates the number of truncated elements.
+                        Setting max_seq_len to ``None`` disables truncation.
     :param sort_dict_keys: a ``bool`` value indicating if dict keys should be
                            sorted in the output. Defaults to ``False``, in
                            which case the default order is used, which is the
@@ -266,38 +236,15 @@ def cpprint(
     """
     sdocs = python_to_sdocs(
         object,
-        indent=(
-            _default_config['indent']
-            if indent is _UNSET_SENTINEL
-            else indent
-        ),
-        width=(
-            _default_config['width']
-            if width is _UNSET_SENTINEL
-            else width
-        ),
-        depth=(
-            _default_config['depth']
-            if depth is _UNSET_SENTINEL
-            else depth
-        ),
-        ribbon_width=(
-            _default_config['ribbon_width']
-            if ribbon_width is _UNSET_SENTINEL
-            else ribbon_width
-        ),
-        max_seq_len=(
-            _default_config['max_seq_len']
-            if max_seq_len is _UNSET_SENTINEL
-            else max_seq_len
-        ),
-        sort_dict_keys=(
-            _default_config['sort_dict_keys']
-            if sort_dict_keys is _UNSET_SENTINEL
-            else sort_dict_keys
+        **_merge_defaults(
+            indent=indent,
+            width=width,
+            depth=depth,
+            ribbon_width=ribbon_width,
+            max_seq_len=max_seq_len,
+            sort_dict_keys=sort_dict_keys,
         )
     )
-
     stream = (
         # This is not in _default_config in case
         # sys.stdout changes.
@@ -305,7 +252,6 @@ def cpprint(
         if stream is _UNSET_SENTINEL
         else stream
     )
-
     colored_render_to_stream(stream, sdocs, style=style)
     if end:
         stream.write(end)
@@ -338,7 +284,7 @@ def install_extras(
 
     - ``'attrs'`` - automatically pretty prints classes created using the ``attrs`` package.
     - ``'dataclasses'`` - automatically pretty prints classes created using the ``dataclasses``
-        module.
+      module.
     - ``'django'`` - automatically pretty prints Model and QuerySet subclasses defined in your
         Django apps.
     - ``numpy`` - automatically pretty prints numpy scalars with explicit types, and,
@@ -347,8 +293,8 @@ def install_extras(
     - ``'ipython'`` - makes prettyprinter the default printer in the IPython shell.
     - ``'python'`` - makes prettyprinter the default printer in the default Python shell.
     - ``'ipython_repr_pretty'`` - automatically prints objects that define a ``_repr_pretty_``
-        method to integrate with
-        `IPython.lib.pretty <http://ipython.readthedocs.io/en/stable/api/generated/IPython.lib.pretty.html#extending>`_.
+      method to integrate with `IPython.lib.pretty
+      <http://ipython.readthedocs.io/en/stable/api/generated/IPython.lib.pretty.html#extending>`_.
 
     :param include: an iterable of strs representing the extras to include.
         All extras are included by default.
