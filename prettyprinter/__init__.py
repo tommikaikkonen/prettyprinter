@@ -74,7 +74,7 @@ _default_config = {
 
 
 def _merge_defaults(
-    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys,
+    *, indent, width, depth, ribbon_width, max_seq_len, sort_dict_keys
 ):
     kwargs = locals()
     return {key: kwargs[key] if kwargs[key] is not _UNSET_SENTINEL else default
