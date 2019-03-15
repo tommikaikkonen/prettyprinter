@@ -2,6 +2,15 @@
 History
 =======
 
+0.17.0 (2019-03-14)
+-------------------
+
+* `Add prettyprinter for numpy ndarrays. <https://github.com/tommikaikkonen/prettyprinter/pull/47>`_ by `@anntzer <https://github.com/anntzer>`_
+* `Add helper to apply default config. <https://github.com/tommikaikkonen/prettyprinter/pull/46>`_ by `@anntzer <https://github.com/anntzer>`_
+* A number of docs and CI improvements: `#43 <https://github.com/tommikaikkonen/prettyprinter/pull/43>`_, `#44 <https://github.com/tommikaikkonen/prettyprinter/pull/44>`_, `#45 <https://github.com/tommikaikkonen/prettyprinter/pull/45>`_ .Thanks `@anntzer <https://github.com/anntzer>`_
+* `Add support for functools.partialmethod. <https://github.com/tommikaikkonen/prettyprinter/pull/42>`_ by `@anntzer <https://github.com/anntzer>`_
+* `Fix typo in changelog. <https://github.com/tommikaikkonen/prettyprinter/pull/40>`_ Thanks `@Vlad-Shcherbina <https://github.com/Vlad-Shcherbina>`_
+
 0.16.0 (2019-02-27)
 -------------------
 
