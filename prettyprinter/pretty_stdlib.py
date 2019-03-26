@@ -296,7 +296,11 @@ def pretty_ordereddict(d, ctx):
 
 @register_pretty(Counter)
 def pretty_counter(counter, ctx):
-    return pretty_call_alt(ctx, type(counter), args=(dict(counter), ))
+    return pretty_call_alt(
+        ctx,
+        type(counter),
+        args=(dict(counter.most_common()), ),
+    )
 
 
 @register_pretty('enum.Enum')
