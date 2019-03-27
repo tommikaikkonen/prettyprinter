@@ -10,6 +10,7 @@ from collections import (
 from enum import Enum
 from functools import partial, partialmethod
 from pathlib import PosixPath, PurePosixPath, PureWindowsPath, WindowsPath
+import sys
 from types import MappingProxyType
 from uuid import UUID
 
@@ -22,6 +23,9 @@ def test_counter():
     value = Counter({'a': 1, 'b': 200})
     expected = "collections.Counter({'a': 1, 'b': 200})"
     assert pformat(value, width=999, sort_dict_keys=True) == expected
+    if sys.version_info >= (3, 6):
+        expected = "collections.Counter({'b': 200, 'a': 1})"
+        assert pformat(value, width=999, sort_dict_keys=False) == expected
 
 
 def test_ordereddict():
