@@ -212,8 +212,8 @@ hashable_primitives = (
 def hashable_containers(primitives):
     def extend(base):
         return st.one_of(
-            st.frozensets(base, average_size=10, max_size=50),
-            st.lists(base, average_size=10, max_size=50).map(tuple),
+            st.frozensets(base, max_size=50),
+            st.lists(base, max_size=50).map(tuple),
         )
     return st.recursive(primitives, extend)
 
@@ -221,12 +221,11 @@ def hashable_containers(primitives):
 def containers(primitives):
     def extend(base):
         return st.one_of(
-            st.lists(base, average_size=10, max_size=50),
-            st.lists(base, average_size=10, max_size=50).map(tuple),
+            st.lists(base, max_size=50),
+            st.lists(base, max_size=50).map(tuple),
             st.dictionaries(
                 keys=hashable_containers(primitives),
                 values=base,
-                average_size=5,
                 max_size=10
             ),
         )
@@ -252,7 +251,7 @@ def test_all_python_values(value):
     cpprint(value)
 
 
-@settings(max_examples=500, max_iterations=500)
+@settings(max_examples=500)
 @given(st.binary())
 def test_bytes_pprint_equals_repr(bytestr):
     reprd = repr(bytestr)
@@ -272,7 +271,7 @@ def test_bytes_pprint_equals_repr(bytestr):
         assert pformat(bytestr) == repr(bytestr)
 
 
-@settings(max_examples=500, max_iterations=500)
+@settings(max_examples=500)
 @given(containers(primitives()))
 def test_readable(value):
     formatted = pformat(value)
@@ -284,7 +283,7 @@ def test_readable(value):
 
 def nested_dictionaries():
     simple_strings_alphabet = 'abcdefghijklmnopqrstuvwxyz\'"\r\n '
-    simple_text = st.text(alphabet=simple_strings_alphabet, min_size=5, average_size=20)
+    simple_text = st.text(alphabet=simple_strings_alphabet, min_size=5)
 
     def extend(base):
         return st.one_of(
@@ -490,7 +489,7 @@ def test_large_data_performance():
     assert took < datetime.timedelta(seconds=13)
 
 
-@settings(max_examples=5000, max_iterations=5000)
+@settings(max_examples=5000)
 @given(
     st.text(),
     st.integers(min_value=5),
