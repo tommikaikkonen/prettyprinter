@@ -614,6 +614,10 @@ def test_list_subclass():
 ])"""
 
 
+def test_builtin_method():
+    assert pformat(int(1).to_bytes == "int.to_bytes  # built-in bound method")
+
+
 class TestDeferredType(dict):
     pass
 
