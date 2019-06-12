@@ -46,3 +46,10 @@ def test_masked_array():
     # (they require their own algoithm, which is not implemented yet).
     array = np.ma.array([0, 1])
     assert pformat(array) == repr(array)
+
+
+def test_truncation():
+    array = np.zeros((11, 11, 11))
+    lines = pformat(array, max_seq_len=1000).split()
+    zeros = len(list(filter(lambda line: line.lstrip().startswith('0'), lines)))
+    assert zeros == 1000
