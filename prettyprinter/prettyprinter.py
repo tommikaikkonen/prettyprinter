@@ -1163,6 +1163,7 @@ def pretty_cnamedtuple(value, ctx, trailing_comment=None):
         ])
     )
 
+
 @register_pretty(SimpleNamespace)
 def pretty_simplenamespace(value, ctx, trailing_comment=None):
     cls = type(value)

@@ -32,14 +32,14 @@ def pretty_ndarray(value, ctx):
     ctx_new = ctx.nested_call()
     # Handle truncation of subsequences for multidimensional arrays
     if value.ndim >= 2 and value.size > ctx.max_seq_len:
-        l, r = 1, ctx.max_seq_len
-        while l != r:
-            m = ceil((l + r) / 2)
-            if np.prod(np.minimum(m, value.shape)) > ctx.max_seq_len:
-                r = m - 1
+        left, right = 1, ctx.max_seq_len
+        while left != right:
+            middle = ceil((left + right) / 2)
+            if np.prod(np.minimum(middle, value.shape)) > ctx.max_seq_len:
+                right = middle - 1
             else:
-                l = m
-        ctx_new.max_seq_len = l
+                left = middle
+        ctx_new.max_seq_len = left
     return pretty_call_alt(ctx_new, type(value), args, kwargs)
 
 
