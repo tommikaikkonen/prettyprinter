@@ -2,6 +2,18 @@
 History
 =======
 
+0.18.0 (2019-06-21)
+-------------------
+
+* `Improve prettyprinting of builtin bound methods. <https://github.com/tommikaikkonen/prettyprinter/pull/57>`_ by `@anntzer <https://github.com/anntzer>`_
+* `Fix test suite compatibility with hypothesis4. <https://github.com/tommikaikkonen/prettyprinter/pull/58>`_ by `@anntzer <https://github.com/anntzer>`_
+* `Use $COLORFGBG to help decide whether to use a dark or light style <https://github.com/tommikaikkonen/prettyprinter/pull/62>`_ by `@crowsonkb <https://github.com/crowsonkb>`_
+* `Truncate numpy arrays with ndim >= 2 so that the total printed does not exceed max_seq_len <https://github.com/tommikaikkonen/prettyprinter/pull/63>`_ by `@crowsonkb <https://github.com/crowsonkb>`_
+* Fixed ipython_repr_pretty extra raising an exception when printing Mock instances (GH #61)
+* Added support for pretty printing types.SimpleNamespace (GH #60)
+* Fixed dictionary pretty printing indentation when the value had a comment on the line above (GH #59)
+
+
 0.17.0 (2019-03-14)
 -------------------
 
