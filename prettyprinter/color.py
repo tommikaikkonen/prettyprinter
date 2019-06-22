@@ -127,7 +127,24 @@ class GitHubLightStyle(Style):
 default_dark_style = styles.get_style_by_name('monokai')
 default_light_style = GitHubLightStyle
 
-is_light_bg = bool(os.environ.get('PYPRETTYPRINTER_LIGHT_BACKGROUND', False))
+is_light_bg = None
+
+colorfgbg = os.environ.get('COLORFGBG', '')
+try:
+    fg, bg = map(int, colorfgbg.split(';', 1))
+    if bg > fg:
+        is_light_bg = True
+    if fg > bg:
+        is_light_bg = False
+except ValueError:
+    pass
+
+bg_override = os.environ.get('PYPRETTYPRINTER_LIGHT_BACKGROUND')
+if bg_override is not None:
+    is_light_bg = bool(bg_override)
+    if bg_override == '0' or bg_override.lower() == 'false':
+        is_light_bg = False
+
 default_style = default_light_style if is_light_bg else default_dark_style
 
 
