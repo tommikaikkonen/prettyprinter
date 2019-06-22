@@ -1,5 +1,6 @@
 import ast
 from distutils.version import LooseVersion
+from math import ceil
 
 from ..prettyprinter import (
     register_pretty,
@@ -28,7 +29,18 @@ def pretty_ndarray(value, ctx):
         dtype_repr = repr(dtype)
         assert dtype_repr.startswith("dtype(") and dtype_repr.endswith(")")
         kwargs.append(("dtype", ast.literal_eval(dtype_repr[6:-1])))
-    return pretty_call_alt(ctx, type(value), args, kwargs)
+    ctx_new = ctx.nested_call()
+    # Handle truncation of subsequences for multidimensional arrays
+    if value.ndim >= 2 and value.size > ctx.max_seq_len:
+        l, r = 1, ctx.max_seq_len
+        while l != r:
+            m = ceil((l + r) / 2)
+            if np.prod(np.minimum(m, value.shape)) > ctx.max_seq_len:
+                r = m - 1
+            else:
+                l = m
+        ctx_new.max_seq_len = l
+    return pretty_call_alt(ctx_new, type(value), args, kwargs)
 
 
 def install():
