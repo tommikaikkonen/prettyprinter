@@ -11,7 +11,6 @@ from traceback import format_exception
 from types import (
     FunctionType,
     BuiltinFunctionType,
-    BuiltinMethodType
 )
 from weakref import WeakKeyDictionary
 
@@ -219,6 +218,9 @@ def keyword_arg(s):
 def general_identifier(s):
     if callable(s):
         module, qualname = s.__module__, s.__qualname__
+        if module is None and hasattr(s, '__self__'):
+            # Builtin methods on builtin types.
+            module = type(s.__self__).__module__
 
         if module in IMPLICIT_MODULES:
             if module == 'builtins':
@@ -1042,19 +1044,12 @@ def pretty_function(fn, ctx):
     )
 
 
-@register_pretty(BuiltinMethodType)
-def pretty_builtin_method(method, ctx):
-    return comment(
-        general_identifier(method),
-        'built-in method'
-    )
-
-
-@register_pretty(BuiltinFunctionType)
+@register_pretty(BuiltinFunctionType)  # Also includes bound methods.
 def pretty_builtin_function(fn, ctx):
     return comment(
         general_identifier(fn),
-        'built-in function'
+        'built-in bound method' if hasattr(fn, '__self__')
+        else 'built-in function'
     )
 
 
