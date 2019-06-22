@@ -385,6 +385,18 @@ def test_gh_issue_25():
     )
 
 
+def test_gh_issue_59():
+    out = pformat({'a': comment('abcde' * 20, 'Comment'), 'b': 1})
+    assert out == """\
+{
+    'a':
+        # Comment
+        'abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcd'
+        'eabcdeabcdeabcdeabcdeabcdeabcde',
+    'b': 1
+}"""
+
+
 def test_time_struct_time():
     data = time.strptime("2000", "%Y")
     assert pformat(data) == """\

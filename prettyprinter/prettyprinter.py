@@ -1425,9 +1425,9 @@ def pretty_dict(d, ctx, trailing_comment=None):
                                     ),
                                 ),
                                 COMMA if not last else NIL,
-                                HARDLINE if not last else NIL
                             ])
                         ),
+                        HARDLINE if not last else NIL
                     ])
                 )
             )
