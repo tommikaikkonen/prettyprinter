@@ -11,6 +11,7 @@ from traceback import format_exception
 from types import (
     FunctionType,
     BuiltinFunctionType,
+    ModuleType,
 )
 from weakref import WeakKeyDictionary
 
@@ -1046,9 +1047,18 @@ def pretty_function(fn, ctx):
 
 @register_pretty(BuiltinFunctionType)  # Also includes bound methods.
 def pretty_builtin_function(fn, ctx):
+    try:
+        cls_inst = fn.__self__
+    except Exception:
+        is_method = False
+    else:
+        # Apparently built-in functions like sorted have the builtin Module
+        # returned from __self__.
+        is_method = not isinstance(cls_inst, ModuleType)
+
     return comment(
         general_identifier(fn),
-        'built-in bound method' if hasattr(fn, '__self__')
+        'built-in bound method' if is_method
         else 'built-in function'
     )
 
