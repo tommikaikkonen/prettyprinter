@@ -14,6 +14,7 @@ from io import StringIO
 from itertools import cycle, islice
 import json
 import timeit
+from types import SimpleNamespace
 
 from hypothesis import given, settings, HealthCheck
 from hypothesis.extra.pytz import timezones
@@ -462,6 +463,12 @@ def test_cnamedtuples(value, reconstructable):
     if reconstructable:
         reconstructed = eval(printed)
         assert reconstructed == value
+
+
+def test_simplenamespace():
+    ns = SimpleNamespace(a=1, b=2)
+    expected = """types.SimpleNamespace(a=1, b=2)"""
+    assert pformat(ns) == expected
 
 
 def test_gh_issue_28():

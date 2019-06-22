@@ -12,6 +12,7 @@ from types import (
     FunctionType,
     BuiltinFunctionType,
     ModuleType,
+    SimpleNamespace,
 )
 from weakref import WeakKeyDictionary
 
@@ -1160,6 +1161,19 @@ def pretty_cnamedtuple(value, ctx, trailing_comment=None):
                 for val, fieldname in zip(value, fieldnames)
             )
         ])
+    )
+
+@register_pretty(SimpleNamespace)
+def pretty_simplenamespace(value, ctx, trailing_comment=None):
+    cls = type(value)
+    return pretty_call_alt(
+        ctx,
+        cls,
+        args=(),
+        kwargs=[
+            (k, value.__dict__[k])
+            for k in sorted(value.__dict__)
+        ]
     )
 
 
