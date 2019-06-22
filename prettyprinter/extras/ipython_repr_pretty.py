@@ -22,6 +22,9 @@ from ..doc import (
 def implements_repr_pretty(instance):
     try:
         method = instance._repr_pretty_
+        # Values returned from Mocks don't have a __func__
+        # attribute.
+        method.__func__
     except AttributeError:
         return False
     return callable(method)
