@@ -303,10 +303,20 @@ def pretty_counter(counter, ctx):
     )
 
 
+# IntEnum inherits from int first, but we want Enum-style prettyprinting.
 @register_pretty('enum.Enum')
+@register_pretty('enum.IntEnum')
+@register_pretty('enum.Flag')
+@register_pretty('enum.IntFlag')
 def pretty_enum(value, ctx):
     cls = type(value)
-    return classattr(cls, value.name)
+    if value.name is not None:
+        return classattr(cls, value.name)
+    else:  # Combined flags.
+        s = str(value)
+        prefix = cls.__name__ + "."
+        assert s.startswith(prefix)
+        return classattr(cls, s[len(prefix):])
 
 
 @register_pretty('builtins.mappingproxy')

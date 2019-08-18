@@ -64,6 +64,19 @@ def test_enum():
     expected = 'tests.test_stdlib_definitions.test_enum.<locals>.TestEnum.ONE'
     assert pformat(value) == expected
 
+    try:
+        from enum import IntFlag
+    except ImportError:
+        pass
+    else:
+        class TestFlag(IntFlag):
+            ONE = 1
+            TWO = 2
+
+        value = TestFlag.ONE | TestFlag.TWO
+        expected = 'tests.test_stdlib_definitions.test_enum.<locals>.TestFlag.TWO|ONE'
+        assert pformat(value) == expected
+
 
 def test_mappingproxytype():
     assert is_registered(
