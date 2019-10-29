@@ -23,11 +23,11 @@ setup_requirements = [
 
 test_requirements = [
     'pytest==4.3.0',
-    'hypothesis==3.33.0',
+    'hypothesis==4.42.0',
     'dataclasses==0.6',
-    'django>=1.10.8',
+    'django>=2.2.6',
     'requests==2.21.0',
-    'attrs==17.4.0',
+    'attrs==19.3.0',
     'IPython==6.2.1',
     'pytz==2017.3',
     'tox-pyenv==1.1.0',
@@ -55,6 +55,8 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.5',
     ],
