@@ -25,9 +25,11 @@ jobs:
             [ ! -d "/home/circleci/.pyenv" ] && curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             eval "$(pyenv init -)"
-            pyenv install 3.5.4 --skip-existing
-            pyenv install 3.6.3 --skip-existing
-            pyenv global 3.6.3 3.5.4
+            pyenv install 3.5.7 --skip-existing
+            pyenv install 3.6.9 --skip-existing
+            pyenv install 3.7.5 --skip-existing
+            pyenv install 3.8.0 --skip-existing
+            pyenv global 3.8.0 3.7.5 3.6.9 3.5.7
             echo "Installed Python versions"
 
       - save_cache:
