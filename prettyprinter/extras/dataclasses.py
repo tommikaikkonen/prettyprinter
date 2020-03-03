@@ -28,26 +28,7 @@ def pretty_dataclass_instance(value, ctx):
         # to display the field value.
         if not field_def.repr:
             continue
-
-        display_attr = False
-
-        if (
-            field_def.default is MISSING and
-            field_def.default_factory is MISSING
-        ):
-            display_attr = True
-        elif field_def.default is not MISSING:
-            if field_def.default != getattr(value, field_def.name):
-                display_attr = True
-        elif field_def.default_factory is not MISSING:
-            default_value = field_def.default_factory()
-            if default_value != getattr(value, field_def.name):
-                display_attr = True
-        else:
-            assert "default and default_factory should not be both defined"
-
-        if display_attr:
-            kwargs.append((field_def.name, getattr(value, field_def.name)))
+        kwargs.append((field_def.name, getattr(value, field_def.name)))
 
     return pretty_call(ctx, cls, **OrderedDict(kwargs))
 
