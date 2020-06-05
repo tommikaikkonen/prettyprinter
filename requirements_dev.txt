@@ -19,7 +19,7 @@ ipython==6.2.1
 requests==2.21.0
 pytz==2017.3
 attrs==17.4.0
-Django==1.10.8
+Django==1.11.29
 pytest-django==3.4.7
 pytest-pythonpath==0.7.3
 numpy==1.16.1
