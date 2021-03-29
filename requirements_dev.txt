@@ -13,7 +13,7 @@ pytest==4.3.0
 pytest-runner==3.0
 pycodestyle==2.3.1
 colorful==0.4.0
-Pygments==2.2.0
+Pygments==2.7.4
 dataclasses==0.3
 ipython==6.2.1
 requests==2.21.0
