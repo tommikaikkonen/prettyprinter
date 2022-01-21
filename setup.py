@@ -28,7 +28,7 @@ test_requirements = [
     'django>=1.10.8',
     'requests==2.21.0',
     'attrs==17.4.0',
-    'IPython==6.2.1',
+    'IPython==7.16.3',
     'pytz==2017.3',
     'tox-pyenv==1.1.0',
     'pytest-django==3.4.7',
