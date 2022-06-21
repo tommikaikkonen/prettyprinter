@@ -22,4 +22,4 @@ attrs==17.4.0
 Django==1.10.8
 pytest-django==3.4.7
 pytest-pythonpath==0.7.3
-numpy==1.16.1
+numpy==1.22.0
