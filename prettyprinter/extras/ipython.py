@@ -53,7 +53,7 @@ def install():
                 obj,
                 stream=self.stream,
                 style=pygments_style_from_name_or_cls(
-                    ipy.highlighting_style,
+                    getattr(ipy, "highlighting_style", "legacy"),
                     ishell=ipy
                 ),
                 width=columns,
